@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Deepak Reminders - 17 Spark & Particle Engines</title>
+<title>Vista Reminders - 17 Spark & Particle Engines</title>
 <style>
-  <style>
 *{box-sizing:border-box}
 :root{
   --glass:rgba(255,255,255,0.85);
@@ -151,7 +150,6 @@ button{
  color:#12283e;background:linear-gradient(#fff,#dbeafe);box-shadow:0 4px 10px rgba(0,25,60,0.12),inset 0 1px #fff;transition:.15s
 }
 button:hover{transform:translateY(-1px);filter:brightness(1.04);box-shadow:0 6px 14px rgba(0,25,60,0.18)}
-#musicBtn.music-on{background:linear-gradient(#a7f3d0,#34d399);color:#064e3b}
 .primary{background:linear-gradient(#3b82f6,#1d4ed8);color:#fff;text-shadow:0 1px #172554}
 .green{background:linear-gradient(#10b981,#059669);color:white;text-shadow:0 1px #064e3b}
 .danger{background:linear-gradient(#f87171,#dc2626);color:#fff;text-shadow:0 1px #7f1d1d}
@@ -191,21 +189,8 @@ footer{text-align:center;color:#cbd5e1;font-size:12px;margin-top:14px;text-shado
 @media(max-width:850px){.grid{grid-template-columns:1fr}.clock{display:none}}
 @media(max-width:560px){.app{width:96%;margin:10px auto}.card{grid-template-columns:5px 1fr}.actions{grid-column:2;justify-content:flex-start}header{padding:18px}.panel{padding:13px}}
 
-/* ===== PREMIUM SOFT BACKGROUND ===== */
-body{
-  background:
-    radial-gradient(circle at 12% 18%, rgba(99,102,241,.28), transparent 30%),
-    radial-gradient(circle at 88% 20%, rgba(56,189,248,.22), transparent 28%),
-    radial-gradient(circle at 72% 82%, rgba(168,85,247,.22), transparent 32%),
-    linear-gradient(135deg,#07111f 0%,#0b1730 45%,#130d2b 100%);
-}
-#bgCanvas{opacity:.92}
-.aero{
-  background:linear-gradient(135deg,rgba(255,255,255,.78),rgba(255,255,255,.38));
-  backdrop-filter:blur(28px);
-  -webkit-backdrop-filter:blur(28px);
-}
-
+.password-page-btn{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border:1px solid rgba(255,255,255,.9);text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.password-page-btn:hover{filter:brightness(1.08)}
 </style>
 </head>
 <body class="theme-magma">
@@ -222,10 +207,9 @@ body{
   <div class="brand">
     <div class="logo">🔔</div>
     <div>
-      <h1>Deepak Reminders</h1>
+      <h1>Vista Reminders</h1>
       <div class="sub">Offline • Private • Stored on this device</div>
       <div class="theme-bar">
-        <button class="theme-btn active" onclick="setTheme('aurora', this)">🌌 Soft Aurora</button>
         <!-- Original Core Themes -->
         <button class="theme-btn active" onclick="setTheme('magma', this)">💥 Magma Sparks</button>
         <button class="theme-btn" onclick="setTheme('inferno', this)">🔥 Inferno Fire</button>
@@ -284,11 +268,7 @@ body{
   <button class="primary" onclick="openModal()">＋ Add Reminder</button>
   <button onclick="backup()">⬇ Backup</button>
   <button onclick="document.getElementById('restore').click()">⬆ Restore</button>
-  <button id="musicBtn" onclick="toggleMusic()">🎵 Music: Off</button>
-  <label style="display:flex;align-items:center;gap:6px;padding:0 6px;font-size:12px;font-weight:700;color:#12283e">
-    🔈 <input id="musicVolume" type="range" min="0" max="1" step="0.01" value="0.28"
-      style="width:95px;padding:0;box-shadow:none" oninput="setMusicVolume(this.value)">
-  </label>
+  <button class="password-page-btn" onclick="window.location.href='password.html'">🔐 Password Maker</button>
   <input type="file" id="restore" accept=".json" hidden onchange="restore(event)">
 </div>
 
@@ -437,7 +417,7 @@ const ctx = canvas.getContext('2d');
 
 let cw = canvas.width = window.innerWidth;
 let ch = canvas.height = window.innerHeight;
-let currentTheme = 'aurora';
+let currentTheme = 'magma';
 let mouseX = cw / 2, mouseY = ch / 2;
 
 window.addEventListener('resize', () => {
@@ -701,72 +681,10 @@ function drawSynthwave() {
   }
 }
 
-
-/* ========================================================
-   PREMIUM AURORA / FLOATING LIGHT BACKGROUND
-   ======================================================== */
-const auroraBlobs = Array.from({length: 18}, () => ({
-  x: Math.random() * cw,
-  y: Math.random() * ch,
-  r: 80 + Math.random() * 170,
-  vx: (Math.random() - .5) * .35,
-  vy: (Math.random() - .5) * .25,
-  phase: Math.random() * Math.PI * 2,
-  hue: [190, 220, 260, 285, 165][Math.floor(Math.random()*5)]
-}));
-
-function drawAurora() {
-  ctx.fillStyle = '#07111f';
-  ctx.fillRect(0, 0, cw, ch);
-
-  const g = ctx.createLinearGradient(0, 0, cw, ch);
-  g.addColorStop(0, 'rgba(20, 38, 75, .9)');
-  g.addColorStop(.45, 'rgba(10, 24, 48, .72)');
-  g.addColorStop(1, 'rgba(25, 12, 48, .92)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, cw, ch);
-
-  auroraBlobs.forEach(b => {
-    b.x += b.vx;
-    b.y += b.vy;
-    b.phase += .008;
-
-    if (b.x < -b.r) b.x = cw + b.r;
-    if (b.x > cw + b.r) b.x = -b.r;
-    if (b.y < -b.r) b.y = ch + b.r;
-    if (b.y > ch + b.r) b.y = -b.r;
-
-    const pulse = 1 + Math.sin(b.phase) * .08;
-    const grad = ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r*pulse);
-    grad.addColorStop(0, `hsla(${b.hue},90%,70%,.16)`);
-    grad.addColorStop(.42, `hsla(${b.hue},85%,60%,.07)`);
-    grad.addColorStop(1, `hsla(${b.hue},80%,50%,0)`);
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(b.x,b.y,b.r*pulse,0,Math.PI*2);
-    ctx.fill();
-  });
-
-  // Small slow-moving stars / dust
-  ctx.save();
-  for(let i=0;i<90;i++){
-    const x=(i*97 + performance.now()*.008*(i%3+1))%cw;
-    const y=(i*53)%ch;
-    const a=.18+.16*Math.sin(performance.now()*.001+i);
-    ctx.globalAlpha=a;
-    ctx.fillStyle='#dbeafe';
-    ctx.beginPath();
-    ctx.arc(x,y,1+(i%3)*.35,0,Math.PI*2);
-    ctx.fill();
-  }
-  ctx.restore();
-}
-
 /* Master Animation Frame Router */
 function renderLoop() {
   ctx.globalAlpha = 1;
-  if(currentTheme === 'aurora') drawAurora();
-  else if(currentTheme === 'magma') drawMagma('rgba(8, 2, 4, 0.3)');
+  if(currentTheme === 'magma') drawMagma('rgba(8, 2, 4, 0.3)');
   else if(currentTheme === 'blue_plasma') drawBluePlasma('rgba(2, 6, 18, 0.32)');
   else if(currentTheme === 'mystic_violet') drawMysticViolet('rgba(10, 2, 16, 0.3)');
   else if(currentTheme === 'gold_dust') drawGoldDust('rgba(14, 10, 2, 0.3)');
@@ -792,37 +710,6 @@ buildClockTicks();
 setInterval(updateClock, 1000);
 updateClock();
 render();
-
-
-/* ========================================================
-   OFFLINE SOFT MUSIC (SEPARATE MP3 FILE)
-   The MP3 is stored as a separate local file in the same folder.
-   ======================================================== */
-const musicAudio = new Audio();
-musicAudio.src = "music.mp3";
-musicAudio.loop = true;
-musicAudio.preload = "auto";
-musicAudio.volume = 0.28;
-
-function toggleMusic() {
-  const btn = document.getElementById("musicBtn");
-  if (musicAudio.paused) {
-    musicAudio.play().then(() => {
-      btn.textContent = "🔊 Music: On";
-      btn.classList.add("music-on");
-    }).catch(() => {
-      btn.textContent = "▶️ Click Music";
-    });
-  } else {
-    musicAudio.pause();
-    btn.textContent = "🎵 Music: Off";
-    btn.classList.remove("music-on");
-  }
-}
-
-function setMusicVolume(value) {
-  musicAudio.volume = Number(value);
-}
 
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape") closeModal();
