@@ -191,6 +191,12 @@ footer{text-align:center;color:#cbd5e1;font-size:12px;margin-top:14px;text-shado
 
 .password-page-btn{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border:1px solid rgba(255,255,255,.9);text-shadow:0 1px 2px rgba(0,0,0,.25)}
 .password-page-btn:hover{filter:brightness(1.08)}
+
+/* Quick Page Navigation */
+.quick-pages{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.quick-page-btn{background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff!important;border:1px solid rgba(255,255,255,.9);font-weight:700}
+.quick-page-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+
 </style>
 </head>
 <body class="theme-magma">
@@ -270,6 +276,14 @@ footer{text-align:center;color:#cbd5e1;font-size:12px;margin-top:14px;text-shado
   <button onclick="document.getElementById('restore').click()">⬆ Restore</button>
   <button class="password-page-btn" onclick="window.location.href='password.html'">🔐 Password Maker</button>
   <input type="file" id="restore" accept=".json" hidden onchange="restore(event)">
+  <div class="quick-pages">
+    <button class="quick-page-btn" onclick="window.location.href='click-1.html'">Click-1</button>
+    <button class="quick-page-btn" onclick="window.location.href='click-2.html'">Click-2</button>
+    <button class="quick-page-btn" onclick="window.location.href='click-3.html'">Click-3</button>
+    <button class="quick-page-btn" onclick="window.location.href='click-4.html'">Click-4</button>
+    <button class="quick-page-btn" onclick="window.location.href='click-5.html'">Click-5</button>
+    <button class="quick-page-btn" onclick="window.location.href='click-6.html'">Click-6</button>
+  </div>
 </div>
 
 <div class="tabs">
