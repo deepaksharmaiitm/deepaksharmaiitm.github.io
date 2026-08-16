@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Gallery | Graphical Site</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;min-height:100vh;color:#fff;overflow-x:hidden;
+background:linear-gradient(135deg,#09001f,#001b3d,#19002f,#003b46);background-size:400% 400%;animation:bg 15s ease infinite}
+@keyframes bg{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+body:before,body:after{content:"";position:fixed;width:320px;height:320px;border-radius:50%;filter:blur(70px);opacity:.35;z-index:-1}
+body:before{background:#00d9ff;top:-80px;left:-80px} body:after{background:#b400ff;right:-80px;bottom:-80px}
+nav{position:sticky;top:15px;z-index:5;margin:15px auto;width:min(1100px,94%);padding:14px 18px;border:1px solid #ffffff30;border-radius:22px;background:#ffffff12;backdrop-filter:blur(18px);display:flex;justify-content:space-between;align-items:center;box-shadow:0 12px 35px #0005}
+.logo{font-size:22px;font-weight:800;letter-spacing:1px}.links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.links a{color:#fff;text-decoration:none;padding:10px 14px;border-radius:14px;transition:.25s}.links a:hover,.links a.active{background:#ffffff22;box-shadow:0 0 18px #00d9ff55}
+main{width:min(1100px,92%);margin:55px auto 30px}.hero{text-align:center;padding:55px 20px}
+h1{font-size:clamp(38px,7vw,72px);line-height:1.05;margin-bottom:18px;text-shadow:0 0 25px #00d9ff55}
+.hero p{font-size:18px;opacity:.85;max-width:700px;margin:auto;line-height:1.6}
+.btn{display:inline-block;margin-top:28px;padding:13px 22px;border-radius:16px;background:linear-gradient(90deg,#00c6ff,#a855f7);color:#fff;text-decoration:none;font-weight:bold;box-shadow:0 8px 30px #00c6ff33}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.card{padding:28px;border-radius:24px;background:#ffffff12;border:1px solid #ffffff22;backdrop-filter:blur(16px);box-shadow:0 15px 35px #0003;transition:.3s}
+.card:hover{transform:translateY(-7px);border-color:#ffffff55}.icon{font-size:38px;margin-bottom:15px}.card h2{margin-bottom:10px}.card p{opacity:.75;line-height:1.55}
+footer{text-align:center;padding:30px;opacity:.6}
+</style></head>
+<body><nav><div class="logo">✨ MY GRAPHICAL SITE</div><div class="links">
+<a href="index.html" data-p="Home">Home</a><a href="dashboard.html" data-p="Dashboard">Dashboard</a>
+<a href="services.html" data-p="Services">Services</a><a href="gallery.html" data-p="Gallery">Gallery</a><a href="contact.html" data-p="Contact">Contact</a>
+</div></nav><main><section class="hero"><h1>🖼️ Gallery</h1><p>A graphical gallery page for images, projects or screenshots.</p><a class="btn" href="index.html">← Back to Home</a></section>
+<section class="grid"><div class="card"><div class="icon">🌄</div><h2>Pictures</h2><p>Show your favorite pictures here.</p></div><div class="card"><div class="icon">🎨</div><h2>Designs</h2><p>Display posters, graphics and creative work.</p></div><div class="card"><div class="icon">✨</div><h2>Projects</h2><p>Showcase your completed projects.</p></div></section></main><footer>© 2026 My Graphical Site • HTML Offline Website</footer>
+<script>
+document.querySelectorAll('.links a').forEach(a=>{if(a.dataset.p==='Gallery')a.classList.add('active')})
+</script></body></html>
