@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>भिण्ड नागरिक सहकारी बैंक मर्यादित, भिण्ड</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family:'Segoe UI',Arial,sans-serif;
+    background:linear-gradient(135deg,#a1c4fd 0%,#c2e9fb 30%,#d4fc79 70%,#f6d365 100%);
+    background-attachment:fixed;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+.panel {
+    width:100%;
+    max-width:900px;
+    background:rgba(255,255,255,0.25);
+    backdrop-filter:blur(15px);
+    border-radius:24px;
+    padding:40px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.15);
+}
+h1 { text-align:center; color:blue; margin-bottom:10px; }
+h2 { text-align:center; color:red; margin-bottom:30px; }
+label { display:block; margin-top:15px; font-weight:bold; color:green; }
+input[type=text], textarea, input[type=file] {
+    width:100%; padding:12px; margin-top:8px; border-radius:10px; border:1px solid #ccc; font-size:15px;
+}
+textarea { height:120px; resize:vertical; }
+
+button.main-btn {
+    width:100%; margin-top:25px; padding:15px; border:none; border-radius:12px;
+    background:#2563eb; color:white; font-size:16px; font-weight:bold; cursor:pointer;
+}
+button.main-btn:hover { background:#1d4ed8; }
+.bottom-right-text { position:fixed; bottom:20px; right:20px; font-size:18px; font-weight:bold; color:#333; }
+</style>
+</head>
+<body>
+
+<div class="panel">
+    <h1>भिण्ड नागरिक सहकारी बैंक मर्यादित, भिण्ड</h1>
+    <h2>.PXF to .RET File Converter Tool</h2>
+
+    <label>1. Select Source .PXF File</label>
+    <input type="file" id="uploadFile" accept=".PXF,.txt" onchange="processFile()">
+
+    <label>2. .RET File Name</label>
+    <input type="text" id="fileName" value="">
+
+    <label>3. Filtered RET Content Preview</label>
+    <textarea id="fileContent" placeholder=".PXF File Data..."></textarea>
+	<p style="color: red; font-weight: bold; text-align: center;">
+    Please Check Data before Submitting
+</p>
+
+    <button class="main-btn" onclick="generateAndDownloadFile()">.RET File Download</button>
+
+</div>
+
+<div class="bottom-right-text">Deepak Sharma</div>
+
+<script>
+window.onload = function() {
+    setAutomaticFileName();
+};
+
+function setAutomaticFileName() {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    const currentDateStr = `${day}${month}${year}`; // DDMMYYYY format
+    
+    document.getElementById("fileName").value = `477844001_${currentDateStr}_14_01.RET`;
+}
+
+function processFile() {
+    const fileInput = document.getElementById('uploadFile');
+    if (fileInput.files.length === 0) return;
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        const text = e.target.result;
+        const lines = text.split(/\r?\n/);
+        let outputLines = [];
+
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i].trim();
+            if (line === "") continue;
+
+            let values = line.split('|');
+
+            if (values.length >= 20) {
+                let val2 = values[1] ? values[1].trim() : "";
+                let val3 = values[2] ? values[2].trim() : "";
+                
+                // Pehle values[3] tha, ab 5th value ke liye values[4] kar diya hai
+                let val5 = values[4] ? values[4].trim() : ""; 
+                
+                let val8 = values[7] ? values[7].trim() : "";
+                let fixed00 = "--";
+                
+                // Direct 20th value (Index 19)
+                let val20 = values[19] ? values[19].trim() : "";
+
+                // Naya Format: val2 | val5 (5th value) | val3 | val8 | 00 | val20
+                let newLine = `${val2}|${val5}|${val3}|${val8}|${fixed00}|${val20}`;
+                outputLines.push(newLine);
+            }
+        }
+
+        if(outputLines.length === 0) {
+            alert("Warning: We accept only .PXF file!");
+        }
+
+        document.getElementById('fileContent').value = outputLines.join('\r\n');
+    };
+    reader.readAsText(file);
+}
+
+function generateAndDownloadFile() {
+    var fileName = document.getElementById("fileName").value.trim();
+    var fileContent = document.getElementById("fileContent").value;
+
+    if (fileContent == "") {
+        alert("Please upload .PXF file.");
+        return;
+    }
+
+    const blob = new Blob([fileContent], {type: "text/plain;charset=utf-8"});
+    const link = document.createElement("a");
+    
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+    
+    alert(".RET File Download Folder mein successfully bhej di gayi hai!");
+}
+</script>
+</body>
+</html>
