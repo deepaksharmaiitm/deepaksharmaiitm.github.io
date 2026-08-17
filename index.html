@@ -3,91 +3,165 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ultra Reminders</title>
+  <title>Ultra Reminders Space Edition</title>
+  
+  <!-- Stylish Signature Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Orbitron:wght@500;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg-dark: #0f111a;
-      --card-bg: rgba(235, 238, 243, 0.95);
-      --card-inner: #ffffff;
-      --primary: #3b66f5;
-      --danger: #eb4d4b;
-      --success: #20bf6b;
-      --text: #2d3436;
-      --text-muted: #636e72;
+      --card-bg: rgba(255, 255, 255, 0.12);
+      --card-inner: rgba(255, 255, 255, 0.18);
+      --card-border: rgba(255, 255, 255, 0.25);
+      --primary: #38ef7d;
+      --accent: #00d2d3;
+      --danger: #ff5252;
+      --success: #1dd1a1;
+      --text: #ffffff;
+      --text-muted: #c8d6e5;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
     body {
-      font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
-      background: radial-gradient(circle at top, #1e2433 0%, var(--bg-dark) 100%);
-      margin: 0;
-      padding: 20px;
+      font-family: 'Outfit', 'Segoe UI', Roboto, Helvetica, sans-serif;
+      background: #050510;
       color: var(--text);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
     }
+
+    /* Background Canvas for Moving Space Stars */
+    #spaceCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
     .dashboard {
       width: 100%;
-      max-width: 1000px;
+      max-width: 1050px;
       display: flex;
       flex-direction: column;
       gap: 16px;
+      position: relative;
+      z-index: 1;
+      padding-bottom: 70px;
     }
-    .header-card {
+
+    /* Glassmorphic Container Style */
+    .glass-card {
       background: var(--card-bg);
-      border-radius: 18px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
       padding: 20px 25px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    }
+
+    .header-card {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      flex-wrap: wrap;
+      gap: 15px;
     }
     .title-group h1 {
-      margin: 0;
-      font-size: 24px;
-      color: #1e272e;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      background: linear-gradient(45deg, #00d2d3, #54a0ff, #5f27cd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
     .title-group p {
-      margin: 4px 0 0;
+      margin-top: 4px;
       font-size: 13px;
       color: var(--text-muted);
     }
+
+    /* Clock Styling */
     .clock-widget {
       display: flex;
       align-items: center;
       gap: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 8px 18px;
+      border-radius: 50px;
+      border: 1px solid rgba(255,255,255,0.15);
     }
     .analog-clock {
-      width: 65px;
-      height: 65px;
-      border: 3px solid #2d3436;
+      width: 55px;
+      height: 55px;
+      border: 2px solid #54a0ff;
       border-radius: 50%;
       position: relative;
-      background: #fff;
+      background: rgba(255,255,255,0.05);
     }
     .hand {
       position: absolute;
       bottom: 50%;
       left: 50%;
       transform-origin: bottom center;
-      background: #2d3436;
+      background: #fff;
       border-radius: 4px;
     }
-    .hour-hand { width: 3px; height: 18px; }
-    .min-hand { width: 2px; height: 25px; }
-    .sec-hand { width: 1.5px; height: 28px; background: #e74c3c; }
+    .hour-hand { width: 3px; height: 16px; }
+    .min-hand { width: 2px; height: 22px; }
+    .sec-hand { width: 1.5px; height: 25px; background: #ff4757; }
     .digital-time {
       font-weight: 700;
-      font-size: 17px;
-      color: #1e272e;
+      font-size: 16px;
+      color: #fff;
     }
     .digital-date {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
-      font-weight: 600;
     }
+
+    /* Jump Navigation Bar */
+    .nav-bar {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 5px;
+    }
+    .nav-btn {
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 30px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+    }
+    .nav-btn:hover {
+      background: linear-gradient(45deg, #0984e3, #6c5ce7);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+    }
+
+    /* Action and Filter Bar */
     .action-bar {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 14px 18px;
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
@@ -96,82 +170,90 @@
     }
     .search-input {
       flex: 1;
-      min-width: 200px;
-      padding: 9px 14px;
-      border: 1px solid #dcdde1;
-      border-radius: 10px;
-      outline: none;
+      min-width: 220px;
+      padding: 10px 16px;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.35);
+      color: #fff;
       font-size: 14px;
+      outline: none;
     }
+    .search-input::placeholder { color: #8395a7; }
+
     .btn {
-      padding: 9px 16px;
+      padding: 10px 18px;
       border: none;
-      border-radius: 9px;
+      border-radius: 12px;
       font-weight: 600;
       cursor: pointer;
       font-size: 13px;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: opacity 0.2s;
+      transition: all 0.2s;
     }
-    .btn:hover { opacity: 0.9; }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-success { background: var(--success); color: white; }
-    .btn-danger { background: var(--danger); color: white; }
-    .btn-neutral { background: #dcdde1; color: #2f3640; }
+    .btn-primary { background: linear-gradient(45deg, #0984e3, #00cec9); color: white; }
+    .btn-neutral { background: rgba(255,255,255,0.15); color: white; }
+    .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+    /* Tabs */
     .filter-tabs {
       display: flex;
       gap: 8px;
+      overflow-x: auto;
     }
     .tab-btn {
       padding: 7px 16px;
       border-radius: 20px;
-      border: none;
-      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.06);
       cursor: pointer;
       font-weight: 600;
-      font-size: 13px;
-      color: #2f3640;
+      font-size: 12px;
+      color: var(--text-muted);
+      transition: all 0.2s;
     }
     .tab-btn.active {
-      background: #2f3640;
-      color: white;
+      background: #54a0ff;
+      color: #fff;
+      border-color: #54a0ff;
     }
+
+    /* Main Grid */
     .main-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
       gap: 16px;
     }
-    @media (max-width: 768px) {
+    @media (max-width: 800px) {
       .main-grid { grid-template-columns: 1fr; }
     }
-    .card {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 20px;
-    }
+
     .card-title {
       font-size: 17px;
       font-weight: 700;
-      margin: 0 0 15px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      margin-bottom: 15px;
     }
+
+    /* Reminder Items */
     .reminder-item {
       background: var(--card-inner);
-      padding: 14px 16px;
-      border-radius: 12px;
-      margin-bottom: 10px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-left: 4px solid var(--primary);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      border-left: 4px solid #54a0ff;
+      backdrop-filter: blur(5px);
+      transition: transform 0.2s;
+      flex-wrap: wrap;
+      gap: 10px;
     }
+    .reminder-item:hover { transform: scale(1.01); }
     .reminder-item.completed {
-      opacity: 0.6;
+      opacity: 0.5;
       border-left-color: var(--success);
       text-decoration: line-through;
     }
@@ -180,53 +262,122 @@
       color: var(--text-muted);
       margin-top: 4px;
     }
+
+    /* Action Buttons in Item */
+    .btn-group-mini {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .btn-mini {
+      padding: 6px 10px;
+      font-size: 11px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: opacity 0.2s;
+    }
+    .btn-mini:hover { opacity: 0.85; }
+    .btn-view { background: #0984e3; color: white; }
+    .btn-edit { background: #f39c12; color: white; }
+    .btn-done { background: #10ac84; color: white; }
+    .btn-del { background: #ee5253; color: white; }
+
+    /* Overview Stats */
     .stats-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
     .stat-box {
-      background: var(--card-inner);
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255,255,255,0.1);
       padding: 15px;
-      border-radius: 12px;
+      border-radius: 14px;
       text-align: center;
     }
-    .stat-number {
-      font-size: 24px;
-      font-weight: bold;
-      color: #1e272e;
-    }
-    .stat-label {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
+    .stat-number { font-size: 24px; font-weight: 800; color: #fff; }
+    .stat-label { font-size: 12px; color: var(--text-muted); }
+
+    /* Modals */
     .modal {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
       align-items: center;
       justify-content: center;
-      z-index: 99;
+      z-index: 999;
     }
     .modal.open { display: flex; }
     .modal-content {
-      background: white;
+      background: #141724;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
       padding: 25px;
-      border-radius: 14px;
+      border-radius: 18px;
       width: 90%;
-      max-width: 420px;
+      max-width: 440px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+    }
+    .modal input, .modal textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 4px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      color: white;
+      outline: none;
+      font-family: inherit;
+    }
+
+    /* Down-Right Signature Badge */
+    .signature-badge {
+      position: fixed;
+      bottom: 15px;
+      right: 20px;
+      z-index: 99;
+      background: rgba(15, 17, 26, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 7px 18px;
+      border-radius: 30px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: auto;
+    }
+    .sig-text {
+      font-size: 11px;
+      color: #a4b0be;
+      letter-spacing: 0.5px;
+    }
+    .sig-name {
+      font-family: 'Great Vibes', cursive;
+      font-size: 22px;
+      background: linear-gradient(45deg, #00d2d3, #54a0ff, #ff9ff3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 12px rgba(84, 160, 255, 0.4);
     }
   </style>
 </head>
 <body>
 
+  <!-- Moving Starfield Background Canvas -->
+  <canvas id="spaceCanvas"></canvas>
+
   <div class="dashboard">
-    <!-- Header -->
-    <div class="header-card">
+
+    <!-- Top Header -->
+    <div class="glass-card header-card">
       <div class="title-group">
-        <h1>🔔 Ultra Reminders</h1>
-        <p>Online • Stored in Google Sheets</p>
+        <h1>🚀 Ultra Reminders Space</h1>
+        <p>Live Sync • Animated Nebula • Stored Online</p>
       </div>
       <div class="clock-widget">
         <div class="analog-clock">
@@ -241,14 +392,25 @@
       </div>
     </div>
 
-    <!-- Action Bar -->
-    <div class="action-bar">
-      <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search reminders..." onkeyup="renderReminders()">
-      <button class="btn btn-primary" onclick="openModal()">+ Add Reminder</button>
-      <button class="btn btn-neutral" onclick="fetchReminders()">🔄 Refresh</button>
+    <!-- Jumping Navigation Bar to Other HTML Pages -->
+    <div class="nav-bar">
+      <a href="form.html" class="nav-btn">📝 Data Entry Form</a>
+      <a href="calculator.html" class="nav-btn">🧮 Calculator</a>
+      <a href="notes.html" class="nav-btn">📓 Notes Page</a>
+      <a href="dashboard.html" class="nav-btn">📊 Master Dashboard</a>
+      <a href="settings.html" class="nav-btn">⚙️ Settings</a>
     </div>
 
-    <!-- Tabs -->
+    <!-- Action Bar -->
+    <div class="glass-card action-bar">
+      <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search reminders..." onkeyup="renderReminders()">
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-primary" onclick="openAddModal()">+ Add Reminder</button>
+        <button class="btn btn-neutral" onclick="fetchReminders()">🔄 Refresh</button>
+      </div>
+    </div>
+
+    <!-- Filter Tabs -->
     <div class="filter-tabs">
       <button class="tab-btn active" onclick="setFilter('All', this)">All</button>
       <button class="tab-btn" onclick="setFilter('Today', this)">Today</button>
@@ -256,65 +418,121 @@
       <button class="tab-btn" onclick="setFilter('Completed', this)">Completed</button>
     </div>
 
-    <!-- Main Grid -->
+    <!-- Main Content Area -->
     <div class="main-grid">
-      <!-- List -->
-      <div class="card">
-        <h3 class="card-title">📝 My Reminders</h3>
+      <!-- Reminder Items -->
+      <div class="glass-card">
+        <h3 class="card-title">📝 My Space Reminders</h3>
         <div id="reminderList">Loading reminders from Google Sheet...</div>
       </div>
 
-      <!-- Stats -->
-      <div class="card">
-        <h3 class="card-title">📊 Overview</h3>
+      <!-- Stats Overview -->
+      <div class="glass-card">
+        <h3 class="card-title">📊 Space Overview</h3>
         <div class="stats-grid">
           <div class="stat-box">
             <div class="stat-number" id="totalCount">0</div>
             <div class="stat-label">Total</div>
           </div>
           <div class="stat-box">
-            <div class="stat-number" id="pendingCount" style="color:var(--primary);">0</div>
+            <div class="stat-number" id="pendingCount" style="color:#54a0ff;">0</div>
             <div class="stat-label">Pending</div>
           </div>
           <div class="stat-box">
-            <div class="stat-number" id="todayCount" style="color:#e67e22;">0</div>
+            <div class="stat-number" id="todayCount" style="color:#feca57;">0</div>
             <div class="stat-label">Today</div>
           </div>
           <div class="stat-box">
-            <div class="stat-number" id="doneCount" style="color:var(--success);">0</div>
+            <div class="stat-number" id="doneCount" style="color:#1dd1a1;">0</div>
             <div class="stat-label">Done</div>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 
-  <!-- Modal -->
+  <!-- Down-Right Signature Badge -->
+  <div class="signature-badge">
+    <span class="sig-text">Designed by</span>
+    <span class="sig-name">Deepak Sharma</span>
+  </div>
+
+  <!-- Add Reminder Modal -->
   <div class="modal" id="addModal">
     <div class="modal-content">
-      <h3 style="margin-top:0;">नया रिमाइंडर जोड़ें</h3>
+      <h3 style="margin-bottom:15px;">➕ Add New Reminder</h3>
       <form id="reminderForm">
         <div style="margin-bottom:12px;">
-          <label style="font-size:13px; font-weight:bold;">टास्क का नाम:</label>
-          <input type="text" name="task" required style="width:100%; padding:8px; margin-top:4px; box-sizing:border-box;">
+          <label style="font-size:12px; color:var(--text-muted);">Reminder Topic:</label>
+          <input type="text" name="task" required placeholder="Reminder Subject">
         </div>
         <div style="margin-bottom:12px;">
-          <label style="font-size:13px; font-weight:bold;">तारीख:</label>
-          <input type="date" name="remindDate" required style="width:100%; padding:8px; margin-top:4px; box-sizing:border-box;">
+          <label style="font-size:12px; color:var(--text-muted);">Date:</label>
+          <input type="date" name="remindDate" required>
         </div>
         <div style="margin-bottom:12px;">
-          <label style="font-size:13px; font-weight:bold;">समय:</label>
-          <input type="time" name="remindTime" value="09:00" style="width:100%; padding:8px; margin-top:4px; box-sizing:border-box;">
+          <label style="font-size:12px; color:var(--text-muted);">Time:</label>
+          <input type="time" name="remindTime" value="09:00">
         </div>
         <div style="margin-bottom:15px;">
-          <label style="font-size:13px; font-weight:bold;">नोट्स (विवरण):</label>
-          <textarea name="notes" rows="2" style="width:100%; padding:8px; margin-top:4px; box-sizing:border-box;"></textarea>
+          <label style="font-size:12px; color:var(--text-muted);">Reminder Details:</label>
+          <textarea name="notes" rows="2" placeholder="Details add..."></textarea>
         </div>
         <div style="display:flex; justify-content:flex-end; gap:8px;">
-          <button type="button" class="btn btn-neutral" onclick="closeModal()">रद्द करें</button>
-          <button type="submit" class="btn btn-primary" id="saveBtn">सेव करें</button>
+          <button type="button" class="btn btn-neutral" onclick="closeModal('addModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveBtn">Save</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Edit Reminder Modal -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <h3 style="margin-bottom:15px;">✏️ Edit Reminder</h3>
+      <form id="editForm">
+        <input type="hidden" name="rowIndex" id="editRowIndex">
+        <div style="margin-bottom:12px;">
+          <label style="font-size:12px; color:var(--text-muted);">Reminder Topic:</label>
+          <input type="text" name="task" id="editTask" required>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:12px; color:var(--text-muted);">Date:</label>
+          <input type="date" name="remindDate" id="editDate" required>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:12px; color:var(--text-muted);">Time:</label>
+          <input type="time" name="remindTime" id="editTime">
+        </div>
+        <div style="margin-bottom:15px;">
+          <label style="font-size:12px; color:var(--text-muted);">Reminder Details:</label>
+          <textarea name="notes" id="editNotes" rows="3"></textarea>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+          <button type="button" class="btn btn-neutral" onclick="closeModal('editModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveEditBtn">Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- View Task Details Modal -->
+  <div class="modal" id="viewModal">
+    <div class="modal-content">
+      <h3 style="margin-bottom:15px;">👁️ Task Details</h3>
+      <div style="background: rgba(255,255,255,0.06); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+        <h4 id="viewTaskTitle" style="color: #54a0ff; margin-bottom: 8px; font-size: 18px;"></h4>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px;"><strong>📅 Date:</strong> <span id="viewTaskDate"></span></p>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px;"><strong>⏰ Time:</strong> <span id="viewTaskTime"></span></p>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px;"><strong>📊 Status:</strong> <span id="viewTaskStatus"></span></p>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
+          <strong>📝 Details:</strong><br><span id="viewTaskNotes" style="color:#fff; display:block; margin-top:4px;"></span>
+        </p>
+      </div>
+      <div style="display:flex; justify-content:flex-end;">
+        <button type="button" class="btn btn-neutral" onclick="closeModal('viewModal')">Close</button>
+      </div>
     </div>
   </div>
 
@@ -324,7 +542,57 @@
     let reminders = [];
     let currentFilter = 'All';
 
-    // Clock
+    /* --- Interactive Moving Space Objects Canvas --- */
+    const canvas = document.getElementById('spaceCanvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initStars();
+    }
+
+    function initStars() {
+      stars = [];
+      const numStars = 150;
+      for (let i = 0; i < numStars; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          size: Math.random() * 2,
+          speedX: (Math.random() - 0.5) * 0.4,
+          speedY: Math.random() * 0.6 + 0.2,
+          opacity: Math.random() * 0.8 + 0.2
+        });
+      }
+    }
+
+    function animateSpace() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+      
+      stars.forEach(star => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(180, 210, 255, ${star.opacity})`;
+        ctx.fill();
+
+        star.y += star.speedY;
+        star.x += star.speedX;
+
+        if (star.y > canvas.height) star.y = 0;
+        if (star.x > canvas.width) star.x = 0;
+        if (star.x < 0) star.x = canvas.width;
+      });
+      requestAnimationFrame(animateSpace);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    animateSpace();
+
+    /* --- Clock Logic --- */
     function updateClock() {
       const now = new Date();
       const s = now.getSeconds();
@@ -341,9 +609,9 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Fetch
+    /* --- Fetch Reminders --- */
     function fetchReminders() {
-      document.getElementById('reminderList').innerHTML = '<div style="text-align:center; padding:20px;">शीट से लोड हो रहा है...</div>';
+      document.getElementById('reminderList').innerHTML = '<div style="text-align:center; padding:20px; color:#8395a7;">शीट से लोड हो रहा है...</div>';
       fetch(SCRIPT_URL)
         .then(res => res.json())
         .then(data => {
@@ -351,11 +619,11 @@
           renderReminders();
         })
         .catch(err => {
-          document.getElementById('reminderList').innerHTML = '<div style="color:red; text-align:center;">डेटा लोड नहीं हो पाया।</div>';
+          document.getElementById('reminderList').innerHTML = '<div style="color:#ff6b6b; text-align:center;">डेटा लोड नहीं हो पाया।</div>';
         });
     }
 
-    // Render
+    /* --- Render Reminders --- */
     function renderReminders() {
       const query = document.getElementById('searchInput').value.toLowerCase();
       const list = document.getElementById('reminderList');
@@ -371,14 +639,14 @@
         return true;
       });
 
-      // Stats
+      // Update Stats
       document.getElementById('totalCount').innerText = reminders.length;
       document.getElementById('pendingCount').innerText = reminders.filter(r => r.status !== 'Completed').length;
       document.getElementById('todayCount').innerText = reminders.filter(r => r.remindDate === todayStr).length;
       document.getElementById('doneCount').innerText = reminders.filter(r => r.status === 'Completed').length;
 
       if (filtered.length === 0) {
-        list.innerHTML = '<div style="text-align:center; color:#888; padding:20px;">कोई रिमाइंडर नहीं मिला।</div>';
+        list.innerHTML = '<div style="text-align:center; color:#8395a7; padding:20px;">कोई रिमाइंडर नहीं मिला।</div>';
         return;
       }
 
@@ -386,24 +654,75 @@
         const isDone = item.status === 'Completed';
         return `
           <div class="reminder-item ${isDone ? 'completed' : ''}">
-            <div>
-              <div style="font-weight:700; font-size:15px; color:#2c3e50;">${item.task}</div>
+            <div style="flex: 1; min-width: 200px;">
+              <div style="font-weight:700; font-size:15px; color:#ffffff;">${item.task}</div>
               <div class="task-meta">
-                📅 ${item.remindDate} • ⏰ ${item.remindTime} ${item.notes ? '• 📝 ' + item.notes : ''}
+                📅 ${item.remindDate} • ⏰ ${item.remindTime}
               </div>
             </div>
-            <div style="display:flex; gap:6px;">
-              <button class="btn btn-success" style="padding:5px 10px; font-size:11px;" onclick="toggleStatus(${item.rowIndex}, '${item.status}')">${isDone ? 'Undo' : 'Done'}</button>
-              <button class="btn btn-danger" style="padding:5px 10px; font-size:11px;" onclick="deleteReminder(${item.rowIndex})">Delete</button>
+            <div class="btn-group-mini">
+              <button class="btn-mini btn-view" onclick="viewDetails(${item.rowIndex})">👁️ View</button>
+              <button class="btn-mini btn-edit" onclick="openEditModal(${item.rowIndex})">✏️ Edit</button>
+              <button class="btn-mini btn-done" onclick="toggleStatus(${item.rowIndex}, '${item.status}')">${isDone ? 'Undo' : 'Done'}</button>
+              <button class="btn-mini btn-del" onclick="deleteReminder(${item.rowIndex})">Delete</button>
             </div>
           </div>
         `;
       }).join('');
     }
 
-    // Delete Action
+    /* --- View Task Details Modal --- */
+    function viewDetails(rowIndex) {
+      const item = reminders.find(r => r.rowIndex === rowIndex);
+      if (!item) return;
+
+      document.getElementById('viewTaskTitle').innerText = item.task;
+      document.getElementById('viewTaskDate').innerText = item.remindDate || '-';
+      document.getElementById('viewTaskTime').innerText = item.remindTime || '-';
+      document.getElementById('viewTaskStatus').innerText = item.status || 'Pending';
+      document.getElementById('viewTaskNotes').innerText = item.notes ? item.notes : 'कोई विवरण मौजूद नहीं है।';
+
+      openModal('viewModal');
+    }
+
+    /* --- Edit Task Modal --- */
+    function openEditModal(rowIndex) {
+      const item = reminders.find(r => r.rowIndex === rowIndex);
+      if (!item) return;
+
+      document.getElementById('editRowIndex').value = item.rowIndex;
+      document.getElementById('editTask').value = item.task;
+      document.getElementById('editDate').value = item.remindDate;
+      document.getElementById('editTime').value = item.remindTime;
+      document.getElementById('editNotes').value = item.notes;
+
+      openModal('editModal');
+    }
+
+    /* --- Submit Edit --- */
+    document.getElementById('editForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById('saveEditBtn');
+      saveBtn.disabled = true;
+      saveBtn.innerText = "अपडेट हो रहा है...";
+
+      const fd = new FormData(this);
+      fd.append("action", "edit");
+
+      fetch(SCRIPT_URL, { method: "POST", body: fd })
+        .then(() => {
+          closeModal('editModal');
+          fetchReminders();
+        })
+        .finally(() => {
+          saveBtn.disabled = false;
+          saveBtn.innerText = "Update";
+        });
+    });
+
+    /* --- Actions --- */
     function deleteReminder(rowIndex) {
-      if (!confirm("क्या आप वाकई इस रिमाइंडर को हमेशा के लिए डिलीट करना चाहते हैं?")) return;
+      if (!confirm("Reminder Delete confirmation?")) return;
 
       const fd = new FormData();
       fd.append("action", "delete");
@@ -414,7 +733,6 @@
         .catch(() => fetchReminders());
     }
 
-    // Toggle Done/Undo Action
     function toggleStatus(rowIndex, currentStatus) {
       const fd = new FormData();
       fd.append("action", "toggle");
@@ -426,7 +744,6 @@
         .catch(() => fetchReminders());
     }
 
-    // Add New
     document.getElementById('reminderForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const saveBtn = document.getElementById('saveBtn');
@@ -438,13 +755,13 @@
 
       fetch(SCRIPT_URL, { method: "POST", body: fd })
         .then(() => {
-          closeModal();
+          closeModal('addModal');
           this.reset();
           fetchReminders();
         })
         .finally(() => {
           saveBtn.disabled = false;
-          saveBtn.innerText = "सेव करें";
+          saveBtn.innerText = "Save";
         });
     });
 
@@ -455,10 +772,13 @@
       renderReminders();
     }
 
-    function openModal() { document.getElementById('addModal').classList.add('open'); }
-    function closeModal() { document.getElementById('addModal').classList.remove('open'); }
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function openAddModal() { openModal('addModal'); }
 
     fetchReminders();
+
   </script>
+
 </body>
 </html>
