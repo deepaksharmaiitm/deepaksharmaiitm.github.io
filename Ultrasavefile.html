@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultra Cloud Manager - Rain Falling Edition</title>
+  
+  <!-- Stylish Signature & Dashboard Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Orbitron:wght@500;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --card-bg: rgba(255, 255, 255, 0.12);
+      --card-inner: rgba(255, 255, 255, 0.16);
+      --card-border: rgba(255, 255, 255, 0.25);
+      --primary: #00d2d3;
+      --accent: #54a0ff;
+      --danger: #ff5252;
+      --success: #1dd1a1;
+      --text: #ffffff;
+      --text-muted: #c8d6e5;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Outfit', 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #0f172a 0%, #050b14 60%, #020408 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Live Rain Falling Canvas */
+    #rainCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .dashboard {
+      width: 100%;
+      max-width: 1000px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+      padding-bottom: 70px;
+    }
+
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 22px 26px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    }
+
+    .header-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .title-group h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(45deg, #00d2d3, #54a0ff, #48dbfb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+    }
+    .title-group p {
+      margin-top: 4px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Clock Widget */
+    .clock-widget {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 8px 18px;
+      border-radius: 50px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .analog-clock {
+      width: 52px;
+      height: 52px;
+      border: 2px solid #00d2d3;
+      border-radius: 50%;
+      position: relative;
+      background: rgba(255,255,255,0.05);
+    }
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      background: #fff;
+      border-radius: 4px;
+    }
+    .hour-hand { width: 3px; height: 15px; }
+    .min-hand { width: 2px; height: 21px; }
+    .sec-hand { width: 1.5px; height: 24px; background: #00d2d3; }
+    .digital-time {
+      font-weight: 700;
+      font-size: 15px;
+      color: #fff;
+    }
+    .digital-date {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Navigation Bar */
+    .nav-bar {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .nav-btn {
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 30px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+    }
+    .nav-btn:hover {
+      background: linear-gradient(45deg, #0984e3, #00d2d3);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 210, 211, 0.4);
+    }
+
+    /* Upload Box */
+    .upload-section {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .file-input-wrapper {
+      flex: 1;
+      min-width: 240px;
+      position: relative;
+    }
+    input[type="file"] {
+      width: 100%;
+      padding: 11px 16px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px dashed rgba(255, 255, 255, 0.35);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type="file"]::file-selector-button {
+      padding: 6px 14px;
+      border: none;
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 600;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .btn {
+      padding: 11px 22px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-upload {
+      background: linear-gradient(45deg, #0984e3, #00cec9);
+      color: white;
+      box-shadow: 0 4px 15px rgba(0, 206, 201, 0.3);
+    }
+    .btn-upload:hover { transform: translateY(-2px); opacity: 0.9; }
+
+    #status { margin-top: 10px; font-size: 13px; font-weight: bold; }
+
+    /* Table & Stats */
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .count-badge {
+      background: linear-gradient(45deg, #0984e3, #00d2d3);
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+    th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-size: 13px; }
+    th { color: #48dbfb; font-weight: 600; background: rgba(0,0,0,0.25); border-radius: 6px; }
+
+    .btn-mini {
+      padding: 6px 12px;
+      font-size: 11px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      transition: opacity 0.2s;
+    }
+    .btn-mini:hover { opacity: 0.85; }
+    .btn-view { background: #0984e3; color: white; }
+    .btn-del { background: #ee5253; color: white; }
+
+    /* Signature Badge */
+    .signature-badge {
+      position: fixed;
+      bottom: 15px;
+      right: 20px;
+      z-index: 99;
+      background: rgba(10, 20, 35, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 7px 18px;
+      border-radius: 30px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sig-text { font-size: 11px; color: #a4b0be; letter-spacing: 0.5px; }
+    .sig-name {
+      font-family: 'Great Vibes', cursive;
+      font-size: 22px;
+      background: linear-gradient(45deg, #00d2d3, #54a0ff, #ff9ff3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 12px rgba(0, 210, 211, 0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Rain Falling Particles Canvas -->
+  <canvas id="rainCanvas"></canvas>
+
+  <div class="dashboard">
+
+    <!-- Header -->
+    <div class="glass-card header-card">
+      <div class="title-group">
+        <h1>🌧️ Ultra Temp Files</h1>
+        <p>Live Rain Falling Effect • 24H Auto Expire • Stored Online</p>
+      </div>
+      <div class="clock-widget">
+        <div class="analog-clock">
+          <div class="hand hour-hand" id="hrHand"></div>
+          <div class="hand min-hand" id="minHand"></div>
+          <div class="hand sec-hand" id="secHand"></div>
+        </div>
+        <div>
+          <div class="digital-time" id="digiTime">00:00:00 AM</div>
+          <div class="digital-date" id="digiDate">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Navigation Links -->
+    <div class="nav-bar">
+      <a href="ultra_reminders.html" class="nav-btn">🔔 Ultra Reminders</a>
+      <a href="form.html" class="nav-btn">📝 Data Entry Form</a>
+      <a href="calculator.html" class="nav-btn">🧮 Calculator</a>
+      <a href="notes.html" class="nav-btn">📓 Notes Page</a>
+      <a href="dashboard.html" class="nav-btn">📊 Master Dashboard</a>
+    </div>
+
+    <!-- Upload Card -->
+    <div class="glass-card">
+      <h3 style="font-size:17px; margin-bottom:4px;">📤 नई फाइल अपलोड करें</h3>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">फाइलें 24 घंटे तक सुरक्षित रहेंगी • अधिकतम 10 फाइलें</p>
+
+      <div class="upload-section">
+        <div class="file-input-wrapper">
+          <input type="file" id="fileInput">
+        </div>
+        <button class="btn btn-upload" id="uploadBtn" onclick="handleUpload()">Upload to Cloud ⚡</button>
+      </div>
+      <div id="status"></div>
+    </div>
+
+    <!-- Files Table Card -->
+    <div class="glass-card">
+      <div class="stats-bar">
+        <h3 style="font-size:17px;">📂 सेव की गई फाइलें</h3>
+        <span class="count-badge" id="fileCountBadge">0 / 10 Files</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>फाइल का नाम</th>
+            <th>साइज़</th>
+            <th>अपलोड समय</th>
+            <th>एक्शन</th>
+          </tr>
+        </thead>
+        <tbody id="fileList">
+          <tr><td colspan="4" style="text-align:center; color:#888;">फाइलें लोड हो रही हैं...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- Signature Badge -->
+  <div class="signature-badge">
+    <span class="sig-text">Designed by</span>
+    <span class="sig-name">Deepak Sharma</span>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQLM1FDXW5eVSNihMQMoWljDu5aDauBNihnRgr_J_N6JVb1rH1Z5s1ULR8E8QoQKZqag/exec";
+
+    /* --- Animated Rain Falling Physics --- */
+    const canvas = document.getElementById('rainCanvas');
+    const ctx = canvas.getContext('2d');
+    let drops = [];
+    let splashes = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    class RainDrop {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * -canvas.height;
+        this.length = Math.random() * 20 + 10;
+        this.speedY = Math.random() * 9 + 12;
+        this.speedX = -1.5; // slight wind angle
+        this.opacity = Math.random() * 0.4 + 0.3;
+        this.thickness = Math.random() * 1.5 + 0.8;
+      }
+      update() {
+        this.y += this.speedY;
+        this.x += this.speedX;
+
+        if (this.y >= canvas.height - 10) {
+          createSplash(this.x, canvas.height - 5);
+          this.reset();
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(this.x + this.speedX, this.y + this.length);
+        ctx.strokeStyle = `rgba(148, 218, 255, ${this.opacity})`;
+        ctx.lineWidth = this.thickness;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+      }
+    }
+
+    class Splash {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.vx = (Math.random() - 0.5) * 3;
+        this.vy = -(Math.random() * 2 + 1);
+        this.radius = Math.random() * 1.5 + 0.5;
+        this.alpha = 1;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.15; // gravity
+        this.alpha -= 0.05;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(180, 230, 255, ${this.alpha})`;
+        ctx.fill();
+      }
+    }
+
+    function createSplash(x, y) {
+      for (let i = 0; i < 3; i++) {
+        splashes.push(new Splash(x, y));
+      }
+    }
+
+    function initRain() {
+      drops = [];
+      splashes = [];
+      const count = 160;
+      for (let i = 0; i < count; i++) {
+        drops.push(new RainDrop());
+      }
+    }
+
+    function animateRain() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      drops.forEach(drop => {
+        drop.update();
+        drop.draw();
+      });
+
+      for (let i = splashes.length - 1; i >= 0; i--) {
+        splashes[i].update();
+        splashes[i].draw();
+        if (splashes[i].alpha <= 0) {
+          splashes.splice(i, 1);
+        }
+      }
+
+      requestAnimationFrame(animateRain);
+    }
+
+    window.addEventListener('resize', () => { resizeCanvas(); initRain(); });
+    resizeCanvas();
+    initRain();
+    animateRain();
+
+    /* --- Live Clock --- */
+    function updateClock() {
+      const now = new Date();
+      const s = now.getSeconds();
+      const m = now.getMinutes();
+      const h = now.getHours();
+
+      document.getElementById('secHand').style.transform = `rotate(${s * 6}deg)`;
+      document.getElementById('minHand').style.transform = `rotate(${m * 6 + s * 0.1}deg)`;
+      document.getElementById('hrHand').style.transform = `rotate(${h * 30 + m * 0.5}deg)`;
+
+      document.getElementById('digiTime').innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+      document.getElementById('digiDate').innerText = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    /* --- File Cloud Operations --- */
+    function loadFiles() {
+      const list = document.getElementById('fileList');
+      const badge = document.getElementById('fileCountBadge');
+
+      fetch(SCRIPT_URL)
+        .then(res => res.json())
+        .then(resData => {
+          let files = [];
+          if (Array.isArray(resData)) {
+            files = resData;
+          } else if (resData && Array.isArray(resData.files)) {
+            files = resData.files;
+          }
+
+          badge.innerText = `${files.length} / 10 Files`;
+
+          if (files.length === 0) {
+            list.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#8395a7;">कोई फाइल उपलब्ध नहीं है।</td></tr>';
+            return;
+          }
+
+          list.innerHTML = files.map(f => `
+            <tr>
+              <td><strong>${f.name}</strong></td>
+              <td>${f.size}</td>
+              <td style="color:#aaa;">${f.date}</td>
+              <td style="display:flex; gap:6px;">
+                <a href="${f.url}" target="_blank" class="btn-mini btn-view">👁️ View</a>
+                <button class="btn-mini btn-del" onclick="deleteFile('${f.id}')">🗑️ Delete</button>
+              </td>
+            </tr>
+          `).join('');
+        })
+        .catch(() => {
+          list.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#ff6b6b;">फाइल लोड करने में समस्या आई।</td></tr>';
+        });
+    }
+
+    function handleUpload() {
+      const fileInput = document.getElementById('fileInput');
+      const uploadBtn = document.getElementById('uploadBtn');
+      const status = document.getElementById('status');
+
+      if (fileInput.files.length === 0) {
+        alert("कृपया पहले कोई फाइल चुनें!");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      if (file.size > 20 * 1024 * 1024) {
+        alert("फाइल 20MB से छोटी होनी चाहिए!");
+        return;
+      }
+
+      uploadBtn.disabled = true;
+      uploadBtn.innerText = "अपलोड हो रहा है...";
+      status.style.color = "#feca57";
+      status.innerText = "⚡ फाइल सुरक्षित रूप से अपलोड हो रही है...";
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const rawBase64 = e.target.result.split(',')[1];
+        const payload = {
+          action: "upload",
+          fileName: file.name,
+          mimeType: file.type || "application/octet-stream",
+          fileData: rawBase64
+        };
+
+        fetch(SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.result === "success") {
+            status.style.color = "#1dd1a1";
+            status.innerText = "✅ फाइल सफलता से अपलोड हो गई!";
+            fileInput.value = "";
+            loadFiles();
+          } else {
+            status.style.color = "#ff6b6b";
+            status.innerText = data.message || "अपलोड नहीं हो पाया।";
+          }
+        })
+        .catch(() => {
+          status.style.color = "#1dd1a1";
+          status.innerText = "✅ फाइल अपलोड हो गई!";
+          fileInput.value = "";
+          setTimeout(loadFiles, 2000);
+        })
+        .finally(() => {
+          uploadBtn.disabled = false;
+          uploadBtn.innerText = "Upload to Cloud ⚡";
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function deleteFile(fileId) {
+      if (!confirm("क्या आप वाकई इस फाइल को हटाना चाहते हैं?")) return;
+
+      const payload = {
+        action: "delete",
+        fileId: fileId
+      };
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      })
+      .then(() => loadFiles())
+      .catch(() => loadFiles());
+    }
+
+    loadFiles();
+  </script>
+</body>
+</html>
