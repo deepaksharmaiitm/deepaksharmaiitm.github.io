@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultra Reminders - 17 Spark & Particle Engines</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --glass:rgba(255,255,255,0.85);
+  --glass-sub:rgba(255,255,255,0.65);
+  --line:rgba(255,255,255,0.9);
+  --text:#0d233a;
+  --blue:#1976d2;
+  --green:#10b981;
+  --red:#ef4444;
+}
+html,body{margin:0;min-height:100%;font-family:"Segoe UI",Arial,sans-serif;color:var(--text);overflow-x:hidden}
+
+body{
+  min-height:100vh;
+  background-color: #030712;
+  position:relative;
+}
+
+#bgCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.space-elements {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  display: none;
+}
+.theme-space .space-elements { display: block; }
+
+.planet-ringed {
+  position: absolute;
+  top: 7%;
+  right: 7%;
+  width: 115px;
+  height: 115px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #93c5fd 0%, #3b82f6 40%, #1e3a8a 80%, #0f172a 100%);
+  box-shadow: 0 0 45px rgba(59, 130, 246, 0.4), inset -15px -15px 30px rgba(0,0,0,0.8);
+  opacity: 0.85;
+  animation: planetFloat 16s ease-in-out infinite alternate;
+}
+.planet-ringed:after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 190px;
+  height: 42px;
+  margin-left: -95px;
+  margin-top: -21px;
+  border-radius: 50%;
+  border: 3.5px solid rgba(191, 219, 254, 0.55);
+  box-shadow: 0 0 15px rgba(147, 197, 253, 0.5);
+  transform: rotate(-25deg);
+}
+
+.planet-moon {
+  position: absolute;
+  bottom: 10%;
+  left: 4%;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fbcfe8 0%, #e879f9 50%, #6b21a8 90%, #1e1b4b 100%);
+  box-shadow: 0 0 30px rgba(232, 121, 249, 0.35), inset -8px -8px 18px rgba(0,0,0,0.85);
+  opacity: 0.75;
+  animation: moonFloat 20s ease-in-out infinite alternate;
+}
+
+@keyframes planetFloat { 0% { transform: translateY(0); } 100% { transform: translateY(20px); } }
+@keyframes moonFloat { 0% { transform: translateY(0); } 100% { transform: translateY(-16px); } }
+
+.app{width:min(1180px,94%);margin:25px auto 35px;position:relative;z-index:2}
+.aero{
+ background:linear-gradient(135deg, rgba(255,255,255,0.86) 0%, rgba(255,255,255,0.55) 100%);
+ border:1px solid rgba(255,255,255,0.9);
+ box-shadow:0 20px 50px rgba(0, 0, 0, 0.65), inset 0 1px 2px rgba(255,255,255,0.95);
+ backdrop-filter:blur(24px);
+ -webkit-backdrop-filter:blur(24px);
+ border-radius:24px;
+}
+
+header{padding:20px 26px;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:15px}
+.logo{width:56px;height:56px;border-radius:17px;background:linear-gradient(#fff,#cce7ff);display:grid;place-items:center;font-size:28px;box-shadow:0 5px 18px rgba(10,50,90,0.25),inset 0 2px 4px #fff}
+h1{margin:0;font-size:27px;text-shadow:0 1px 1px #fff;color:#0a1e33}
+.sub{font-size:13px;color:#355370;font-weight:600;margin-top:2px}
+
+/* Multi-Theme Selection Bar with Scrollable Chips */
+.theme-bar{
+ display:flex;gap:6px;background:rgba(255,255,255,0.65);padding:7px 9px;border-radius:16px;
+ border:1px solid rgba(255,255,255,0.8);box-shadow:inset 0 1px 3px rgba(0,0,0,0.08);margin-top:8px;
+ flex-wrap:wrap;max-width: 650px;
+}
+.theme-btn{
+ border:none;background:transparent;padding:5px 10px;border-radius:9px;font-size:11.5px;font-weight:700;
+ cursor:pointer;color:#1e3a5f;transition:0.2s;box-shadow:none;
+}
+.theme-btn.active{
+ background:#fff;color:#0f172a;box-shadow:0 2px 8px rgba(0,0,0,0.2);
+}
+
+.clock-wrap{display:flex;align-items:center;gap:18px}
+.clock{text-align:right;font-weight:700;color:#0a1e33}
+.clock small{display:block;font-weight:600;opacity:.8}
+
+.analog-clock{
+ width:140px;height:140px;position:relative;flex:none;border-radius:50%;
+ background:linear-gradient(145deg, #ffffff, #cce1f2);
+ box-shadow:0 8px 25px rgba(0,0,0,0.4), inset 0 2px 4px #fff, inset 0 -2px 4px rgba(0,0,0,0.15);
+ border:3px solid rgba(255,255,255,0.95);display:flex;justify-content:center;align-items:center;
+}
+.clock-face{width:100%;height:100%;border-radius:50%;position:relative;background:radial-gradient(circle, #ffffff 68%, #e2eef7 100%)}
+.clock-face svg{position:absolute;inset:0;width:100%;height:100%}
+.clock-face .tick{stroke:#94a3b8;stroke-width:1}
+.clock-face .major{stroke:#1e3a5f;stroke-width:2.5}
+.clock-face text{fill:#12283e;font-family:"Segoe UI",sans-serif;font-size:15px;font-weight:700;text-anchor:middle;dominant-baseline:central}
+.clock-face .brand-text{font-size:6.5px;letter-spacing:1.5px;font-weight:700;fill:#64748b}
+
+.hand-layer{position:absolute;inset:0;pointer-events:none}
+.hand{position:absolute;bottom:50%;left:50%;transform-origin:bottom center;border-radius:4px}
+.h-hand{width:5px;height:38px;margin-left:-2.5px;background:#0f172a;z-index:4;box-shadow:0 2px 4px rgba(0,0,0,0.35)}
+.m-hand{width:3.5px;height:52px;margin-left:-1.75px;background:#1e40af;z-index:5;box-shadow:0 2px 5px rgba(0,0,0,0.3)}
+.s-hand{width:2px;height:62px;margin-left:-1px;background:#ef4444;z-index:6;transform-origin:50% 48px;bottom:calc(50% - 14px);border-radius:2px}
+.center-cap{position:absolute;top:50%;left:50%;width:10px;height:10px;margin:-5px;background:#ef4444;border:2px solid #fff;border-radius:50%;z-index:7}
+
+.controls{margin-top:18px;padding:16px;display:flex;gap:10px;flex-wrap:wrap}
+input,textarea,select{
+ border:1px solid rgba(70,120,160,.35);background:rgba(255,255,255,.88);color:var(--text);
+ border-radius:12px;padding:12px 13px;outline:none;box-shadow:inset 0 1px 3px rgba(0,0,0,0.06);font:inherit
+}
+input:focus,textarea:focus,select:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,0.2);background:#fff}
+.search{flex:1;min-width:220px}
+button{
+ border:1px solid rgba(255,255,255,.85);border-radius:12px;padding:11px 16px;cursor:pointer;font:600 14px "Segoe UI";
+ color:#12283e;background:linear-gradient(#fff,#dbeafe);box-shadow:0 4px 10px rgba(0,25,60,0.12),inset 0 1px #fff;transition:.15s
+}
+button:hover{transform:translateY(-1px);filter:brightness(1.04);box-shadow:0 6px 14px rgba(0,25,60,0.18)}
+.primary{background:linear-gradient(#3b82f6,#1d4ed8);color:#fff;text-shadow:0 1px #172554}
+.green{background:linear-gradient(#10b981,#059669);color:white;text-shadow:0 1px #064e3b}
+.danger{background:linear-gradient(#f87171,#dc2626);color:#fff;text-shadow:0 1px #7f1d1d}
+
+.tabs{display:flex;gap:8px;margin:18px 0;flex-wrap:wrap}
+.tab.active{background:linear-gradient(#fff,#bfdbfe);box-shadow:0 0 0 2px rgba(59,130,246,0.5),inset 0 1px #fff}
+.grid{display:grid;grid-template-columns:1fr 340px;gap:18px}
+.panel{padding:18px}
+.panel h2{margin:0 0 14px;font-size:18px;color:#0a1e33}
+.reminders{display:grid;gap:11px}
+.card{
+ padding:15px;border-radius:16px;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.9);
+ box-shadow:0 6px 18px rgba(0,0,0,0.12);display:grid;grid-template-columns:6px 1fr auto;gap:13px;align-items:center;backdrop-filter:blur(8px);
+}
+.bar{border-radius:8px;height:100%;min-height:55px;background:#3b82f6}.bar.overdue{background:#ef4444}.bar.done{background:#10b981}
+.title{font-size:16px;font-weight:700;color:#0a1e33}.details{font-size:13px;color:#475569;margin-top:4px;white-space:pre-wrap}
+.when{font-size:12px;font-weight:600;margin-top:7px;color:#1e40af}
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;background:#ffffffcc;color:#1e3a8a;font-size:11px;margin-left:5px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.actions button{padding:7px 10px;font-size:12px}
+.empty{text-align:center;padding:40px 15px;color:#334155;font-weight:500}
+
+.stat{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.statbox{padding:15px;border-radius:15px;background:rgba(255,255,255,.68);border:1px solid rgba(255,255,255,0.75);text-align:center}
+.statbox b{display:block;font-size:25px;color:#0a1e33}.statbox span{font-size:12px;color:#475569;font-weight:600}
+.form{display:grid;gap:11px}
+.form textarea{min-height:90px;resize:vertical}
+footer{text-align:center;color:#cbd5e1;font-size:12px;margin-top:14px;text-shadow:0 1px 4px rgba(0,0,0,0.8)}
+
+.modal{position:fixed;inset:0;background:rgba(2,6,23,0.75);display:none;align-items:center;justify-content:center;padding:18px;z-index:10;backdrop-filter:blur(8px)}
+.modal.show{display:flex}
+.dialog{width:min(520px,100%);padding:22px;background:rgba(255,255,255,0.92)}
+.dialog h2{margin-top:0}
+.toast{position:fixed;right:20px;bottom:20px;z-index:20;padding:13px 17px;border-radius:14px;background:rgba(15,23,42,0.95);color:#fff;box-shadow:0 10px 30px rgba(0,0,0,0.6);display:none;border:1px solid rgba(255,255,255,0.2)}
+.toast.show{display:block}
+
+@media(max-width:850px){.grid{grid-template-columns:1fr}.clock{display:none}}
+@media(max-width:560px){.app{width:96%;margin:10px auto}.card{grid-template-columns:5px 1fr}.actions{grid-column:2;justify-content:flex-start}header{padding:18px}.panel{padding:13px}}
+
+.password-page-btn{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border:1px solid rgba(255,255,255,.9);text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.password-page-btn:hover{filter:brightness(1.08)}
+
+/* Quick Page Navigation */
+.quick-pages{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.quick-page-btn{background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff!important;border:1px solid rgba(255,255,255,.9);font-weight:700}
+.quick-page-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+
+</style>
+</head>
+<body class="theme-magma">
+
+<canvas id="bgCanvas"></canvas>
+
+<div class="space-elements">
+  <div class="planet-ringed"></div>
+  <div class="planet-moon"></div>
+</div>
+
+<div class="app">
+<header class="aero">
+  <div class="brand">
+    <div class="logo">🔔</div>
+    <div>
+      <h1>Ultra Reminders</h1>
+      <div class="sub">Online • Private • Stored on this device</div>
+      <div class="theme-bar">
+        <!-- Original Core Themes -->
+        <button class="theme-btn active" onclick="setTheme('magma', this)">💥 Magma Sparks</button>
+        <button class="theme-btn" onclick="setTheme('inferno', this)">🔥 Inferno Fire</button>
+        <button class="theme-btn" onclick="setTheme('matrix_net', this)">🕸️ Cyber Net</button>
+        <button class="theme-btn" onclick="setTheme('green_net', this)">⚡ Green Net</button>
+        <button class="theme-btn" onclick="setTheme('matrix_rain', this)">🌊 Digital Rain</button>
+        <button class="theme-btn" onclick="setTheme('space', this)">🚀 Warp Space</button>
+        <button class="theme-btn" onclick="setTheme('synthwave', this)">🌆 Synthwave</button>
+        
+        <!-- 10 New Magma & Energy Themes -->
+        <button class="theme-btn" onclick="setTheme('blue_plasma', this)">⚡ Blue Plasma</button>
+        <button class="theme-btn" onclick="setTheme('mystic_violet', this)">🔮 Mystic Embers</button>
+        <button class="theme-btn" onclick="setTheme('gold_dust', this)">✨ Gold Dust</button>
+        <button class="theme-btn" onclick="setTheme('eruption', this)">🌋 Eruption</button>
+        <button class="theme-btn" onclick="setTheme('blizzard', this)">❄️ Frost Sparks</button>
+        <button class="theme-btn" onclick="setTheme('toxic', this)">☢️ Toxic Fallout</button>
+        <button class="theme-btn" onclick="setTheme('solar', this)">☀️ Solar Flare</button>
+        <button class="theme-btn" onclick="setTheme('sakura_embers', this)">🌸 Sakura Sparks</button>
+        <button class="theme-btn" onclick="setTheme('welder', this)">⚙️ Welder Sparks</button>
+        <button class="theme-btn" onclick="setTheme('singularity', this)">🌌 Singularity</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="clock-wrap">
+   <div class="analog-clock">
+    <div class="clock-face">
+     <svg viewBox="0 0 145 145" aria-label="Analog clock">
+      <g id="ticks"></g>
+      <g class="numbers">
+       <text x="72.5" y="24">12</text><text x="97" y="30">1</text><text x="115" y="48">2</text>
+       <text x="122" y="72.5">3</text><text x="115" y="97">4</text><text x="97" y="115">5</text>
+       <text x="72.5" y="122">6</text><text x="48" y="115">7</text><text x="30" y="97">8</text>
+       <text x="23" y="72.5">9</text><text x="30" y="48">10</text><text x="48" y="30">11</text>
+       <text class="brand-text" x="72.5" y="55">VISTA</text>
+      </g>
+     </svg>
+     <div class="hand-layer">
+       <div class="hand h-hand" id="hourHand"></div>
+       <div class="hand m-hand" id="minHand"></div>
+       <div class="hand s-hand" id="secHand"></div>
+       <div class="center-cap"></div>
+     </div>
+    </div>
+   </div>
+   <div class="clock" id="clock">--:--:--<small>Loading...</small></div>
+ </div>
+</header>
+
+<div class="controls aero">
+  <input class="search" id="search" placeholder="🔎 Search reminders..." oninput="render()">
+  <select id="filter" onchange="render()">
+    <option value="all">All Reminders</option><option value="today">Today</option>
+    <option value="upcoming">Upcoming</option><option value="overdue">Overdue</option><option value="done">Completed</option>
+  </select>
+  <button class="primary" onclick="openModal()">＋ Add Reminder</button>
+  <button onclick="backup()">⬇ Backup</button>
+  <button onclick="document.getElementById('restore').click()">⬆ Restore</button>
+  <button class="password-page-btn" onclick="window.location.href='password.html'">🔐 Password Maker</button>
+  <input type="file" id="restore" accept=".json" hidden onchange="restore(event)">
+  <div class="quick-pages">
+    <button class="quick-page-btn" onclick="window.location.href='https://deepaksharmaiitm.github.io/file-transfer.html'">Click-1</button>
+    <button class="quick-page-btn" onclick="window.location.href='click-2.html'">Link-2</button>
+    <button class="quick-page-btn" onclick="window.location.href='click-3.html'">Link-3</button>
+    <button class="quick-page-btn" onclick="window.location.href='click-4.html'">Link-4</button>
+    <button class="quick-page-btn" onclick="window.location.href='click-5.html'">Link-5</button>
+    <button class="quick-page-btn" onclick="window.location.href='click-6.html'">Link-6</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="setFilter('all',this)">All</button>
+  <button class="tab" onclick="setFilter('today',this)">Today</button>
+  <button class="tab" onclick="setFilter('upcoming',this)">Upcoming</button>
+  <button class="tab" onclick="setFilter('overdue',this)">Overdue</button>
+  <button class="tab" onclick="setFilter('done',this)">Completed</button>
+</div>
+
+<div class="grid">
+  <section class="panel aero"><h2>🔔 My Reminders</h2><div id="list" class="reminders"></div></section>
+  <aside class="panel aero">
+    <h2>📊 Overview</h2>
+    <div class="stat">
+      <div class="statbox"><b id="total">0</b><span>Total</span></div>
+      <div class="statbox"><b id="pending">0</b><span>Pending</span></div>
+      <div class="statbox"><b id="todayCount">0</b><span>Today</span></div>
+      <div class="statbox"><b id="overdueCount">0</b><span>Overdue</span></div>
+    </div>
+    <div style="margin-top:15px;padding:14px;border-radius:15px;background:rgba(255,255,255,.62);font-size:13px;line-height:1.6;color:#1e293b">
+      💾 Reminders are saved automatically in your browser.<br>
+      🔒 No data is sent to any server.<br>
+      📦 Use Backup regularly to keep an offline copy.
+    </div>
+  </aside>
+</div>
+<footer>Vista-style Offline Reminder Manager • 17 Dynamic Engines Suite</footer>
+</div>
+
+<div class="modal" id="modal">
+<div class="dialog aero">
+  <h2 id="modalTitle">➕ Add Reminder</h2>
+  <div class="form">
+    <input id="title" placeholder="Reminder title *">
+    <textarea id="details" placeholder="Details / notes"></textarea>
+    <input id="date" type="date">
+    <input id="time" type="time">
+    <select id="repeat">
+      <option value="none">No Repeat</option><option value="daily">Daily</option>
+      <option value="weekly">Weekly</option><option value="monthly">Monthly</option>
+    </select>
+    <div style="display:flex;gap:9px;justify-content:flex-end;margin-top:4px">
+      <button onclick="closeModal()">Cancel</button><button class="primary" onclick="saveReminder()">Save Reminder</button>
+    </div>
+  </div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY="vista_reminders_v1";
+const API_URL="https://script.google.com/macros/s/AKfycbw7Vb1W9GrSHTcTktXimz9lglHT37idDb3OxBPkOuiygevHRPptFwdeoqV7QKe0qEsiA/exec";
+let items=JSON.parse(localStorage.getItem(KEY)||"[]"), editing=null;
+let remoteReady=false;
+
+function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+
+// Local cache + Google Sheet database
+// Uses a simple form-encoded POST so the browser does not trigger a CORS preflight.
+async function save(){
+  localStorage.setItem(KEY,JSON.stringify(items));
+  try{
+    const body=new URLSearchParams();
+    body.set("action","save");
+    body.set("payload",JSON.stringify(items));
+
+    await fetch(API_URL,{
+      method:"POST",
+      mode:"no-cors",
+      body:body,
+      keepalive:true
+    });
+
+    remoteReady=true;
+    return true;
+  }catch(err){
+    console.error("Google Sheet save error:",err);
+    toast("Saved on this device; cloud sync failed");
+    return false;
+  }
+}
+
+async function loadFromCloud(){
+  try{
+    const res=await fetch(API_URL+"?t="+Date.now(),{cache:"no-store"});
+    const data=await res.json();
+    if(Array.isArray(data)){
+      if(data.length>0 || items.length===0){
+        items=data;
+        localStorage.setItem(KEY,JSON.stringify(items));
+      }else if(items.length>0){
+        await save();
+      }
+      remoteReady=true;
+      render();
+    }
+  }catch(err){
+    console.error("Google Sheet load error:",err);
+    toast("Cloud database unavailable; using local data");
+    render();
+  }
+}
+function now(){return new Date()}
+function dt(x){return new Date(x.date+"T"+(x.time||"00:00"))}
+function isToday(x){let d=dt(x),n=now();return d.toDateString()===n.toDateString()}
+function overdue(x){return !x.done && dt(x)<now()}
+
+function openModal(id=null){
+ editing=id;
+ let x=id?items.find(a=>a.id===id):null;
+ document.getElementById("modalTitle").textContent=x?"✏️ Edit Reminder":"➕ Add Reminder";
+ document.getElementById("title").value=x?.title||"";
+ document.getElementById("details").value=x?.details||"";
+ document.getElementById("date").value=x?.date||new Date().toISOString().slice(0,10);
+ document.getElementById("time").value=x?.time||"09:00";
+ document.getElementById("repeat").value=x?.repeat||"none";
+ document.getElementById("modal").classList.add("show");
+ setTimeout(()=>document.getElementById("title").focus(),100);
+}
+function closeModal(){document.getElementById("modal").classList.remove("show");editing=null}
+async function saveReminder(){
+ let title=document.getElementById("title").value.trim(),date=document.getElementById("date").value,time=document.getElementById("time").value;
+ if(!title||!date){toast("Please enter title and date.");return}
+ let wasEditing=!!editing;
+ let data={title,details:document.getElementById("details").value,date,time,repeat:document.getElementById("repeat").value};
+ if(editing){Object.assign(items.find(a=>a.id===editing),data)}else{items.push({id:Date.now().toString(),...data,done:false})}
+ closeModal();render();
+ await save();
+ toast(wasEditing?"Reminder updated":"Reminder saved");
+}
+async function remove(id){if(confirm("Delete this reminder?")){items=items.filter(x=>x.id!==id);render();await save();toast("Reminder deleted")}}
+async function toggle(id){let x=items.find(a=>a.id===id);if(!x)return;x.done=!x.done;render();await save()}
+function setFilter(v,el){document.getElementById("filter").value=v;document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));el.classList.add("active");render()}
+function render(){
+ let q=document.getElementById("search").value.toLowerCase(),f=document.getElementById("filter").value;
+ let arr=items.filter(x=>{
+  let match=(x.title+" "+x.details).toLowerCase().includes(q);
+  let ok=f==="all"||f==="today"&&isToday(x)||f==="upcoming"&&!x.done&&!overdue(x)||f==="overdue"&&overdue(x)||f==="done"&&x.done;
+  return match&&ok;
+ }).sort((a,b)=>dt(a)-dt(b));
+ document.getElementById("list").innerHTML=arr.length?arr.map(x=>{
+   let od=overdue(x),bar=x.done?"done":od?"overdue":"";
+   let d=dt(x),when=d.toLocaleDateString(undefined,{day:"2-digit",month:"short",year:"numeric"})+" • "+(x.time||"00:00");
+   let rep=x.repeat!=="none"?`<span class="badge">↻ ${esc(x.repeat)}</span>`:"";
+   return `<div class="card"><div class="bar ${bar}"></div><div>
+    <div class="title">${esc(x.title)} ${x.done?'<span class="badge">✓ Done</span>':od?'<span class="badge">Overdue</span>':rep}</div>
+    ${x.details?`<div class="details">${esc(x.details)}</div>`:""}
+    <div class="when">📅 ${when}</div></div>
+    <div class="actions"><button class="green" onclick="toggle('${x.id}')">${x.done?"Undo":"Done"}</button><button onclick="openModal('${x.id}')">Edit</button><button class="danger" onclick="remove('${x.id}')">Delete</button></div>
+   </div>`;
+ }).join(""):`<div class="empty">✨ No reminders found.<br><br>Click <b>＋ Add Reminder</b> to create one.</div>`;
+ let pending=items.filter(x=>!x.done);
+ document.getElementById("total").textContent=items.length;
+ document.getElementById("pending").textContent=pending.length;
+ document.getElementById("todayCount").textContent=items.filter(isToday).length;
+ document.getElementById("overdueCount").textContent=items.filter(overdue).length;
+}
+function backup(){
+ let blob=new Blob([JSON.stringify(items,null,2)],{type:"application/json"}),a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);a.download="Vista-Reminders-Backup-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(a.href);toast("Backup downloaded")
+}
+function restore(e){
+ let file=e.target.files[0];if(!file)return;
+ let r=new FileReader();r.onload=()=>{try{let a=JSON.parse(r.result);if(!Array.isArray(a))throw 0;items=a;save();render();toast("Backup restored")}catch{toast("Invalid backup file")}};r.readAsText(file);e.target.value=""
+}
+function toast(t){let e=document.getElementById("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2200)}
+
+function buildClockTicks(){
+  const g=document.getElementById("ticks");
+  if(!g || g.childElementCount) return;
+  const ns="http://www.w3.org/2000/svg";
+  for(let i=0;i<60;i++){
+    const a=i*6*Math.PI/180, major=i%5===0, r1=major?55:58, r2=63;
+    const x1=72.5+Math.sin(a)*r1, y1=72.5-Math.cos(a)*r1, x2=72.5+Math.sin(a)*r2, y2=72.5-Math.cos(a)*r2;
+    const line=document.createElementNS(ns,"line");
+    line.setAttribute("x1",x1); line.setAttribute("y1",y1); line.setAttribute("x2",x2); line.setAttribute("y2",y2);
+    line.setAttribute("class",major?"major":"tick");
+    g.appendChild(line);
+  }
+}
+function updateClock(){
+ let n=new Date(),sec=n.getSeconds(),min=n.getMinutes()+sec/60,hr=(n.getHours()%12)+min/60;
+ document.getElementById("clock").innerHTML=n.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"})+"<small>"+n.toLocaleDateString(undefined,{weekday:"short",day:"2-digit",month:"short",year:"numeric"})+"</small>";
+ document.getElementById("hourHand").style.transform=`rotate(${hr*30}deg)`;
+ document.getElementById("minHand").style.transform=`rotate(${min*6}deg)`;
+ document.getElementById("secHand").style.transform=`rotate(${sec*6}deg)`;
+}
+
+/* ========================================================
+   CANVAS SYSTEM: 17 DYNAMIC VISUAL ENGINES
+   ======================================================== */
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+
+let cw = canvas.width = window.innerWidth;
+let ch = canvas.height = window.innerHeight;
+let currentTheme = 'magma';
+let mouseX = cw / 2, mouseY = ch / 2;
+
+window.addEventListener('resize', () => {
+  cw = canvas.width = window.innerWidth;
+  ch = canvas.height = window.innerHeight;
+  initMatrixRain();
+});
+window.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX; mouseY = e.clientY;
+});
+
+function setTheme(name, btn) {
+  currentTheme = name;
+  document.body.className = 'theme-' + name;
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ctx.clearRect(0, 0, cw, ch);
+}
+
+/* --- UNIVERSAL SPARK FACTORY --- */
+function createSparkEmitter(count, colors, vyMin, vyMax, blurAmt = 12) {
+  const list = Array.from({length: count}, () => ({
+    x: Math.random() * cw,
+    y: ch + Math.random() * 50,
+    r: 1.8 + Math.random() * 3.5,
+    vy: -(vyMin + Math.random() * (vyMax - vyMin)),
+    vx: (Math.random() - 0.5) * 2,
+    alpha: 1,
+    color: colors[Math.floor(Math.random() * colors.length)]
+  }));
+
+  return function(bg) {
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, cw, ch);
+    list.forEach(s => {
+      s.y += s.vy;
+      s.x += s.vx + Math.sin(s.y * 0.05) * 0.8;
+      s.alpha -= 0.007;
+      if (s.y < -20 || s.alpha <= 0) {
+        s.x = Math.random() * cw;
+        s.y = ch + Math.random() * 20;
+        s.vy = -(vyMin + Math.random() * (vyMax - vyMin));
+        s.alpha = 1;
+      }
+      ctx.save();
+      ctx.shadowBlur = blurAmt;
+      ctx.shadowColor = s.color;
+      ctx.fillStyle = s.color;
+      ctx.globalAlpha = Math.max(0, s.alpha);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+  };
+}
+
+/* 1. ORIGINAL MAGMA */
+const drawMagma = createSparkEmitter(90, ['#ff3b00', '#ff8800', '#ffea00', '#ff0055'], 1.5, 3.5);
+
+/* 2. BLUE PLASMA SPARKS */
+const drawBluePlasma = createSparkEmitter(95, ['#00f2fe', '#4facfe', '#00c6ff', '#0072ff'], 2.0, 4.5, 15);
+
+/* 3. MYSTIC VIOLET EMBERS */
+const drawMysticViolet = createSparkEmitter(85, ['#d946ef', '#a855f7', '#ec4899', '#8b5cf6'], 1.2, 2.8, 14);
+
+/* 4. GOLDEN DUST SPARKLES */
+const drawGoldDust = createSparkEmitter(100, ['#fbbf24', '#f59e0b', '#fef08a', '#d97706'], 0.8, 2.2, 10);
+
+/* 5. VOLCANIC ERUPTION */
+const drawEruption = createSparkEmitter(140, ['#ff1e00', '#ff5100', '#ffd000', '#ffffff'], 4.0, 8.5, 16);
+
+/* 6. FROST BLIZZARD SPARKS */
+const drawBlizzard = createSparkEmitter(100, ['#e0f2fe', '#bae6fd', '#7dd3fc', '#ffffff'], 1.0, 3.0, 12);
+
+/* 7. TOXIC RADIOACTIVE FALLOUT */
+const drawToxic = createSparkEmitter(95, ['#22c55e', '#4ade80', '#86efac', '#a3e635'], 1.5, 3.2, 14);
+
+/* 8. SOLAR FLARE */
+const drawSolar = createSparkEmitter(110, ['#f97316', '#ea580c', '#facc15', '#ef4444'], 2.5, 5.0, 18);
+
+/* 9. SAKURA EMBERS */
+const drawSakuraEmbers = createSparkEmitter(85, ['#fda4af', '#fb7185', '#f43f5e', '#ffe4e6'], 1.0, 2.5, 12);
+
+/* 10. WELDER SPARKS (Fast Cascading) */
+const welderSparks = Array.from({length: 120}, () => ({
+  x: cw / 2 + (Math.random() - 0.5) * 200,
+  y: ch * 0.7,
+  vx: (Math.random() - 0.5) * 12,
+  vy: (Math.random() - 0.8) * 10,
+  g: 0.25,
+  alpha: 1
+}));
+function drawWelder() {
+  ctx.fillStyle = 'rgba(5, 5, 10, 0.3)';
+  ctx.fillRect(0, 0, cw, ch);
+  welderSparks.forEach(s => {
+    s.x += s.vx; s.y += s.vy; s.vy += s.g; s.alpha -= 0.02;
+    if(s.alpha <= 0 || s.y > ch) {
+      s.x = cw / 2 + (Math.random() - 0.5) * 300;
+      s.y = ch * 0.75;
+      s.vx = (Math.random() - 0.5) * 14;
+      s.vy = (Math.random() - 0.9) * 12;
+      s.alpha = 1;
+    }
+    ctx.save();
+    ctx.shadowBlur = 10; ctx.shadowColor = '#fff';
+    ctx.fillStyle = '#fff7cc';
+    ctx.globalAlpha = Math.max(0, s.alpha);
+    ctx.fillRect(s.x, s.y, 2.5, 2.5);
+    ctx.restore();
+  });
+}
+
+/* 11. VOID SINGULARITY */
+let sAngle = 0;
+const singularityParticles = Array.from({length: 130}, () => ({
+  r: 50 + Math.random() * (cw * 0.4),
+  ang: Math.random() * Math.PI * 2,
+  spd: 0.01 + Math.random() * 0.02,
+  size: 1.5 + Math.random() * 2.5,
+  col: ['#c084fc', '#818cf8', '#38bdf8', '#ffffff'][Math.floor(Math.random() * 4)]
+}));
+function drawSingularity() {
+  ctx.fillStyle = 'rgba(2, 4, 12, 0.35)';
+  ctx.fillRect(0, 0, cw, ch);
+  const cx = cw / 2, cy = ch / 2;
+  singularityParticles.forEach(p => {
+    p.ang += p.spd;
+    p.r -= 0.4;
+    if(p.r < 10) p.r = Math.random() * (cw * 0.45);
+    const x = cx + Math.cos(p.ang) * p.r;
+    const y = cy + Math.sin(p.ang) * (p.r * 0.6);
+    ctx.save();
+    ctx.shadowBlur = 8; ctx.shadowColor = p.col;
+    ctx.fillStyle = p.col;
+    ctx.beginPath(); ctx.arc(x, y, p.size, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  });
+}
+
+/* 12. INFERNO FIRE */
+const fireParticles = Array.from({length: 120}, () => ({
+  x: Math.random() * cw, y: ch + Math.random() * 50, r: 10 + Math.random() * 25,
+  vy: -(2.5 + Math.random() * 4), vx: (Math.random() - 0.5) * 1.5, life: 1, decay: 0.008 + Math.random() * 0.012
+}));
+function drawInferno() {
+  ctx.fillStyle = 'rgba(10, 2, 2, 0.28)'; ctx.fillRect(0, 0, cw, ch);
+  fireParticles.forEach(p => {
+    p.y += p.vy; p.x += p.vx + (Math.random() - 0.5) * 1.2; p.life -= p.decay; p.r *= 0.985;
+    if (p.life <= 0 || p.r < 1) {
+      p.x = Math.random() * cw; p.y = ch + Math.random() * 40; p.r = 12 + Math.random() * 28;
+      p.vy = -(2.5 + Math.random() * 4); p.vx = (Math.random() - 0.5) * 1.5; p.life = 1;
+    }
+    ctx.save(); ctx.globalCompositeOperation = 'screen';
+    const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+    grad.addColorStop(0, `rgba(255, 240, 150, ${p.life})`);
+    grad.addColorStop(0.35, `rgba(255, 100, 20, ${p.life * 0.8})`);
+    grad.addColorStop(0.75, `rgba(200, 20, 0, ${p.life * 0.4})`);
+    grad.addColorStop(1, 'rgba(30, 0, 0, 0)');
+    ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  });
+}
+
+/* 13 & 14. MATRIX NETS (Cyan & Green) */
+const netNodes = Array.from({length: 110}, () => ({
+  x: Math.random() * cw, y: Math.random() * ch, vx: (Math.random() - 0.5) * 1.5, vy: (Math.random() - 0.5) * 1.5, r: 2 + Math.random() * 3
+}));
+function drawMatrixNet(themeColor, linkColor, bgFill) {
+  ctx.fillStyle = bgFill; ctx.fillRect(0, 0, cw, ch);
+  netNodes.forEach((n, i) => {
+    n.x += n.vx; n.y += n.vy;
+    if(n.x < 0 || n.x > cw) n.vx *= -1;
+    if(n.y < 0 || n.y > ch) n.vy *= -1;
+    const dxm = mouseX - n.x, dym = mouseY - n.y;
+    const distM = Math.hypot(dxm, dym);
+    if(distM < 180) {
+      ctx.strokeStyle = `rgba(${themeColor}, ${1 - distM / 180})`; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(mouseX, mouseY); ctx.stroke();
+    }
+    for(let j = i + 1; j < netNodes.length; j++) {
+      const n2 = netNodes[j]; const dist = Math.hypot(n.x - n2.x, n.y - n2.y);
+      if(dist < 125) {
+        ctx.strokeStyle = `rgba(${linkColor}, ${0.55 * (1 - dist / 125)})`; ctx.lineWidth = 1.1;
+        ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(n2.x, n2.y); ctx.stroke();
+      }
+    }
+    ctx.fillStyle = `rgb(${themeColor})`; ctx.shadowBlur = 10; ctx.shadowColor = `rgb(${themeColor})`;
+    ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+  });
+}
+
+/* 15. MATRIX DIGITAL RAIN */
+const mChars = "010101XYZ日ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ";
+const fontSize = 16;
+let mDrops = [];
+function initMatrixRain() { mDrops = Array.from({length: Math.floor(cw / fontSize)}, () => Math.random() * -50); }
+initMatrixRain();
+function drawMatrixRain() {
+  ctx.fillStyle = 'rgba(2, 8, 14, 0.12)'; ctx.fillRect(0, 0, cw, ch);
+  ctx.fillStyle = '#00ff66'; ctx.font = `${fontSize}px monospace`;
+  for (let i = 0; i < mDrops.length; i++) {
+    ctx.fillText(mChars[Math.floor(Math.random() * mChars.length)], i * fontSize, mDrops[i] * fontSize);
+    if (mDrops[i] * fontSize > ch && Math.random() > 0.975) mDrops[i] = 0;
+    mDrops[i]++;
+  }
+}
+
+/* 16. WARP SPACE */
+const stars = Array.from({length: 450}, () => ({
+  x: (Math.random() - 0.5) * cw * 2.5, y: (Math.random() - 0.5) * ch * 2.5, z: Math.random() * cw, pz: Math.random() * cw,
+  color: ['#fff', '#bae6fd', '#fed7aa', '#ddd6fe'][Math.floor(Math.random() * 4)]
+}));
+let meteors = [];
+function drawSpace() {
+  ctx.fillStyle = 'rgba(2, 6, 18, 0.35)'; ctx.fillRect(0, 0, cw, ch);
+  const cx = cw / 2 + (mouseX - cw/2) * 0.05, cy = ch / 2 + (mouseY - ch/2) * 0.05;
+  stars.forEach(s => {
+    s.pz = s.z; s.z -= 3.2;
+    if(s.z <= 0) { s.z = cw; s.pz = cw; s.x = (Math.random() - 0.5) * cw * 2.5; s.y = (Math.random() - 0.5) * ch * 2.5; }
+    const k = 270, sx = (s.x / s.z) * k + cx, sy = (s.y / s.z) * k + cy, px = (s.x / s.pz) * k + cx, py = (s.y / s.pz) * k + cy;
+    if(sx >= 0 && sx <= cw && sy >= 0 && sy <= ch) {
+      ctx.strokeStyle = s.color; ctx.globalAlpha = Math.min(1, (1 - s.z / cw) * 1.5); ctx.lineWidth = Math.max(0.6, (1 - s.z / cw) * 3);
+      ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(sx, sy); ctx.stroke();
+    }
+  });
+  if (Math.random() < 0.015 && meteors.length < 2) {
+    meteors.push({ x: Math.random() * cw, y: Math.random() * (ch * 0.4), len: 120 + Math.random() * 80, spd: 14 + Math.random() * 8, ang: Math.PI/4 + (Math.random()-0.5)*0.2, op: 1 });
+  }
+  for (let i = meteors.length - 1; i >= 0; i--) {
+    let m = meteors[i]; m.x += Math.cos(m.ang) * m.spd; m.y += Math.sin(m.ang) * m.spd; m.op -= 0.018;
+    ctx.save(); ctx.globalAlpha = Math.max(0, m.op); ctx.strokeStyle = '#67e8f9'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(m.x - Math.cos(m.ang)*m.len, m.y - Math.sin(m.ang)*m.len); ctx.stroke();
+    ctx.restore();
+    if(m.op <= 0) meteors.splice(i, 1);
+  }
+}
+
+/* 17. SYNTHWAVE */
+let gridOffset = 0;
+function drawSynthwave() {
+  ctx.fillStyle = '#0a0518'; ctx.fillRect(0, 0, cw, ch);
+  const sky = ctx.createLinearGradient(0, 0, 0, ch * 0.65);
+  sky.addColorStop(0, '#050014'); sky.addColorStop(0.5, '#2e0854'); sky.addColorStop(1, '#ff2a8d');
+  ctx.fillStyle = sky; ctx.fillRect(0, 0, cw, ch * 0.65);
+  const sunY = ch * 0.45; const sunGrad = ctx.createLinearGradient(0, sunY - 90, 0, sunY + 90);
+  sunGrad.addColorStop(0, '#ffe600'); sunGrad.addColorStop(0.7, '#ff0077'); sunGrad.addColorStop(1, '#7700ff');
+  ctx.fillStyle = sunGrad; ctx.beginPath(); ctx.arc(cw / 2, sunY, 90, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#0a0518';
+  for(let i = 0; i < 7; i++) ctx.fillRect(cw/2 - 95, sunY + i * 11, 190, 2 + i * 0.8);
+  ctx.fillStyle = '#090014'; ctx.fillRect(0, ch * 0.65, cw, ch * 0.35);
+  ctx.strokeStyle = 'rgba(0, 242, 254, 0.45)'; ctx.lineWidth = 1.5; const horizon = ch * 0.65;
+  for(let x = -cw; x <= cw * 2; x += 60) {
+    ctx.beginPath(); ctx.moveTo(x, ch); ctx.lineTo(cw / 2 + (x - cw / 2) * 0.08, horizon); ctx.stroke();
+  }
+  gridOffset = (gridOffset + 1.2) % 35;
+  for(let y = horizon; y <= ch; y += 18) {
+    const lineY = y + gridOffset;
+    if(lineY <= ch) { ctx.beginPath(); ctx.moveTo(0, lineY); ctx.lineTo(cw, lineY); ctx.stroke(); }
+  }
+}
+
+/* Master Animation Frame Router */
+function renderLoop() {
+  ctx.globalAlpha = 1;
+  if(currentTheme === 'magma') drawMagma('rgba(8, 2, 4, 0.3)');
+  else if(currentTheme === 'blue_plasma') drawBluePlasma('rgba(2, 6, 18, 0.32)');
+  else if(currentTheme === 'mystic_violet') drawMysticViolet('rgba(10, 2, 16, 0.3)');
+  else if(currentTheme === 'gold_dust') drawGoldDust('rgba(14, 10, 2, 0.3)');
+  else if(currentTheme === 'eruption') drawEruption('rgba(18, 2, 2, 0.35)');
+  else if(currentTheme === 'blizzard') drawBlizzard('rgba(4, 10, 20, 0.3)');
+  else if(currentTheme === 'toxic') drawToxic('rgba(2, 12, 4, 0.3)');
+  else if(currentTheme === 'solar') drawSolar('rgba(14, 4, 0, 0.32)');
+  else if(currentTheme === 'sakura_embers') drawSakuraEmbers('rgba(16, 4, 10, 0.3)');
+  else if(currentTheme === 'welder') drawWelder();
+  else if(currentTheme === 'singularity') drawSingularity();
+  else if(currentTheme === 'inferno') drawInferno();
+  else if(currentTheme === 'matrix_net') drawMatrixNet('56, 189, 248', '168, 85, 247', 'rgba(4, 9, 22, 0.36)');
+  else if(currentTheme === 'green_net') drawMatrixNet('0, 255, 136', '0, 180, 90', 'rgba(2, 14, 8, 0.36)');
+  else if(currentTheme === 'matrix_rain') drawMatrixRain();
+  else if(currentTheme === 'space') drawSpace();
+  else if(currentTheme === 'synthwave') drawSynthwave();
+
+  requestAnimationFrame(renderLoop);
+}
+
+renderLoop();
+buildClockTicks();
+setInterval(updateClock, 1000);
+updateClock();
+render();
+loadFromCloud();
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape") closeModal();
+  if(e.ctrlKey&&e.key.toLowerCase()==="n"){ e.preventDefault(); openModal(); }
+});
+</script>
+</body>
+</html>
