@@ -345,28 +345,30 @@ function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&l
 // Local cache + Google Sheet database
 // Uses a simple form-encoded POST so the browser does not trigger a CORS preflight.
 async function save(){
-  localStorage.setItem(KEY,JSON.stringify(items));
-  try{
-    const body=new URLSearchParams();
-    body.set("action","save");
-    body.set("payload",JSON.stringify(items));
+  // पहले इस computer में local backup
+  localStorage.setItem(KEY, JSON.stringify(items));
 
-    await fetch(API_URL,{
-      method:"POST",
-      mode:"no-cors",
-      body:body,
-      keepalive:true
+  try{
+    const payload = JSON.stringify(items);
+
+    await fetch(API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+      },
+      body: "action=save&payload=" + encodeURIComponent(payload)
     });
 
-    remoteReady=true;
+    remoteReady = true;
+    console.log("Reminder data sent to Google Sheet");
     return true;
+
   }catch(err){
-    console.error("Google Sheet save error:",err);
-    toast("Saved on this device; cloud sync failed");
+    console.error("Google Sheet save error:", err);
     return false;
   }
 }
-
 async function loadFromCloud(){
   try{
     const res=await fetch(API_URL+"?t="+Date.now(),{cache:"no-store"});
