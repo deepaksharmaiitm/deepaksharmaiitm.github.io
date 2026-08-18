@@ -10,23 +10,179 @@
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 
+:root {
+    --bg-gradient: radial-gradient(circle at 50% 100%, #172554 0%, #030712 70%);
+    --card-bg: rgba(15, 23, 42, 0.78);
+    --card-border: rgba(250, 204, 21, 0.3);
+    --accent-glow: rgba(250, 204, 21, 0.25);
+    --btn-grad: linear-gradient(135deg, #ca8a04 0%, #eab308 100%);
+    --btn-shadow: rgba(234, 179, 8, 0.4);
+    --title-grad: linear-gradient(135deg, #fef08a 0%, #facc15 60%, #eab308 100%);
+    --badge-color: #fde047;
+    --badge-border: rgba(253, 224, 71, 0.5);
+    --text-highlight: #fde047;
+}
+
+/* Theme 1: Matrix Net */
+body.theme-matrix {
+    --bg-gradient: #020b05;
+    --card-bg: rgba(5, 20, 10, 0.84);
+    --card-border: rgba(34, 197, 94, 0.35);
+    --accent-glow: rgba(34, 197, 94, 0.25);
+    --btn-grad: linear-gradient(135deg, #15803d 0%, #22c55e 100%);
+    --btn-shadow: rgba(34, 197, 94, 0.45);
+    --title-grad: linear-gradient(135deg, #bbf7d0 0%, #4ade80 50%, #22c55e 100%);
+    --badge-color: #4ade80;
+    --badge-border: rgba(74, 222, 128, 0.5);
+    --text-highlight: #4ade80;
+}
+
+/* Theme 2: Fireflies */
+body.theme-fireflies {
+    --bg-gradient: radial-gradient(circle at 50% 100%, #1e1b4b 0%, #030712 80%);
+    --card-bg: rgba(15, 23, 42, 0.78);
+    --card-border: rgba(250, 204, 21, 0.3);
+    --accent-glow: rgba(250, 204, 21, 0.25);
+    --btn-grad: linear-gradient(135deg, #ca8a04 0%, #eab308 100%);
+    --btn-shadow: rgba(234, 179, 8, 0.4);
+    --title-grad: linear-gradient(135deg, #fef08a 0%, #facc15 60%, #eab308 100%);
+    --badge-color: #fde047;
+    --badge-border: rgba(253, 224, 71, 0.5);
+    --text-highlight: #fde047;
+}
+
+/* Theme 3: Cosmic Galaxy */
+body.theme-galaxy {
+    --bg-gradient: radial-gradient(circle at 80% 20%, #4c1d95 0%, #0f172a 45%, #020617 100%);
+    --card-bg: rgba(23, 15, 45, 0.8);
+    --card-border: rgba(192, 132, 252, 0.35);
+    --accent-glow: rgba(168, 85, 247, 0.3);
+    --btn-grad: linear-gradient(135deg, #9333ea 0%, #c084fc 100%);
+    --btn-shadow: rgba(168, 85, 247, 0.45);
+    --title-grad: linear-gradient(135deg, #f3e8ff 0%, #d8b4fe 50%, #c084fc 100%);
+    --badge-color: #d8b4fe;
+    --badge-border: rgba(192, 132, 252, 0.5);
+    --text-highlight: #c084fc;
+}
+
+/* Theme 4: Ocean Deep */
+body.theme-ocean {
+    --bg-gradient: linear-gradient(180deg, #022c43 0%, #053f5e 40%, #115173 70%, #021a24 100%);
+    --card-bg: rgba(2, 44, 67, 0.8);
+    --card-border: rgba(56, 189, 248, 0.35);
+    --accent-glow: rgba(56, 189, 248, 0.25);
+    --btn-grad: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+    --btn-shadow: rgba(56, 189, 248, 0.4);
+    --title-grad: linear-gradient(135deg, #e0f2fe 0%, #7dd3fc 50%, #38bdf8 100%);
+    --badge-color: #38bdf8;
+    --badge-border: rgba(56, 189, 248, 0.5);
+    --text-highlight: #38bdf8;
+}
+
+/* Theme 5: Sakura Blossom */
+body.theme-sakura {
+    --bg-gradient: linear-gradient(180deg, #2b091f 0%, #4a0e35 45%, #701a4e 80%, #1f0415 100%);
+    --card-bg: rgba(43, 9, 31, 0.82);
+    --card-border: rgba(244, 114, 182, 0.35);
+    --accent-glow: rgba(244, 114, 182, 0.3);
+    --btn-grad: linear-gradient(135deg, #db2777 0%, #f472b6 100%);
+    --btn-shadow: rgba(244, 114, 182, 0.45);
+    --title-grad: linear-gradient(135deg, #fdf2f8 0%, #fbcfe8 50%, #f472b6 100%);
+    --badge-color: #f472b6;
+    --badge-border: rgba(244, 114, 182, 0.5);
+    --text-highlight: #f472b6;
+}
+
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 30px 15px 100px 15px;
+    padding: 85px 15px 80px 15px;
     position: relative;
     overflow-x: hidden;
-    /* Upar Raat (Deep Midnight Navy) -> Niche Subah (Warm Golden Dawn Glow) */
-    background: linear-gradient(180deg, #050a18 0%, #0d1b3e 30%, #1e3a5f 55%, #c87955 80%, #fcd34d 92%, #86efac 100%);
+    background: var(--bg-gradient);
     background-attachment: fixed;
     color: #f8fafc;
+    transition: background 0.6s ease;
 }
 
-/* Rain & Sky Elements */
-#skyCanvas {
+/* Top Navigation Link */
+.home-nav-btn {
+    position: fixed;
+    top: 18px;
+    left: 20px;
+    z-index: 100;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    transition: all 0.25s ease;
+}
+
+.home-nav-btn:hover {
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Theme Switcher Bar */
+.theme-switch-container {
+    position: fixed;
+    top: 18px;
+    right: 20px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 14px;
+    padding: 4px 6px;
+    gap: 4px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    flex-wrap: wrap;
+}
+
+.theme-btn {
+    background: transparent;
+    border: none;
+    color: #cbd5e1;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.theme-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.theme-btn.active {
+    background: var(--btn-grad);
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 2px 8px var(--btn-shadow);
+}
+
+/* Dynamic Visual Canvas */
+#effectCanvas {
     position: fixed;
     top: 0;
     left: 0;
@@ -36,94 +192,30 @@ body {
     pointer-events: none;
 }
 
-/* Flying Birds */
-.birds-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 2;
-    overflow: hidden;
-}
-
-.bird {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M 10 50 Q 30 20, 50 50 Q 70 20, 90 50 Q 70 38, 50 55 Q 30 38, 10 50 Z' fill='%23ffffff' opacity='0.9'/%3E%3C/svg%3E");
-    background-size: contain;
-    background-repeat: no-repeat;
-    position: absolute;
-    will-change: transform;
-}
-
-.bird-1 { width: 44px; height: 44px; top: 12%; left: -60px; animation: flyRight 16s linear infinite; }
-.bird-2 { width: 34px; height: 34px; top: 22%; left: -50px; animation: flyRight 20s linear 4s infinite; }
-.bird-3 { width: 26px; height: 26px; top: 8%;  left: -40px; animation: flyRight 24s linear 9s infinite; }
-.bird-4 { width: 38px; height: 38px; top: 28%; left: -55px; animation: flyRight 18s linear 12s infinite; }
-
-@keyframes flyRight {
-    0%   { transform: translate(-10vw, 0px) scale(1) rotate(2deg); }
-    25%  { transform: translate(25vw, -20px) scale(0.95) rotate(-3deg); }
-    50%  { transform: translate(55vw, 15px) scale(1.05) rotate(2deg); }
-    75%  { transform: translate(80vw, -10px) scale(0.98) rotate(-1deg); }
-    100% { transform: translate(115vw, 5px) scale(1) rotate(0deg); }
-}
-
-/* Bottom Blooming Flowers Garden */
-.garden-bottom {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 75px;
-    background: linear-gradient(180deg, rgba(34, 197, 94, 0) 0%, rgba(22, 101, 52, 0.9) 85%, #14532d 100%);
-    z-index: 3;
-    pointer-events: none;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-around;
-    padding-bottom: 8px;
-    font-size: 28px;
-    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
-}
-
-.garden-bottom span {
-    display: inline-block;
-    animation: gentleSway 4s ease-in-out infinite alternate;
-    transform-origin: bottom center;
-}
-
-.garden-bottom span:nth-child(even) { animation-duration: 3s; animation-delay: -1.5s; }
-.garden-bottom span:nth-child(3n)   { animation-duration: 4.5s; animation-delay: -2s; font-size: 32px; }
-
-@keyframes gentleSway {
-    0%   { transform: rotate(-5deg) scale(0.95); }
-    100% { transform: rotate(6deg) scale(1.05); }
-}
-
-/* Main Panel Glass Card */
+/* Panel */
 .panel {
     position: relative;
     z-index: 10;
     width: 100%;
     max-width: 950px;
-    background: rgba(10, 20, 40, 0.65);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--card-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--card-border);
     border-radius: 28px;
     padding: 35px 45px;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 35px rgba(252, 211, 77, 0.15);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 35px var(--accent-glow);
+    transition: all 0.4s ease;
 }
 
 .header-badge { text-align: center; margin-bottom: 15px; }
 .badge {
     display: inline-block;
     padding: 4px 14px;
-    background: rgba(253, 224, 71, 0.15);
-    border: 1px solid rgba(253, 224, 71, 0.4);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--badge-border);
     border-radius: 20px;
-    color: #fde047;
+    color: var(--badge-color);
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 1.2px;
@@ -134,10 +226,11 @@ h1 {
     text-align: center;
     font-size: 32px;
     font-weight: 800;
-    background: linear-gradient(135deg, #ffffff 0%, #fde68a 60%, #f59e0b 100%);
+    background: var(--title-grad);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-top: 5px;
+    letter-spacing: -0.5px;
 }
 
 h2 {
@@ -148,10 +241,10 @@ h2 {
     margin-bottom: 25px;
 }
 
-/* 1-Bar Folder Setup Bar */
+/* Folder Bar */
 .folder-config-box {
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid var(--card-border);
     border-radius: 16px;
     padding: 15px 20px;
     margin-bottom: 22px;
@@ -176,7 +269,7 @@ h2 {
 .folder-details .path-name {
     font-size: 14px;
     font-weight: 600;
-    color: #38bdf8;
+    color: var(--text-highlight);
     margin-top: 2px;
 }
 
@@ -212,7 +305,7 @@ input[type=file], input[type=text], textarea {
     width: 100%;
     padding: 13px 16px;
     background: rgba(15, 23, 42, 0.75);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--card-border);
     border-radius: 12px;
     color: #f8fafc;
     font-size: 14px;
@@ -233,7 +326,7 @@ input[type=file]::file-selector-button {
 }
 
 input[type=text]:focus, textarea:focus {
-    border-color: #38bdf8;
+    border-color: var(--text-highlight);
     box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
     background: rgba(15, 23, 42, 0.95);
 }
@@ -254,7 +347,7 @@ textarea {
     font-weight: 600;
     background: rgba(30, 41, 59, 0.85);
     color: #94a3b8;
-    border-left: 3px solid #38bdf8;
+    border-left: 3px solid var(--text-highlight);
 }
 
 .generate-btn {
@@ -263,19 +356,18 @@ textarea {
     padding: 16px;
     border: none;
     border-radius: 14px;
-    background: linear-gradient(135deg, #0284c7 0%, #059669 100%);
+    background: var(--btn-grad);
     color: #ffffff;
     font-size: 16px;
     font-weight: 800;
     letter-spacing: 0.5px;
     cursor: pointer;
-    box-shadow: 0 8px 25px rgba(2, 132, 199, 0.4);
+    box-shadow: 0 8px 25px var(--btn-shadow);
     transition: all 0.2s ease;
 }
 
 .generate-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 30px rgba(5, 150, 105, 0.5);
     filter: brightness(1.1);
 }
 
@@ -291,25 +383,20 @@ textarea {
 }
 </style>
 </head>
-<body>
+<body class="theme-fireflies">
 
-<!-- Canvas for Stars & Soft Gentle Rain -->
-<canvas id="skyCanvas"></canvas>
+<a href="https://deepaksharmaiitm.github.io/" class="home-nav-btn" title="Go to Main Website">
+    <span>⬅️ Home / Main Page</span>
+</a>
 
-<!-- Flying Birds -->
-<div class="birds-container">
-    <div class="bird bird-1"></div>
-    <div class="bird bird-2"></div>
-    <div class="bird bird-3"></div>
-    <div class="bird bird-4"></div>
+<!-- 5 High-Quality Theme Buttons -->
+<div class="theme-switch-container">
+    <button class="theme-btn" id="btn-galaxy" onclick="switchTheme('galaxy')">🌌 Galaxy Space</button>
+    <button class="theme-btn" id="btn-ocean" onclick="switchTheme('ocean')">🌊 Deep Ocean</button>
+    <button class="theme-btn" id="btn-sakura" onclick="switchTheme('sakura')">🌸 Sakura Petals</button>
 </div>
 
-<!-- Bottom Blooming Garden -->
-<div class="garden-bottom">
-    <span>🌸</span><span>🌷</span><span>🌺</span><span>🌼</span><span>🌻</span>
-    <span>🌷</span><span>🌸</span><span>🌺</span><span>🌼</span><span>🌹</span>
-    <span>🌸</span><span>🌷</span><span>🌻</span><span>🌺</span><span>🌼</span>
-</div>
+<canvas id="effectCanvas"></canvas>
 
 <div class="panel">
     <div class="header-badge">
@@ -345,7 +432,7 @@ textarea {
     </div>
 
     <div class="form-group">
-        <label>3. Filtered RET Content Preview <p style="font-weight: bold; color: red;">Note:- कृपया CTS returing कोड डालना जरूरी हैं। </p></label>
+             <label>3. Filtered RET Content Preview <p style="font-weight: bold; color: red;">Note:- कृपया CTS returing कोड डालना जरूरी हैं। </p></label>
         <textarea id="fileContent" placeholder="ZIP upload karte hi converted .RET data yaha load ho jayega..."></textarea>
     </div>
 
@@ -354,10 +441,273 @@ textarea {
     </button>
 </div>
 
-<div class="bottom-author">Designed by Deepak Sharma</div>
+<div class="bottom-author">Developed by Deepak Sharma</div>
 
 <script>
-// ----------------- INDEXED DB FOLDER PERMANENT STORAGE -----------------
+// ----------------- 5 ADVANCED THEME ANIMATION ENGINES -----------------
+let currentTheme = 'fireflies';
+const canvas = document.getElementById('effectCanvas');
+const ctx = canvas.getContext('2d');
+let animationFrameId = null;
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function switchTheme(themeName) {
+    currentTheme = themeName;
+    document.body.className = `theme-${themeName}`;
+    
+    document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.getElementById(`btn-${themeName}`);
+    if (activeBtn) activeBtn.classList.add('active');
+
+    localStorage.setItem('preferred_theme', themeName);
+
+    if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    
+    if (themeName === 'matrix') {
+        initMatrix();
+    } else if (themeName === 'galaxy') {
+        initGalaxy();
+    } else if (themeName === 'ocean') {
+        initOcean();
+    } else if (themeName === 'sakura') {
+        initSakura();
+    } else {
+        initFireflies();
+    }
+}
+
+// --- 1. FIREFLIES THEME ---
+let fireflies = [];
+function initFireflies() {
+    fireflies = [];
+    for (let i = 0; i < 65; i++) {
+        fireflies.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 3 + 1.5,
+            speedX: (Math.random() - 0.5) * 0.8,
+            speedY: (Math.random() - 0.5) * 0.8,
+            alpha: Math.random(),
+            pulseSpeed: Math.random() * 0.03 + 0.01,
+            color: Math.random() > 0.3 ? '#facc15' : '#4ade80'
+        });
+    }
+    renderFireflies();
+}
+
+function renderFireflies() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let f of fireflies) {
+        f.x += f.speedX;
+        f.y += f.speedY;
+        f.alpha += f.pulseSpeed;
+        if (f.alpha > 1 || f.alpha < 0.1) f.pulseSpeed = -f.pulseSpeed;
+
+        if (f.x < 0) f.x = canvas.width;
+        if (f.x > canvas.width) f.x = 0;
+        if (f.y < 0) f.y = canvas.height;
+        if (f.y > canvas.height) f.y = 0;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = f.color;
+        ctx.fillStyle = f.color;
+        ctx.globalAlpha = Math.max(0, Math.min(1, f.alpha));
+        ctx.fill();
+        ctx.restore();
+    }
+    animationFrameId = requestAnimationFrame(renderFireflies);
+}
+
+// --- 2. MATRIX NET THEME ---
+let matrixColumns = [];
+const matrixChars = '0123456789ABCDEF@#$%&*+-/<>~';
+const fontSize = 16;
+function initMatrix() {
+    const columns = Math.floor(canvas.width / fontSize);
+    matrixColumns = [];
+    for (let i = 0; i < columns; i++) {
+        matrixColumns[i] = Math.floor(Math.random() * -50);
+    }
+    renderMatrix();
+}
+
+function renderMatrix() {
+    ctx.fillStyle = 'rgba(2, 11, 5, 0.15)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.font = `${fontSize}px monospace`;
+
+    for (let i = 0; i < matrixColumns.length; i++) {
+        const char = matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
+        const x = i * fontSize;
+        const y = matrixColumns[i] * fontSize;
+
+        ctx.fillStyle = '#bbf7d0';
+        ctx.fillText(char, x, y);
+        ctx.fillStyle = '#22c55e';
+
+        if (y > canvas.height && Math.random() > 0.975) {
+            matrixColumns[i] = 0;
+        }
+        matrixColumns[i]++;
+    }
+    animationFrameId = requestAnimationFrame(renderMatrix);
+}
+
+// --- 3. GALAXY SPACE THEME ---
+let stars = [];
+let comet = { x: 0, y: 0, length: 0, speed: 0, active: false };
+function initGalaxy() {
+    stars = [];
+    for (let i = 0; i < 150; i++) {
+        stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 2 + 0.4,
+            alpha: Math.random(),
+            speed: Math.random() * 0.02 + 0.005,
+            color: Math.random() > 0.4 ? '#e9d5ff' : '#c084fc'
+        });
+    }
+    renderGalaxy();
+}
+
+function renderGalaxy() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let s of stars) {
+        s.alpha += s.speed;
+        if (s.alpha > 1 || s.alpha < 0.2) s.speed = -s.speed;
+        ctx.fillStyle = s.color;
+        ctx.globalAlpha = Math.max(0.1, Math.min(1, s.alpha));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Shooting comet
+    if (!comet.active && Math.random() > 0.98) {
+        comet = {
+            x: Math.random() * canvas.width * 0.8,
+            y: Math.random() * canvas.height * 0.3,
+            length: Math.random() * 80 + 50,
+            speed: Math.random() * 10 + 12,
+            active: true
+        };
+    }
+    if (comet.active) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(216, 180, 254, 0.7)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(comet.x, comet.y);
+        ctx.lineTo(comet.x - comet.length, comet.y - comet.length * 0.5);
+        ctx.stroke();
+        ctx.restore();
+
+        comet.x += comet.speed;
+        comet.y += comet.speed * 0.5;
+        if (comet.x > canvas.width + 100 || comet.y > canvas.height + 100) comet.active = false;
+    }
+
+    animationFrameId = requestAnimationFrame(renderGalaxy);
+}
+
+// --- 4. DEEP OCEAN THEME ---
+let bubbles = [];
+function initOcean() {
+    bubbles = [];
+    for (let i = 0; i < 45; i++) {
+        bubbles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 8 + 3,
+            speedY: Math.random() * 1.5 + 0.5,
+            wiggle: Math.random() * 2,
+            wiggleSpeed: Math.random() * 0.05 + 0.02,
+            alpha: Math.random() * 0.5 + 0.2
+        });
+    }
+    renderOcean();
+}
+
+function renderOcean() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let b of bubbles) {
+        b.y -= b.speedY;
+        b.wiggle += b.wiggleSpeed;
+        const wx = b.x + Math.sin(b.wiggle) * 15;
+
+        if (b.y < -20) {
+            b.y = canvas.height + 20;
+            b.x = Math.random() * canvas.width;
+        }
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(wx, b.y, b.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(56, 189, 248, ${b.alpha})`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.fillStyle = `rgba(56, 189, 248, ${b.alpha * 0.3})`;
+        ctx.fill();
+        ctx.restore();
+    }
+    animationFrameId = requestAnimationFrame(renderOcean);
+}
+
+// --- 5. SAKURA BLOSSOM PETALS THEME ---
+let petals = [];
+function initSakura() {
+    petals = [];
+    for (let i = 0; i < 50; i++) {
+        petals.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 8 + 6,
+            speedY: Math.random() * 1.4 + 0.8,
+            speedX: Math.random() * 1.2 + 0.4,
+            rotation: Math.random() * 360,
+            rotSpeed: (Math.random() - 0.5) * 0.04,
+            alpha: Math.random() * 0.6 + 0.4
+        });
+    }
+    renderSakura();
+}
+
+function renderSakura() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let p of petals) {
+        p.y += p.speedY;
+        p.x += Math.sin(p.rotation) * 0.8 + p.speedX;
+        p.rotation += p.rotSpeed;
+
+        if (p.y > canvas.height + 20) {
+            p.y = -20;
+            p.x = Math.random() * canvas.width;
+        }
+        if (p.x > canvas.width + 20) p.x = -20;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation);
+        ctx.fillStyle = `rgba(244, 114, 182, ${p.alpha})`;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, p.size, p.size * 0.6, Math.PI / 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+    animationFrameId = requestAnimationFrame(renderSakura);
+}
+
+// ----------------- INDEXED DB FOLDER STORAGE -----------------
 let savedDirectoryHandle = null;
 const DB_NAME = 'RetGeneratorDB';
 const STORE_NAME = 'FolderHandles';
@@ -420,7 +770,8 @@ async function selectAndSavePermanentFolder() {
 // ----------------- AUTO DATE & FILENAME EXTRACTION -----------------
 window.onload = function() {
     setAutomaticFileName();
-    initSkyAndRain();
+    const saved = localStorage.getItem('preferred_theme') || 'fireflies';
+    switchTheme(saved);
     loadSavedFolderHandle();
 };
 
@@ -588,79 +939,6 @@ async function autoGenerateAndSave() {
     URL.revokeObjectURL(link.href);
     
     alert(`File Downloaded: ${fileName}`);
-}
-
-// ----------------- STARS & GENTLE RAIN ANIMATION -----------------
-function initSkyAndRain() {
-    const canvas = document.getElementById('skyCanvas');
-    const ctx = canvas.getContext('2d');
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
-
-    window.addEventListener('resize', () => {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-    });
-
-    // Night Stars (Top Area)
-    const stars = [];
-    for (let i = 0; i < 75; i++) {
-        stars.push({
-            x: Math.random() * width,
-            y: Math.random() * (height * 0.45),
-            size: Math.random() * 1.5 + 0.5,
-            opacity: Math.random() * 0.8 + 0.2,
-            twinkleSpeed: Math.random() * 0.02 + 0.005
-        });
-    }
-
-    // Soft Gentle Rain
-    const raindrops = [];
-    for (let i = 0; i < 90; i++) {
-        raindrops.push({
-            x: Math.random() * width,
-            y: Math.random() * height,
-            length: Math.random() * 14 + 10,
-            speedY: Math.random() * 4 + 5,
-            speedX: -0.8,
-            opacity: Math.random() * 0.35 + 0.15
-        });
-    }
-
-    function animate() {
-        ctx.clearRect(0, 0, width, height);
-
-        // Draw Stars
-        for (let s of stars) {
-            s.opacity += s.twinkleSpeed;
-            if (s.opacity > 1 || s.opacity < 0.2) s.twinkleSpeed = -s.twinkleSpeed;
-            ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
-            ctx.beginPath();
-            ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        // Draw Gentle Rain
-        ctx.lineWidth = 1.2;
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-        for (let r of raindrops) {
-            ctx.beginPath();
-            ctx.moveTo(r.x, r.y);
-            ctx.lineTo(r.x + r.speedX * 2, r.y + r.length);
-            ctx.stroke();
-
-            r.y += r.speedY;
-            r.x += r.speedX;
-
-            if (r.y > height) {
-                r.y = -20;
-                r.x = Math.random() * width;
-            }
-        }
-
-        requestAnimationFrame(animate);
-    }
-    animate();
 }
 </script>
 </body>
