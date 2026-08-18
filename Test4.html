@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RET File Generator Pro</title>
+<!-- JSZip Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 15px 100px 15px;
+    position: relative;
+    overflow-x: hidden;
+    /* Upar Raat (Deep Midnight Navy) -> Niche Subah (Warm Golden Dawn Glow) */
+    background: linear-gradient(180deg, #050a18 0%, #0d1b3e 30%, #1e3a5f 55%, #c87955 80%, #fcd34d 92%, #86efac 100%);
+    background-attachment: fixed;
+    color: #f8fafc;
+}
+
+/* Rain & Sky Elements */
+#skyCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Flying Birds */
+.birds-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    overflow: hidden;
+}
+
+.bird {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M 10 50 Q 30 20, 50 50 Q 70 20, 90 50 Q 70 38, 50 55 Q 30 38, 10 50 Z' fill='%23ffffff' opacity='0.9'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    will-change: transform;
+}
+
+.bird-1 { width: 44px; height: 44px; top: 12%; left: -60px; animation: flyRight 16s linear infinite; }
+.bird-2 { width: 34px; height: 34px; top: 22%; left: -50px; animation: flyRight 20s linear 4s infinite; }
+.bird-3 { width: 26px; height: 26px; top: 8%;  left: -40px; animation: flyRight 24s linear 9s infinite; }
+.bird-4 { width: 38px; height: 38px; top: 28%; left: -55px; animation: flyRight 18s linear 12s infinite; }
+
+@keyframes flyRight {
+    0%   { transform: translate(-10vw, 0px) scale(1) rotate(2deg); }
+    25%  { transform: translate(25vw, -20px) scale(0.95) rotate(-3deg); }
+    50%  { transform: translate(55vw, 15px) scale(1.05) rotate(2deg); }
+    75%  { transform: translate(80vw, -10px) scale(0.98) rotate(-1deg); }
+    100% { transform: translate(115vw, 5px) scale(1) rotate(0deg); }
+}
+
+/* Bottom Blooming Flowers Garden */
+.garden-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 75px;
+    background: linear-gradient(180deg, rgba(34, 197, 94, 0) 0%, rgba(22, 101, 52, 0.9) 85%, #14532d 100%);
+    z-index: 3;
+    pointer-events: none;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    padding-bottom: 8px;
+    font-size: 28px;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+}
+
+.garden-bottom span {
+    display: inline-block;
+    animation: gentleSway 4s ease-in-out infinite alternate;
+    transform-origin: bottom center;
+}
+
+.garden-bottom span:nth-child(even) { animation-duration: 3s; animation-delay: -1.5s; }
+.garden-bottom span:nth-child(3n)   { animation-duration: 4.5s; animation-delay: -2s; font-size: 32px; }
+
+@keyframes gentleSway {
+    0%   { transform: rotate(-5deg) scale(0.95); }
+    100% { transform: rotate(6deg) scale(1.05); }
+}
+
+/* Main Panel Glass Card */
+.panel {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 950px;
+    background: rgba(10, 20, 40, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 28px;
+    padding: 35px 45px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 35px rgba(252, 211, 77, 0.15);
+}
+
+.header-badge { text-align: center; margin-bottom: 15px; }
+.badge {
+    display: inline-block;
+    padding: 4px 14px;
+    background: rgba(253, 224, 71, 0.15);
+    border: 1px solid rgba(253, 224, 71, 0.4);
+    border-radius: 20px;
+    color: #fde047;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+h1 {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #fde68a 60%, #f59e0b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-top: 5px;
+}
+
+h2 {
+    text-align: center;
+    color: #cbd5e1;
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 25px;
+}
+
+/* 1-Bar Folder Setup Bar */
+.folder-config-box {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 15px 20px;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.folder-info { display: flex; align-items: center; gap: 12px; }
+.folder-icon { font-size: 26px; }
+
+.folder-details .title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.folder-details .path-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #38bdf8;
+    margin-top: 2px;
+}
+
+.set-folder-btn {
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+    transition: all 0.2s ease;
+}
+
+.set-folder-btn:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+}
+
+.form-group { margin-bottom: 18px; }
+
+label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 6px;
+}
+
+input[type=file], input[type=text], textarea {
+    width: 100%;
+    padding: 13px 16px;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: #f8fafc;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+input[type=file]::file-selector-button {
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: #334155;
+    color: #f8fafc;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 12px;
+    cursor: pointer;
+}
+
+input[type=text]:focus, textarea:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+    background: rgba(15, 23, 42, 0.95);
+}
+
+textarea {
+    height: 135px;
+    resize: vertical;
+    font-family: 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.status-badge {
+    margin-top: 6px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(30, 41, 59, 0.85);
+    color: #94a3b8;
+    border-left: 3px solid #38bdf8;
+}
+
+.generate-btn {
+    width: 100%;
+    margin-top: 22px;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #0284c7 0%, #059669 100%);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(2, 132, 199, 0.4);
+    transition: all 0.2s ease;
+}
+
+.generate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(5, 150, 105, 0.5);
+    filter: brightness(1.1);
+}
+
+.bottom-author {
+    position: fixed;
+    bottom: 12px;
+    right: 25px;
+    font-size: 14px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.85);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    z-index: 10;
+}
+</style>
+</head>
+<body>
+
+<!-- Canvas for Stars & Soft Gentle Rain -->
+<canvas id="skyCanvas"></canvas>
+
+<!-- Flying Birds -->
+<div class="birds-container">
+    <div class="bird bird-1"></div>
+    <div class="bird bird-2"></div>
+    <div class="bird bird-3"></div>
+    <div class="bird bird-4"></div>
+</div>
+
+<!-- Bottom Blooming Garden -->
+<div class="garden-bottom">
+    <span>🌸</span><span>🌷</span><span>🌺</span><span>🌼</span><span>🌻</span>
+    <span>🌷</span><span>🌸</span><span>🌺</span><span>🌼</span><span>🌹</span>
+    <span>🌸</span><span>🌷</span><span>🌻</span><span>🌺</span><span>🌼</span>
+</div>
+
+<div class="panel">
+    <div class="header-badge">
+        <span class="badge">Next-Gen CTS Converter</span>
+    </div>
+    <h1>RED Generator Pro</h1>
+    <h2>Auto Nested ZIP / PXF to .RET Direct Converter</h2>
+
+    <!-- Permanent Folder Config -->
+    <div class="folder-config-box">
+        <div class="folder-info">
+            <div class="folder-icon">📂</div>
+            <div class="folder-details">
+                <div class="title">Permanent Download Destination</div>
+                <div class="path-name" id="folderDisplay">Default Browser Downloads (Click Set Button)</div>
+            </div>
+        </div>
+        <button class="set-folder-btn" onclick="selectAndSavePermanentFolder()">
+            <span>⚙️ 1-Bar Folder Set Karein</span>
+        </button>
+    </div>
+
+    <!-- Inputs -->
+    <div class="form-group">
+        <label>1. Select Source .ZIP (Nested Supported) or .PXF File</label>
+        <input type="file" id="uploadFile" accept=".zip,.PXF,.pxf,.txt" onchange="processUploadedFile()">
+        <div id="fileStatus" class="status-badge">Waiting for file upload...</div>
+    </div>
+
+    <div class="form-group">
+        <label>2. .RET File Name</label>
+        <input type="text" id="fileName" value="">
+    </div>
+
+    <div class="form-group">
+        <label>3. Filtered RET Content Preview</label>
+        <textarea id="fileContent" placeholder="ZIP upload karte hi converted .RET data yaha load ho jayega..."></textarea>
+    </div>
+
+    <button class="generate-btn" onclick="autoGenerateAndSave()">
+        <span>⚡ Generate & Save .RET File</span>
+    </button>
+</div>
+
+<div class="bottom-author">Deepak Sharma</div>
+
+<script>
+// ----------------- INDEXED DB FOLDER PERMANENT STORAGE -----------------
+let savedDirectoryHandle = null;
+const DB_NAME = 'RetGeneratorDB';
+const STORE_NAME = 'FolderHandles';
+
+function openHandleDB() {
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = () => req.result.createObjectStore(STORE_NAME);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+    });
+}
+
+async function loadSavedFolderHandle() {
+    try {
+        const db = await openHandleDB();
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.get('savedDir');
+        req.onsuccess = async () => {
+            if (req.result) {
+                savedDirectoryHandle = req.result;
+                const status = await savedDirectoryHandle.queryPermission({ mode: 'readwrite' });
+                if (status === 'granted') {
+                    document.getElementById("folderDisplay").innerText = `✅ Linked Folder: "${savedDirectoryHandle.name}"`;
+                } else {
+                    document.getElementById("folderDisplay").innerText = `📁 Saved Folder: "${savedDirectoryHandle.name}" (Click Generate to enable)`;
+                }
+            }
+        };
+    } catch (e) {
+        console.log("Folder Load error", e);
+    }
+}
+
+async function selectAndSavePermanentFolder() {
+    if (!window.showDirectoryPicker) {
+        alert("Aapka browser Direct Folder Picking support nahi karta. Chrome ya Edge ka use karein.");
+        return;
+    }
+
+    try {
+        const dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+        savedDirectoryHandle = dirHandle;
+
+        const db = await openHandleDB();
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).put(dirHandle, 'savedDir');
+
+        document.getElementById("folderDisplay").innerText = `✅ Linked Folder: "${dirHandle.name}"`;
+        alert(`Folder successfully link ho gaya: "${dirHandle.name}"\nAb file seedhe is folder me save hogi!`);
+    } catch (err) {
+        if (err.name !== 'AbortError') {
+            console.error(err);
+            alert("Error setting folder: " + err.message);
+        }
+    }
+}
+
+// ----------------- AUTO DATE & FILENAME EXTRACTION -----------------
+window.onload = function() {
+    setAutomaticFileName();
+    initSkyAndRain();
+    loadSavedFolderHandle();
+};
+
+function setAutomaticFileName(fileCodeSuffix = "01") {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    const currentDateStr = `${day}${month}${year}`;
+    
+    document.getElementById("fileName").value = `477844001_${currentDateStr}_14_${fileCodeSuffix}.RET`;
+}
+
+function updateFileNameFromFile(uploadFileName) {
+    const match = uploadFileName.match(/^C(\d+)/i);
+    let suffix = "01";
+    if (match && match[1]) {
+        suffix = match[1].padStart(2, '0');
+    }
+    setAutomaticFileName(suffix);
+}
+
+// ----------------- NESTED ZIP EXTRACTION -----------------
+async function unpackZipRecursively(zipBuffer) {
+    const zip = new JSZip();
+    const loadedZip = await zip.loadAsync(zipBuffer);
+    const fileEntries = Object.keys(loadedZip.files).filter(name => !loadedZip.files[name].dir);
+
+    for (let fileName of fileEntries) {
+        if (fileName.toLowerCase().endsWith('.zip')) {
+            const innerZipBuffer = await loadedZip.file(fileName).async("arraybuffer");
+            return await unpackZipRecursively(innerZipBuffer);
+        }
+    }
+
+    let targetFileName = fileEntries.find(name => name.toLowerCase().endsWith('.pxf'));
+
+    if (!targetFileName) {
+        targetFileName = fileEntries.find(name => 
+            name.toLowerCase().endsWith('.txt') || 
+            name.toLowerCase().endsWith('.dat') || 
+            !name.includes('.')
+        );
+    }
+
+    if (!targetFileName && fileEntries.length > 0) {
+        targetFileName = fileEntries[0];
+    }
+
+    if (!targetFileName) {
+        throw new Error("ZIP ke andar koi data file nahi mili!");
+    }
+
+    const textContent = await loadedZip.file(targetFileName).async("string");
+    return {
+        fileName: targetFileName,
+        content: textContent
+    };
+}
+
+async function processUploadedFile() {
+    const fileInput = document.getElementById('uploadFile');
+    const statusDiv = document.getElementById('fileStatus');
+    const contentArea = document.getElementById('fileContent');
+    
+    if (fileInput.files.length === 0) return;
+
+    const file = fileInput.files[0];
+    updateFileNameFromFile(file.name);
+    
+    statusDiv.innerText = `Processing: ${file.name}...`;
+    contentArea.value = "";
+
+    try {
+        let rawText = "";
+
+        if (file.name.toLowerCase().endsWith('.zip')) {
+            const arrayBuffer = await file.arrayBuffer();
+            const result = await unpackZipRecursively(arrayBuffer);
+            statusDiv.innerText = `✅ ZIP Extracted Successfully: ${result.fileName}`;
+            rawText = result.content;
+        } else {
+            rawText = await file.text();
+            statusDiv.innerText = `✅ File Loaded: ${file.name}`;
+        }
+
+        parseAndPopulateData(rawText);
+
+    } catch (err) {
+        console.error(err);
+        alert("Error reading file: " + err.message);
+        statusDiv.innerText = "❌ Error in reading file!";
+    }
+}
+
+function parseAndPopulateData(text) {
+    const lines = text.split(/\r?\n/);
+    let outputLines = [];
+
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
+        if (line === "") continue;
+
+        let values = line.split('|');
+
+        if (values.length >= 6) {
+            let val2 = values[1] ? values[1].trim() : "";
+            let val3 = values[2] ? values[2].trim() : "";
+            let val5 = values[4] ? values[4].trim() : ""; 
+            let val8 = values[7] ? values[7].trim() : (values[3] ? values[3].trim() : "");
+            let fixed00 = "--";
+            
+            let val20 = "";
+            if (values.length >= 20) {
+                val20 = values[19] ? values[19].trim() : "";
+            } else {
+                val20 = values[values.length - 1] ? values[values.length - 1].trim() : "";
+            }
+
+            let newLine = `${val2}|${val5}|${val3}|${val8}|${fixed00}|${val20}`;
+            outputLines.push(newLine);
+        }
+    }
+
+    if (outputLines.length === 0) {
+        alert("Warning: Valid delimiter '|' match nahi hua!");
+    }
+
+    document.getElementById('fileContent').value = outputLines.join('\r\n');
+}
+
+// ----------------- DIRECT GENERATE & AUTO-SAVE -----------------
+async function autoGenerateAndSave() {
+    const fileName = document.getElementById("fileName").value.trim();
+    const fileContent = document.getElementById("fileContent").value;
+
+    if (!fileContent) {
+        alert("Pehle .ZIP ya .PXF file select karein!");
+        return;
+    }
+
+    if (savedDirectoryHandle) {
+        try {
+            const perm = await savedDirectoryHandle.requestPermission({ mode: 'readwrite' });
+            if (perm === 'granted') {
+                const fileHandle = await savedDirectoryHandle.getFileHandle(fileName, { create: true });
+                const writable = await fileHandle.createWritable();
+                await writable.write(fileContent);
+                await writable.close();
+                alert(`🎉 File bina kisi pop-up ke aapke linked folder "${savedDirectoryHandle.name}" mein save ho gayi!\nFile: ${fileName}`);
+                return;
+            }
+        } catch (e) {
+            console.warn("Direct folder save fallback", e);
+        }
+    }
+
+    const blob = new Blob([fileContent], {type: "text/plain;charset=utf-8"});
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+    
+    alert(`File Downloaded: ${fileName}`);
+}
+
+// ----------------- STARS & GENTLE RAIN ANIMATION -----------------
+function initSkyAndRain() {
+    const canvas = document.getElementById('skyCanvas');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    });
+
+    // Night Stars (Top Area)
+    const stars = [];
+    for (let i = 0; i < 75; i++) {
+        stars.push({
+            x: Math.random() * width,
+            y: Math.random() * (height * 0.45),
+            size: Math.random() * 1.5 + 0.5,
+            opacity: Math.random() * 0.8 + 0.2,
+            twinkleSpeed: Math.random() * 0.02 + 0.005
+        });
+    }
+
+    // Soft Gentle Rain
+    const raindrops = [];
+    for (let i = 0; i < 90; i++) {
+        raindrops.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            length: Math.random() * 14 + 10,
+            speedY: Math.random() * 4 + 5,
+            speedX: -0.8,
+            opacity: Math.random() * 0.35 + 0.15
+        });
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+
+        // Draw Stars
+        for (let s of stars) {
+            s.opacity += s.twinkleSpeed;
+            if (s.opacity > 1 || s.opacity < 0.2) s.twinkleSpeed = -s.twinkleSpeed;
+            ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Draw Gentle Rain
+        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+        for (let r of raindrops) {
+            ctx.beginPath();
+            ctx.moveTo(r.x, r.y);
+            ctx.lineTo(r.x + r.speedX * 2, r.y + r.length);
+            ctx.stroke();
+
+            r.y += r.speedY;
+            r.x += r.speedX;
+
+            if (r.y > height) {
+                r.y = -20;
+                r.x = Math.random() * width;
+            }
+        }
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+</script>
+</body>
+</html>
