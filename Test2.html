@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RET File Generator Pro</title>
+<!-- JSZip Library for deep nested zip extraction -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 25px 15px;
+    position: relative;
+    overflow-x: hidden;
+    background: #070b19;
+    color: #e2e8f0;
+}
+
+/* Stunning Aurora / Cosmic Animated Background */
+.bg-ambient {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.55;
+    animation: floatOrb 18s ease-in-out infinite alternate;
+}
+
+.orb-1 {
+    width: 450px;
+    height: 450px;
+    background: radial-gradient(circle, #6366f1 0%, rgba(99, 102, 241, 0) 70%);
+    top: -100px;
+    left: -100px;
+}
+
+.orb-2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #06b6d4 0%, rgba(6, 182, 212, 0) 70%);
+    bottom: -120px;
+    right: -100px;
+    animation-duration: 22s;
+    animation-delay: -5s;
+}
+
+.orb-3 {
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, #ec4899 0%, rgba(236, 72, 153, 0) 70%);
+    top: 40%;
+    left: 60%;
+    animation-duration: 16s;
+    animation-delay: -9s;
+}
+
+@keyframes floatOrb {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(60px, 40px) scale(1.15); }
+    100% { transform: translate(-40px, 70px) scale(0.95); }
+}
+
+/* Canvas for floating stars */
+#particleCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Premium Glassmorphic Main Card */
+.panel {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 950px;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 28px;
+    padding: 35px 45px;
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6), 0 0 40px rgba(99, 102, 241, 0.15);
+}
+
+.header-badge {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 14px;
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    border-radius: 20px;
+    color: #a5b4fc;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+h1 {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #93c5fd 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-top: 6px;
+    letter-spacing: -0.5px;
+}
+
+h2 {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 28px;
+}
+
+/* Folder Settings Bar */
+.folder-config-box {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.folder-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.folder-icon {
+    font-size: 26px;
+    color: #f59e0b;
+}
+
+.folder-details .title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #cbd5e1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.folder-details .path-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #38bdf8;
+    margin-top: 2px;
+}
+
+.set-folder-btn {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.set-folder-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.45);
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+}
+
+/* Form controls */
+.form-group {
+    margin-bottom: 18px;
+}
+
+label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+}
+
+input[type=file], input[type=text], textarea {
+    width: 100%;
+    padding: 13px 16px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 12px;
+    color: #f1f5f9;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+input[type=file] {
+    cursor: pointer;
+}
+
+input[type=file]::file-selector-button {
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: #334155;
+    color: #f8fafc;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+input[type=file]::file-selector-button:hover {
+    background: #475569;
+}
+
+input[type=text]:focus, textarea:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+    background: rgba(15, 23, 42, 0.9);
+}
+
+textarea {
+    height: 140px;
+    resize: vertical;
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.status-badge {
+    margin-top: 6px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(30, 41, 59, 0.8);
+    color: #94a3b8;
+    border-left: 3px solid #6366f1;
+}
+
+/* Action Button */
+.generate-btn {
+    width: 100%;
+    margin-top: 24px;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #6366f1 0%, #3b82f6 50%, #06b6d4 100%);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.generate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.55);
+    filter: brightness(1.1);
+}
+
+.generate-btn:active {
+    transform: translateY(0);
+}
+
+.bottom-author {
+    position: fixed;
+    bottom: 15px;
+    right: 25px;
+    font-size: 14px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 0.8px;
+    z-index: 10;
+}
+</style>
+</head>
+<body>
+
+<!-- Animated Aurora Background -->
+<div class="bg-ambient">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+</div>
+
+<!-- Floating Particle Canvas -->
+<canvas id="particleCanvas"></canvas>
+
+<div class="panel">
+    <div class="header-badge">
+        <span class="badge">Next-Gen CTS Tool</span>
+    </div>
+    <h1>RET Generator Pro</h1>
+    <h2>Auto Nested ZIP / PXF to .RET Direct Converter</h2>
+
+    <!-- ONE TIME FOLDER SETUP BAR -->
+    <div class="folder-config-box">
+        <div class="folder-info">
+            <div class="folder-icon">📂</div>
+            <div class="folder-details">
+                <div class="title">Saved Download Destination</div>
+                <div class="path-name" id="folderDisplay">Default Browser Downloads (Click Set Button)</div>
+            </div>
+        </div>
+        <button class="set-folder-btn" onclick="selectAndSavePermanentFolder()">
+            <span>⚙️ 1-Bar Folder Set Karein</span>
+        </button>
+    </div>
+
+    <!-- FILE INPUT -->
+    <div class="form-group">
+        <label>1. Select Source .ZIP (Nested Supported) or .PXF File</label>
+        <input type="file" id="uploadFile" accept=".zip,.PXF,.pxf,.txt" onchange="processUploadedFile()">
+        <div id="fileStatus" class="status-badge">Waiting for file upload...</div>
+    </div>
+
+    <!-- RET FILENAME -->
+    <div class="form-group">
+        <label>2. .RET File Name</label>
+        <input type="text" id="fileName" value="">
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="form-group">
+        <label>3. Filtered RET Content Preview <p style="font-weight: bold; color: red;">Note:- कृपया CTS returing कोड डालना जरूरी हैं। </p></label>
+		        <textarea id="fileContent" placeholder="ZIP upload karte hi converted .RET data yaha load ho jayega..."></textarea>
+    </div>
+
+    <!-- SINGLE MAIN ACTION BUTTON -->
+    <button class="generate-btn" onclick="autoGenerateAndSave()">
+        <span>⚡ Generate & Save .RET File</span>
+    </button>
+</div>
+
+<div class="bottom-author">Designed by Deepak Sharma</div>
+
+<script>
+// ----------------- PERMANENT FOLDER STORAGE (INDEXED DB) -----------------
+let savedDirectoryHandle = null;
+const DB_NAME = 'RetGeneratorDB';
+const STORE_NAME = 'FolderHandles';
+
+function openHandleDB() {
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = () => req.result.createObjectStore(STORE_NAME);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+    });
+}
+
+async function loadSavedFolderHandle() {
+    try {
+        const db = await openHandleDB();
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.get('savedDir');
+        req.onsuccess = async () => {
+            if (req.result) {
+                savedDirectoryHandle = req.result;
+                const status = await savedDirectoryHandle.queryPermission({ mode: 'readwrite' });
+                if (status === 'granted') {
+                    document.getElementById("folderDisplay").innerText = `✅ Linked Folder: "${savedDirectoryHandle.name}"`;
+                } else {
+                    document.getElementById("folderDisplay").innerText = `📁 Saved Folder: "${savedDirectoryHandle.name}" (Click Generate to enable)`;
+                }
+            }
+        };
+    } catch (e) {
+        console.log("IndexedDB Folder Load error", e);
+    }
+}
+
+async function selectAndSavePermanentFolder() {
+    if (!window.showDirectoryPicker) {
+        alert("Aapka browser Direct Folder Picking support nahi karta. Chrome, Edge ya Brave browser ka use karein.");
+        return;
+    }
+
+    try {
+        const dirHandle = await window.showDirectoryPicker({
+            mode: 'readwrite'
+        });
+        savedDirectoryHandle = dirHandle;
+
+        const db = await openHandleDB();
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).put(dirHandle, 'savedDir');
+
+        document.getElementById("folderDisplay").innerText = `✅ Linked Folder: "${dirHandle.name}"`;
+        alert(`Folder successfully set ho gaya: "${dirHandle.name}"\nAb aap jab bhi generate karenge, file seedhe is folder me save hogi!`);
+    } catch (err) {
+        if (err.name !== 'AbortError') {
+            console.error(err);
+            alert("Folder set karne mein issue aaya: " + err.message);
+        }
+    }
+}
+
+// ----------------- AUTO DATE & INITIALIZATION -----------------
+window.onload = function() {
+    setAutomaticFileName();
+    initParticles();
+    loadSavedFolderHandle();
+};
+
+function setAutomaticFileName() {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    const currentDateStr = `${day}${month}${year}`;
+    
+    document.getElementById("fileName").value = `477844001_${currentDateStr}_14_01.RET`;
+}
+
+// ----------------- RECURSIVE ZIP EXTRACTOR -----------------
+async function unpackZipRecursively(zipBuffer, currentPath = "") {
+    const zip = new JSZip();
+    const loadedZip = await zip.loadAsync(zipBuffer);
+    const fileEntries = Object.keys(loadedZip.files).filter(name => !loadedZip.files[name].dir);
+
+    for (let fileName of fileEntries) {
+        if (fileName.toLowerCase().endsWith('.zip')) {
+            const innerZipBuffer = await loadedZip.file(fileName).async("arraybuffer");
+            return await unpackZipRecursively(innerZipBuffer, fileName);
+        }
+    }
+
+    let targetFileName = fileEntries.find(name => name.toLowerCase().endsWith('.pxf'));
+
+    if (!targetFileName) {
+        targetFileName = fileEntries.find(name => 
+            name.toLowerCase().endsWith('.txt') || 
+            name.toLowerCase().endsWith('.dat') || 
+            !name.includes('.')
+        );
+    }
+
+    if (!targetFileName && fileEntries.length > 0) {
+        targetFileName = fileEntries[0];
+    }
+
+    if (!targetFileName) {
+        throw new Error("ZIP ke andar koi data file nahi mili!");
+    }
+
+    const textContent = await loadedZip.file(targetFileName).async("string");
+    return {
+        fileName: targetFileName,
+        content: textContent
+    };
+}
+
+async function processUploadedFile() {
+    const fileInput = document.getElementById('uploadFile');
+    const statusDiv = document.getElementById('fileStatus');
+    const contentArea = document.getElementById('fileContent');
+    
+    if (fileInput.files.length === 0) return;
+
+    const file = fileInput.files[0];
+    statusDiv.innerText = `Processing: ${file.name}...`;
+    contentArea.value = "";
+
+    try {
+        let rawText = "";
+
+        if (file.name.toLowerCase().endsWith('.zip')) {
+            const arrayBuffer = await file.arrayBuffer();
+            const result = await unpackZipRecursively(arrayBuffer);
+            statusDiv.innerText = `✅ ZIP Extracted Successfully: ${result.fileName}`;
+            rawText = result.content;
+        } else {
+            rawText = await file.text();
+            statusDiv.innerText = `✅ File Loaded: ${file.name}`;
+        }
+
+        parseAndPopulateData(rawText);
+
+    } catch (err) {
+        console.error(err);
+        alert("Error reading file: " + err.message);
+        statusDiv.innerText = "❌ Error in reading file!";
+    }
+}
+
+function parseAndPopulateData(text) {
+    const lines = text.split(/\r?\n/);
+    let outputLines = [];
+
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
+        if (line === "") continue;
+
+        let values = line.split('|');
+
+        if (values.length >= 6) {
+            let val2 = values[1] ? values[1].trim() : "";
+            let val3 = values[2] ? values[2].trim() : "";
+            let val5 = values[4] ? values[4].trim() : ""; 
+            let val8 = values[7] ? values[7].trim() : (values[3] ? values[3].trim() : "");
+            let fixed00 = "--";
+            
+            let val20 = "";
+            if (values.length >= 20) {
+                val20 = values[19] ? values[19].trim() : "";
+            } else {
+                val20 = values[values.length - 1] ? values[values.length - 1].trim() : "";
+            }
+
+            let newLine = `${val2}|${val5}|${val3}|${val8}|${fixed00}|${val20}`;
+            outputLines.push(newLine);
+        }
+    }
+
+    if (outputLines.length === 0) {
+        alert("Warning: Valid delimiter '|' match nahi hua!");
+    }
+
+    document.getElementById('fileContent').value = outputLines.join('\r\n');
+}
+
+// ----------------- ONE-CLICK DIRECT GENERATE & SAVE -----------------
+async function autoGenerateAndSave() {
+    const fileName = document.getElementById("fileName").value.trim();
+    const fileContent = document.getElementById("fileContent").value;
+
+    if (!fileContent) {
+        alert("Pehle .ZIP ya .PXF file select karein!");
+        return;
+    }
+
+    // 1. Agar user ne Permanent Folder Set kiya hua hai
+    if (savedDirectoryHandle) {
+        try {
+            const perm = await savedDirectoryHandle.requestPermission({ mode: 'readwrite' });
+            if (perm === 'granted') {
+                const fileHandle = await savedDirectoryHandle.getFileHandle(fileName, { create: true });
+                const writable = await fileHandle.createWritable();
+                await writable.write(fileContent);
+                await writable.close();
+                alert(`🎉 File bina kisi pop-up ke aapke set kiye hue folder "${savedDirectoryHandle.name}" mein save ho gayi hai!\nFile: ${fileName}`);
+                return;
+            }
+        } catch (e) {
+            console.warn("Direct folder save fallback triggered", e);
+        }
+    }
+
+    // 2. Fallback: Normal instant browser download
+    const blob = new Blob([fileContent], {type: "text/plain;charset=utf-8"});
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+    
+    alert(`File Downloaded: ${fileName}\n(Tip: Upar "1-Bar Folder Set Karein" button se apna favorite folder chun lein taaki baar baar download location na chunni pade!)`);
+}
+
+// ----------------- PARTICLE CANVAS EFFECT -----------------
+function initParticles() {
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    for (let i = 0; i < 60; i++) {
+        particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            size: Math.random() * 2 + 0.5,
+            speedY: Math.random() * 0.4 + 0.1,
+            speedX: (Math.random() - 0.5) * 0.2,
+            opacity: Math.random() * 0.6 + 0.2
+        });
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+        for (let p of particles) {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(165, 180, 252, ${p.opacity})`;
+            ctx.fill();
+
+            p.y -= p.speedY;
+            p.x += p.speedX;
+
+            if (p.y < 0) {
+                p.y = height;
+                p.x = Math.random() * width;
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+</script>
+</body>
+</html>
