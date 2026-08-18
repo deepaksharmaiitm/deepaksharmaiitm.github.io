@@ -583,7 +583,7 @@ async function autoGenerateAndSave() {
                 const writable = await fileHandle.createWritable();
                 await writable.write(fileContent);
                 await writable.close();
-                alert(`🎉 File bina kisi pop-up ke aapke set kiye hue folder "${savedDirectoryHandle.name}" mein save ho gayi hai!\nFile: ${fileName}`);
+                alert(`🎉 File Generated "${savedDirectoryHandle.name}" mein save ho gayi hai!\nFile: ${fileName}`);
                 return;
             }
         } catch (e) {
