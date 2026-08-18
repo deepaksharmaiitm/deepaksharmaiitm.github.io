@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Password Maker</title>
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+    --bg-color: #030712;
+    --card-bg: rgba(15, 23, 42, 0.82);
+    --card-border: rgba(56, 189, 248, 0.45);
+    --accent-color: #38bdf8;
+    --glow: 0 0 35px rgba(56, 189, 248, 0.4);
+    --input-bg: #0c1527;
+    --btn-gen: linear-gradient(135deg, #0284c7, #38bdf8);
+}
+
+body.theme-godrays {
+    --bg-color: #05040a;
+    --card-bg: rgba(18, 12, 35, 0.85);
+    --card-border: rgba(234, 179, 8, 0.45);
+    --accent-color: #facc15;
+    --glow: 0 0 35px rgba(250, 204, 21, 0.35);
+    --input-bg: #1c1505;
+    --btn-gen: linear-gradient(135deg, #ca8a04, #facc15);
+}
+
+body.theme-tunnel {
+    --bg-color: #01040f;
+    --card-bg: rgba(6, 16, 38, 0.85);
+    --card-border: rgba(0, 255, 255, 0.45);
+    --accent-color: #00ffff;
+    --glow: 0 0 35px rgba(0, 255, 255, 0.35);
+    --input-bg: #031424;
+    --btn-gen: linear-gradient(135deg, #0099ff, #00ffff);
+}
+
+body.theme-nova {
+    --bg-color: #0d010b;
+    --card-bg: rgba(30, 6, 25, 0.85);
+    --card-border: rgba(236, 72, 153, 0.45);
+    --accent-color: #f472b6;
+    --glow: 0 0 35px rgba(244, 114, 182, 0.35);
+    --input-bg: #21041b;
+    --btn-gen: linear-gradient(135deg, #db2777, #f472b6);
+}
+
+body.theme-aurora {
+    --bg-color: #010d0a;
+    --card-bg: rgba(4, 28, 22, 0.85);
+    --card-border: rgba(52, 211, 153, 0.45);
+    --accent-color: #34d399;
+    --glow: 0 0 35px rgba(52, 211, 153, 0.35);
+    --input-bg: #032119;
+    --btn-gen: linear-gradient(135deg, #059669, #34d399);
+}
+
+body{
+    margin:0;
+    padding:0;
+    font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: var(--bg-color);
+    overflow: hidden;
+    color: white;
+    transition: background 0.5s ease;
+}
+
+/* Top Theme Selector Bar */
+.theme-switch-bar {
+    position: fixed;
+    top: 18px;
+    right: 20px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    padding: 5px 8px;
+    flex-wrap: wrap;
+}
+
+.theme-pill {
+    background: transparent;
+    border: none;
+    color: #cbd5e1;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 11px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.25s;
+    white-space: nowrap;
+}
+
+.theme-pill:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.theme-pill.active {
+    background: var(--btn-gen);
+    color: white;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Set Theme / Save Button */
+.set-theme-btn {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.25s;
+    white-space: nowrap;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    margin-left: 4px;
+}
+
+.set-theme-btn:hover {
+    transform: scale(1.05);
+    filter: brightness(1.15);
+}
+
+#raysCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.container{
+    position: relative;
+    z-index: 10;
+    width: 360px;
+    background: var(--card-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 2px solid var(--card-border);
+    border-radius: 24px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: var(--glow);
+    transition: all 0.4s ease;
+}
+
+h1{
+    margin-bottom: 20px;
+    color: var(--accent-color);
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    text-shadow: 0 0 12px var(--card-border);
+}
+
+.input-box{
+    position:relative;
+}
+
+input{
+    width: 100%;
+    padding: 14px;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    font-size: 17px;
+    outline: none;
+    background: var(--input-bg);
+    color: white;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    text-align: center;
+    transition: 0.3s;
+}
+
+input:focus {
+    box-shadow: 0 0 14px var(--card-border);
+}
+
+.eye{
+    position:absolute;
+    right: 14px;
+    top: 14px;
+    cursor:pointer;
+    opacity: 0.8;
+}
+
+button.action-btn{
+    padding: 11px 15px;
+    border: none;
+    border-radius: 10px;
+    margin: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    transition: 0.25s;
+    color: white;
+}
+
+button.action-btn:hover{
+    transform: translateY(-2px);
+    filter: brightness(1.15);
+}
+
+.generate{
+    background: var(--btn-gen);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.encrypt{
+    background: linear-gradient(135deg, #eab308, #ca8a04);
+    color: #111;
+}
+
+.decrypt{
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.copy{
+    background: linear-gradient(135deg, #ef4444, #f43f5e);
+}
+
+.info{
+    margin-top: 16px;
+    font-size: 13px;
+    color: #cbd5e1;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px;
+    border-radius: 8px;
+}
+
+/* Left Down Side Stylish Credit */
+.styled-credit {
+    position: fixed;
+    bottom: 18px;
+    left: 22px;
+    z-index: 100;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    color: #f8fafc;
+}
+
+.styled-credit .name {
+    background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+}
+
+.styled-credit .dot {
+    width: 6px;
+    height: 6px;
+    background: #38bdf8;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #38bdf8;
+    animation: pulseDot 1.8s infinite;
+}
+
+@keyframes pulseDot {
+    0%, 100% { opacity: 0.4; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.3); }
+}
+
+@media(max-width:600px){
+    .container{ width: 90%; }
+    button.action-btn{ width: 46%; }
+    .theme-switch-bar { 
+        position: static; 
+        margin-bottom: 15px; 
+        justify-content: center; 
+        max-width: 95vw; 
+    }
+    body {
+        padding-top: 15px;
+        flex-direction: column;
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+    }
+    .styled-credit { bottom: 10px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+}
+</style>
+</head>
+
+<body class="theme-godrays">
+
+<!-- Light Beams & Rays Canvas -->
+<canvas id="raysCanvas"></canvas>
+
+<!-- Themes Bar with Set Theme Button -->
+<div class="theme-switch-bar">
+    <button class="theme-pill active" id="btn-godrays" onclick="switchTheme('godrays')">☀️ Golden Rays</button>
+    <button class="theme-pill" id="btn-tunnel" onclick="switchTheme('tunnel')">⚡ Light Speed Tunnel</button>
+    <button class="theme-pill" id="btn-nova" onclick="switchTheme('nova')">💥 Center Pulsing Nova</button>
+    <button class="theme-pill" id="btn-aurora" onclick="switchTheme('aurora')">🌌 Aurora Light Beams</button>
+    <button class="set-theme-btn" onclick="saveCurrentThemeAsDefault()" title="Is theme ko default save karein">💾 Set Theme</button>
+</div>
+
+<div class="container">
+    <h1>Simple Password Maker</h1>
+
+    <div class="input-box">
+        <input type="password" id="password" placeholder="Password yahan dikhega"[cite: 1, 4, 5, 6]>
+        <span class="eye" onclick="togglePassword()">👁️</span>
+    </div>
+
+    <button class="action-btn generate" onclick="generatePassword()">Generate</button>
+    <button class="action-btn encrypt" onclick="encryptPassword()">Encrypt</button>
+    <button class="action-btn decrypt" onclick="decryptPassword()">Decrypt</button>
+    <button class="action-btn copy" onclick="copyPassword()">Copy</button>
+
+    <div class="info">
+        Example: Gwalior@12345
+    </div>
+</div>
+
+<!-- Left Down Side Credit -->
+<div class="styled-credit">
+    <span class="dot"></span>
+    <span>Crafted by <span class="name">Deepak</span></span>
+</div>
+
+<script>
+const canvas = document.getElementById('raysCanvas');
+const ctx = canvas.getContext('2d');
+let animId = null;
+let currentTheme = 'godrays';
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// Page load hone par saved theme check karega
+window.onload = function() {
+    const saved = localStorage.getItem('deepak_final_saved_theme') || 'godrays';
+    switchTheme(saved);
+};
+
+function switchTheme(theme) {
+    currentTheme = theme;
+    document.body.className = `theme-${theme}`;
+    document.querySelectorAll('.theme-pill').forEach(b => b.classList.remove('active'));
+    const btn = document.getElementById(`btn-${theme}`);
+    if (btn) btn.classList.add('active');
+
+    if (animId) cancelAnimationFrame(animId);
+
+    if (theme === 'godrays') initGodRays();
+    else if (theme === 'tunnel') initTunnel();
+    else if (theme === 'nova') initNova();
+    else if (theme === 'aurora') initAurora();
+}
+
+// "Set Theme" button ka function
+function saveCurrentThemeAsDefault() {
+    localStorage.setItem('deepak_final_saved_theme', currentTheme);
+    alert(`🎉 Theme "${currentTheme.toUpperCase()}" successfully set ho gayi!\nAb page refresh ya open karne par yahi theme hamesha load hogi.`);
+}
+
+// ----------------- 1. GOD RAYS (ROTATING VOLUMETRIC LIGHT BEAMS) -----------------
+let rayAngle = 0;
+function initGodRays() {
+    rayAngle = 0;
+    renderGodRays();
+}
+function renderGodRays() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const rayCount = 18;
+    const maxRadius = Math.hypot(canvas.width, canvas.height);
+
+    rayAngle += 0.003;
+
+    let coreGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, 320);
+    coreGrad.addColorStop(0, 'rgba(250, 204, 21, 0.45)');
+    coreGrad.addColorStop(0.5, 'rgba(234, 179, 8, 0.15)');
+    coreGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = coreGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 320, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    for (let i = 0; i < rayCount; i++) {
+        let a = rayAngle + (i * Math.PI * 2) / rayCount;
+        let width = 0.12;
+
+        let grad = ctx.createRadialGradient(0, 0, 50, 0, 0, maxRadius);
+        grad.addColorStop(0, 'rgba(254, 240, 138, 0.35)');
+        grad.addColorStop(0.4, 'rgba(234, 179, 8, 0.18)');
+        grad.addColorStop(1, 'transparent');
+
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, maxRadius, a - width, a + width);
+        ctx.closePath();
+        ctx.fill();
+    }
+    ctx.restore();
+    animId = requestAnimationFrame(renderGodRays);
+}
+
+// ----------------- 2. LIGHT SPEED TUNNEL RAYS -----------------
+let tunnelRays = [];
+function initTunnel() {
+    tunnelRays = [];
+    for (let i = 0; i < 90; i++) {
+        tunnelRays.push({
+            angle: Math.random() * Math.PI * 2,
+            dist: Math.random() * (canvas.width * 0.5),
+            len: Math.random() * 80 + 40,
+            speed: Math.random() * 8 + 6,
+            width: Math.random() * 2.5 + 1.2
+        });
+    }
+    renderTunnel();
+}
+function renderTunnel() {
+    ctx.fillStyle = 'rgba(1, 4, 15, 0.25)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    for (let r of tunnelRays) {
+        r.dist += r.speed;
+        r.speed += 0.25;
+
+        if (r.dist > Math.max(canvas.width, canvas.height) * 0.7) {
+            r.dist = Math.random() * 40;
+            r.speed = Math.random() * 6 + 4;
+            r.angle = Math.random() * Math.PI * 2;
+        }
+
+        let x1 = cx + Math.cos(r.angle) * r.dist;
+        let y1 = cy + Math.sin(r.angle) * r.dist;
+        let x2 = cx + Math.cos(r.angle) * (r.dist + r.len);
+        let y2 = cy + Math.sin(r.angle) * (r.dist + r.len);
+
+        let alpha = Math.min(1, r.dist / 200);
+
+        ctx.save();
+        ctx.strokeStyle = `rgba(0, 255, 255, ${alpha})`;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = '#00ffff';
+        ctx.lineWidth = r.width;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+        ctx.restore();
+    }
+    animId = requestAnimationFrame(renderTunnel);
+}
+
+// ----------------- 3. CENTER PULSING NOVA RINGS & LIGHT -----------------
+let novaRings = [];
+let novaSparks = [];
+function initNova() {
+    novaRings = [
+        { r: 0, alpha: 1, speed: 2.2 },
+        { r: 120, alpha: 0.6, speed: 2.2 },
+        { r: 240, alpha: 0.3, speed: 2.2 }
+    ];
+    novaSparks = [];
+    for (let i = 0; i < 70; i++) {
+        novaSparks.push({
+            angle: Math.random() * Math.PI * 2,
+            dist: Math.random() * 150 + 20,
+            speed: Math.random() * 3 + 1.5,
+            size: Math.random() * 3 + 1
+        });
+    }
+    renderNova();
+}
+function renderNova() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    let flare = ctx.createRadialGradient(cx, cy, 0, cx, cy, 260);
+    flare.addColorStop(0, 'rgba(244, 114, 182, 0.45)');
+    flare.addColorStop(0.5, 'rgba(219, 39, 119, 0.15)');
+    flare.addColorStop(1, 'transparent');
+    ctx.fillStyle = flare;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 260, 0, Math.PI * 2);
+    ctx.fill();
+
+    for (let ring of novaRings) {
+        ring.r += ring.speed;
+        ring.alpha = Math.max(0, 1 - (ring.r / (canvas.width * 0.6)));
+
+        if (ring.alpha <= 0) {
+            ring.r = 20;
+            ring.alpha = 1;
+        }
+
+        ctx.save();
+        ctx.strokeStyle = `rgba(244, 114, 182, ${ring.alpha * 0.7})`;
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = '#ec4899';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(cx, cy, ring.r, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    for (let s of novaSparks) {
+        s.dist += s.speed;
+        if (s.dist > canvas.width * 0.5) s.dist = 30;
+
+        let px = cx + Math.cos(s.angle) * s.dist;
+        let py = cy + Math.sin(s.angle) * s.dist;
+        let a = Math.max(0, 1 - s.dist / (canvas.width * 0.5));
+
+        ctx.save();
+        ctx.fillStyle = `rgba(253, 242, 248, ${a})`;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#f472b6';
+        ctx.beginPath();
+        ctx.arc(px, py, s.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    animId = requestAnimationFrame(renderNova);
+}
+
+// ----------------- 4. AURORA VERTICAL LIGHT BEAMS -----------------
+let auroraT = 0;
+function initAurora() {
+    auroraT = 0;
+    renderAurora();
+}
+function renderAurora() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    auroraT += 0.02;
+
+    const beamCount = 14;
+    const spacing = canvas.width / (beamCount - 1);
+
+    for (let i = 0; i < beamCount; i++) {
+        let x = i * spacing + Math.sin(auroraT + i * 0.5) * 35;
+        let width = Math.sin(auroraT * 0.8 + i) * 30 + 60;
+
+        let grad = ctx.createLinearGradient(x, canvas.height, x, 0);
+        grad.addColorStop(0, 'rgba(5, 150, 105, 0.45)');
+        grad.addColorStop(0.4, 'rgba(52, 211, 153, 0.25)');
+        grad.addColorStop(0.8, 'rgba(110, 231, 183, 0.1)');
+        grad.addColorStop(1, 'transparent');
+
+        ctx.save();
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(x - width / 2, canvas.height);
+        ctx.lineTo(x + width / 2, canvas.height);
+        ctx.lineTo(x + width * 0.8, 0);
+        ctx.lineTo(x - width * 0.8, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    }
+    animId = requestAnimationFrame(renderAurora);
+}
+
+// ----------------- APP LOGIC -----------------
+function generatePassword(){
+    const words = [
+        "Gwalior", "India", "Sharma", "Tiger",
+        "Royal", "Bhopal", "Future", "Coding"
+    ];
+    const specialChars = "@#";
+    const randomWord = words[Math.floor(Math.random() * words.length)];
+    const randomSpecial = specialChars[Math.floor(Math.random() * specialChars.length)];
+    let numbers = "";
+    for(let i = 0; i < 5; i++){
+        numbers += Math.floor(Math.random() * 10);
+    }
+    document.getElementById("password").value = randomWord + randomSpecial + numbers;
+}
+
+function encryptPassword(){
+    let text = document.getElementById("password").value;
+    if(text==""){ alert("Password enter karo!"); return; }
+    document.getElementById("password").value = btoa(text);
+}
+
+function decryptPassword(){
+    let text = document.getElementById("password").value;
+    try{ document.getElementById("password").value = atob(text); }
+    catch{ alert("Invalid encrypted password!"); }
+}
+
+function copyPassword(){
+    let input = document.getElementById("password");
+    input.select();
+    navigator.clipboard.writeText(input.value);
+    alert("Password copied!");
+}
+
+function togglePassword(){
+    let input = document.getElementById("password");
+    input.type = input.type === "password" ? "text" : "password";
+}
+</script>
+</body>
+</html>
