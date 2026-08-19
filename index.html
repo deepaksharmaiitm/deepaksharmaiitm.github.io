@@ -259,24 +259,27 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Badi Black Luxury Analog Clock Widget */
+    /* Clock Widget Updated: Stacked Vertical for Top Analog & Bottom Digital */
     .clock-widget {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 20px;
+      justify-content: center;
+      gap: 12px;
       background: rgba(5, 26, 22, 0.85);
-      padding: 12px 24px 12px 14px;
-      border-radius: 75px;
+      padding: 16px 20px;
+      border-radius: 28px;
       border: 1.5px solid var(--card-border);
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.75), inset 0 0 15px var(--glow-1);
       backdrop-filter: blur(16px);
       transition: all 0.5s ease;
+      margin-left: auto;
     }
 
     .luxury-black-clock {
       position: relative;
-      width: 130px;
-      height: 130px;
+      width: 125px;
+      height: 125px;
       border-radius: 50%;
       background: linear-gradient(145deg, #092c22, #041410);
       padding: 6px;
@@ -344,7 +347,7 @@
 
     .c-hour {
       width: 4px;
-      height: 32px;
+      height: 30px;
       background: linear-gradient(to top, #ffffff, #f1f5f9);
       z-index: 10;
       clip-path: polygon(50% 0%, 100% 20%, 80% 100%, 20% 100%, 0% 20%);
@@ -354,7 +357,7 @@
 
     .c-min {
       width: 3px;
-      height: 46px;
+      height: 44px;
       background: linear-gradient(to top, #ffffff, #f8fafc);
       z-index: 12;
       clip-path: polygon(50% 0%, 100% 15%, 85% 100%, 15% 100%, 0% 15%);
@@ -364,7 +367,7 @@
 
     .c-sec {
       width: 1.5px;
-      height: 52px;
+      height: 50px;
       background: linear-gradient(to top, var(--primary), var(--accent));
       z-index: 15;
       box-shadow: 0 0 10px var(--primary);
@@ -410,20 +413,22 @@
     .digital-time-box {
       display: flex;
       flex-direction: column;
+      align-items: center;
+      text-align: center;
     }
     .digital-time {
       font-family: 'Orbitron', monospace;
       font-weight: 800;
-      font-size: 22px;
+      font-size: 19px;
       color: #ffffff;
       letter-spacing: 1.5px;
       text-shadow: 0 0 15px var(--primary);
     }
     .digital-date {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
       letter-spacing: 0.5px;
-      margin-top: 4px;
+      margin-top: 3px;
       font-weight: 600;
     }
 
@@ -711,7 +716,7 @@
         </div>
       </div>
 
-      <!-- Badi Luxury Black Analog Clock Widget -->
+      <!-- Right Stacked Clock Widget (Analog Top, Digital Bottom) -->
       <div class="clock-widget">
         <div class="luxury-black-clock">
           <div class="clock-dial">
@@ -720,7 +725,7 @@
             <span class="dial-num n6">6</span>
             <span class="dial-num n9">9</span>
 
-            <!-- Solid Pure White Sword Hands -->
+            <!-- Solid Hands -->
             <div class="c-hand c-hour" id="luxuryHr"></div>
             <div class="c-hand c-min" id="luxuryMin"></div>
             <div class="c-hand c-sec" id="luxurySec"></div>
@@ -737,7 +742,7 @@
       </div>
     </div>
 
-    <!-- Jumping Navigation Bar -->
+    <!-- Navigation Bar -->
     <div class="nav-bar">
       <a href="https://deepaksharmaiitm.github.io/Test4.html" class="nav-btn">📝 Ret_Generator</a>
       <a href="https://deepaksharmaiitm.github.io/Ultrasavefile.html" class="nav-btn">🧮 Ultra Temp Files</a>
@@ -887,9 +892,7 @@
     let currentAuroraStyle = 'waves';
     let currentAuroraColor = 'green';
 
-    /* =========================================================================
-       --- 1. AURORA CANVAS ENGINE ---
-       ========================================================================= */
+    /* --- 1. AURORA CANVAS ENGINE --- */
     const canvas = document.getElementById('auroraCanvas');
     const ctx = canvas.getContext('2d');
     let width, height;
@@ -1124,9 +1127,7 @@
     resizeCanvas();
     renderAuroraEngine();
 
-    /* =========================================================================
-       --- 2. ANALOG & DIGITAL CLOCK ENGINE (ACCURATE & SMOOTH) ---
-       ========================================================================= */
+    /* --- 2. ANALOG & DIGITAL CLOCK ENGINE --- */
     const luxuryHr = document.getElementById('luxuryHr');
     const luxuryMin = document.getElementById('luxuryMin');
     const luxurySec = document.getElementById('luxurySec');
@@ -1143,12 +1144,10 @@
       const m = now.getMinutes() + s / 60;
       const h = (now.getHours() % 12) + m / 60;
 
-      // Center-aligned smooth sweep rotation
       luxurySec.style.transform = `translateX(-50%) rotate(${s * 6}deg)`;
       luxuryMin.style.transform = `translateX(-50%) rotate(${m * 6}deg)`;
       luxuryHr.style.transform = `translateX(-50%) rotate(${h * 30}deg)`;
 
-      // Efficient Digital Display (Only updates on minute/day change)
       const currentMinStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
       if (currentMinStr !== lastMinStr) {
         digiTime.innerText = currentMinStr;
