@@ -3,32 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ultra Reminders Aurora Edition</title>
+  <title>Ultra Reminders Space Edition</title>
   
-  <!-- Stylish Fonts -->
+  <!-- Stylish Signature Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Great+Vibes&family=Orbitron:wght@500;800&family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Orbitron:wght@500;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg-base: #01120e;
-      --card-bg: rgba(5, 34, 28, 0.78);
-      --card-inner: rgba(255, 255, 255, 0.06);
-      --card-border: rgba(29, 209, 161, 0.38);
-      --primary: #1dd1a1;
+      --card-bg: rgba(255, 255, 255, 0.12);
+      --card-inner: rgba(255, 255, 255, 0.18);
+      --card-border: rgba(255, 255, 255, 0.25);
+      --primary: #38ef7d;
       --accent: #00d2d3;
       --danger: #ff5252;
       --success: #1dd1a1;
       --text: #ffffff;
-      --text-muted: #a8e6cf;
-      --glow-1: rgba(29, 209, 161, 0.25);
-      --glow-2: rgba(16, 172, 132, 0.18);
-      --title-gradient: linear-gradient(45deg, #1dd1a1, #00d2d3, #54a0ff, #ffffff);
-      --btn-grad: linear-gradient(45deg, #10ac84, #1dd1a1);
-      --btn-text: #01120e;
+      --text-muted: #c8d6e5;
     }
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -36,7 +29,7 @@
     }
     body {
       font-family: 'Outfit', 'Segoe UI', Roboto, Helvetica, sans-serif;
-      background: var(--bg-base);
+      background: #050510;
       color: var(--text);
       min-height: 100vh;
       display: flex;
@@ -44,11 +37,10 @@
       padding: 20px;
       overflow-x: hidden;
       position: relative;
-      transition: background 0.6s ease;
     }
 
-    /* --- Dynamic Aurora Background Canvas --- */
-    #auroraCanvas {
+    /* Background Canvas for Moving Space Stars */
+    #spaceCanvas {
       position: fixed;
       top: 0;
       left: 0;
@@ -58,45 +50,9 @@
       pointer-events: none;
     }
 
-    .ambient-aura {
-      position: fixed;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 0;
-      filter: blur(110px);
-      transition: background 0.6s ease;
-    }
-
-    .aura-1 {
-      top: 5%;
-      right: 5%;
-      width: 650px;
-      height: 650px;
-      background: radial-gradient(circle, var(--glow-1) 0%, var(--glow-2) 45%, rgba(0,0,0,0) 75%);
-      animation: auraPulse 16s infinite alternate ease-in-out;
-    }
-
-    .aura-2 {
-      bottom: 2%;
-      left: 2%;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, var(--glow-2) 0%, var(--glow-1) 50%, rgba(0,0,0,0) 80%);
-      animation: auraPulse2 18s infinite alternate ease-in-out;
-    }
-
-    @keyframes auraPulse {
-      0% { transform: scale(0.9) translate(0, 0); opacity: 0.6; }
-      100% { transform: scale(1.15) translate(-30px, 30px); opacity: 0.95; }
-    }
-    @keyframes auraPulse2 {
-      0% { transform: scale(1.1) translate(0, 0); opacity: 0.5; }
-      100% { transform: scale(0.9) translate(30px, -20px); opacity: 0.9; }
-    }
-
     .dashboard {
       width: 100%;
-      max-width: 1080px;
+      max-width: 1050px;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -105,17 +61,15 @@
       padding-bottom: 70px;
     }
 
-    /* Glassmorphic Container */
+    /* Glassmorphic Container Style */
     .glass-card {
       background: var(--card-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1.5px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
       border-radius: 20px;
       padding: 20px 25px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.75), 0 0 25px var(--glow-1);
-      position: relative;
-      transition: all 0.5s ease;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
     }
 
     .header-card {
@@ -123,17 +77,15 @@
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 20px;
+      gap: 15px;
     }
     .title-group h1 {
-      font-family: 'Cinzel', serif;
+      font-family: 'Orbitron', sans-serif;
       font-size: 26px;
-      font-weight: 900;
-      letter-spacing: 1.2px;
-      background: var(--title-gradient);
+      font-weight: 800;
+      background: linear-gradient(45deg, #00d2d3, #54a0ff, #5f27cd);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 20px rgba(255, 255, 255, 0.35);
     }
     .title-group p {
       margin-top: 4px;
@@ -141,293 +93,46 @@
       color: var(--text-muted);
     }
 
-    /* Aurora Pattern & Color Control Bar */
-    .aurora-control-bar {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      background: rgba(0, 0, 0, 0.65);
-      padding: 8px 16px;
-      border-radius: 30px;
-      border: 1px solid var(--card-border);
-      margin-top: 10px;
-      width: fit-content;
-    }
-    .control-section {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .control-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-weight: 700;
-      letter-spacing: 0.5px;
-    }
-
-    .style-btn {
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-muted);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.25s ease;
-    }
-    .style-btn:hover {
-      border-color: var(--primary);
-      color: #fff;
-      transform: translateY(-2px);
-    }
-    .style-btn.active {
-      background: var(--btn-grad);
-      color: var(--btn-text);
-      border-color: transparent;
-      box-shadow: 0 0 10px var(--glow-1);
-    }
-
-    /* Color Palette Buttons */
-    .color-pill {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid rgba(255, 255, 255, 0.4);
-      transition: all 0.2s ease;
-    }
-    .color-pill:hover {
-      transform: scale(1.3);
-      border-color: #fff;
-    }
-    .color-pill.active {
-      transform: scale(1.25);
-      border-color: #fff;
-      box-shadow: 0 0 10px #fff;
-    }
-    .cp-green { background: linear-gradient(135deg, #1dd1a1, #10ac84); }
-    .cp-cyan  { background: linear-gradient(135deg, #00d2d3, #54a0ff); }
-    .cp-purple{ background: linear-gradient(135deg, #c084fc, #9333ea); }
-    .cp-ruby  { background: linear-gradient(135deg, #fb7185, #e11d48); }
-    .cp-gold  { background: linear-gradient(135deg, #ffd700, #f59e0b); }
-
-    .set-theme-btn {
-      padding: 5px 14px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 800;
-      border: 1px solid #ffd700;
-      background: linear-gradient(45deg, #ffd700, #ff9f43);
-      color: #0b0802;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.25s ease;
-      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-      margin-left: 4px;
-    }
-    .set-theme-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-    }
-
-    /* Toast Notification */
-    .toast-msg {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: rgba(1, 18, 14, 0.95);
-      border: 1.5px solid var(--primary);
-      color: #ffffff;
-      padding: 10px 20px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 700;
-      z-index: 10000;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px var(--glow-1);
-      display: none;
-      animation: fadeIn 0.3s ease;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Badi Black Luxury Analog Clock Widget */
+    /* Clock Styling */
     .clock-widget {
       display: flex;
       align-items: center;
-      gap: 20px;
-      background: rgba(5, 26, 22, 0.85);
-      padding: 12px 24px 12px 14px;
-      border-radius: 75px;
-      border: 1.5px solid var(--card-border);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.75), inset 0 0 15px var(--glow-1);
-      backdrop-filter: blur(16px);
-      transition: all 0.5s ease;
+      gap: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 8px 18px;
+      border-radius: 50px;
+      border: 1px solid rgba(255,255,255,0.15);
     }
-
-    .luxury-black-clock {
-      position: relative;
-      width: 130px;
-      height: 130px;
+    .analog-clock {
+      width: 55px;
+      height: 55px;
+      border: 2px solid #54a0ff;
       border-radius: 50%;
-      background: linear-gradient(145deg, #092c22, #041410);
-      padding: 6px;
-      box-shadow: 
-        0 10px 25px rgba(0, 0, 0, 0.85),
-        0 0 20px var(--glow-1),
-        inset 0 2px 4px rgba(255, 255, 255, 0.3),
-        inset 0 -3px 6px rgba(0, 0, 0, 0.9);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-shrink: 0;
-      border: 1.5px solid var(--card-border);
-    }
-
-    .clock-dial {
       position: relative;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: radial-gradient(circle at 50% 50%, #061e17 0%, #020c09 70%, #000504 100%);
-      box-shadow: 
-        inset 0 8px 18px rgba(0, 0, 0, 0.9),
-        inset 0 0 10px var(--glow-1);
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255,255,255,0.05);
     }
-
-    .clock-dial::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 50%;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 100%);
-      border-top-left-radius: 65px;
-      border-top-right-radius: 65px;
-      pointer-events: none;
-      z-index: 5;
-    }
-
-    .dial-num {
-      position: absolute;
-      font-family: 'Cinzel', serif;
-      font-size: 11px;
-      font-weight: 900;
-      color: #ffffff;
-      pointer-events: none;
-      line-height: 1;
-      text-shadow: 0 0 6px rgba(255, 255, 255, 0.7);
-    }
-    .dial-num.n12 { top: 6px; left: 50%; transform: translateX(-50%); }
-    .dial-num.n3  { right: 7px; top: 50%; transform: translateY(-50%); }
-    .dial-num.n6  { bottom: 6px; left: 50%; transform: translateX(-50%); }
-    .dial-num.n9  { left: 7px; top: 50%; transform: translateY(-50%); }
-
-    .c-hand {
+    .hand {
       position: absolute;
       bottom: 50%;
       left: 50%;
       transform-origin: bottom center;
-      border-radius: 3px;
+      background: #fff;
+      border-radius: 4px;
     }
-
-    .c-hour {
-      width: 4px;
-      height: 32px;
-      background: linear-gradient(to top, #ffffff, #f1f5f9);
-      z-index: 10;
-      clip-path: polygon(50% 0%, 100% 20%, 80% 100%, 20% 100%, 0% 20%);
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.85);
-      filter: drop-shadow(0 3px 5px rgba(0,0,0,0.85));
-    }
-
-    .c-min {
-      width: 3px;
-      height: 46px;
-      background: linear-gradient(to top, #ffffff, #f8fafc);
-      z-index: 12;
-      clip-path: polygon(50% 0%, 100% 15%, 85% 100%, 15% 100%, 0% 15%);
-      box-shadow: 0 0 12px rgba(255, 255, 255, 0.85);
-      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.9));
-    }
-
-    .c-sec {
-      width: 1.5px;
-      height: 52px;
-      background: linear-gradient(to top, var(--primary), var(--accent));
-      z-index: 15;
-      box-shadow: 0 0 10px var(--primary);
-    }
-    .c-sec::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 2.5px;
-      height: 12px;
-      background: var(--primary);
-      border-radius: 0 0 2px 2px;
-    }
-
-    .c-center-cap {
-      position: absolute;
-      width: 9px;
-      height: 9px;
-      background: radial-gradient(circle at 35% 35%, #ffffff 0%, var(--primary) 60%, #032017 100%);
-      border-radius: 50%;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 20;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.8);
-      border: 1.5px solid #ffffff;
-    }
-    .c-center-dot {
-      position: absolute;
-      width: 3.5px;
-      height: 3.5px;
-      background: var(--primary);
-      border-radius: 50%;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 21;
-      box-shadow: 0 0 5px var(--primary);
-    }
-
-    .digital-time-box {
-      display: flex;
-      flex-direction: column;
-    }
+    .hour-hand { width: 3px; height: 16px; }
+    .min-hand { width: 2px; height: 22px; }
+    .sec-hand { width: 1.5px; height: 25px; background: #ff4757; }
     .digital-time {
-      font-family: 'Orbitron', monospace;
-      font-weight: 800;
-      font-size: 22px;
-      color: #ffffff;
-      letter-spacing: 1.5px;
-      text-shadow: 0 0 15px var(--primary);
+      font-weight: 700;
+      font-size: 16px;
+      color: #fff;
     }
     .digital-date {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
-      letter-spacing: 0.5px;
-      margin-top: 4px;
-      font-weight: 600;
     }
 
-    /* Navigation Bar */
+    /* Jump Navigation Bar */
     .nav-bar {
       display: flex;
       gap: 10px;
@@ -437,7 +142,7 @@
     .nav-btn {
       padding: 8px 16px;
       background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--card-border);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 30px;
       color: #fff;
       text-decoration: none;
@@ -450,13 +155,12 @@
       transition: all 0.3s ease;
     }
     .nav-btn:hover {
-      background: var(--btn-grad);
+      background: linear-gradient(45deg, #0984e3, #6c5ce7);
       transform: translateY(-2px);
-      box-shadow: 0 5px 15px var(--glow-1);
-      color: var(--btn-text);
+      box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
     }
 
-    /* Action Bar */
+    /* Action and Filter Bar */
     .action-bar {
       display: flex;
       flex-wrap: wrap;
@@ -468,9 +172,9 @@
       flex: 1;
       min-width: 220px;
       padding: 10px 16px;
-      border: 1px solid var(--card-border);
+      border: 1px solid rgba(255,255,255,0.25);
       border-radius: 12px;
-      background: rgba(0, 0, 0, 0.45);
+      background: rgba(0, 0, 0, 0.35);
       color: #fff;
       font-size: 14px;
       outline: none;
@@ -489,12 +193,7 @@
       gap: 6px;
       transition: all 0.2s;
     }
-    .btn-primary { 
-      background: var(--btn-grad); 
-      color: var(--btn-text);
-      font-weight: 700;
-      box-shadow: 0 4px 15px var(--glow-1);
-    }
+    .btn-primary { background: linear-gradient(45deg, #0984e3, #00cec9); color: white; }
     .btn-neutral { background: rgba(255,255,255,0.15); color: white; }
     .btn:hover { transform: translateY(-2px); opacity: 0.9; }
 
@@ -507,7 +206,7 @@
     .tab-btn {
       padding: 7px 16px;
       border-radius: 20px;
-      border: 1px solid var(--card-border);
+      border: 1px solid rgba(255,255,255,0.2);
       background: rgba(255,255,255,0.06);
       cursor: pointer;
       font-weight: 600;
@@ -516,10 +215,9 @@
       transition: all 0.2s;
     }
     .tab-btn.active {
-      background: var(--btn-grad);
-      color: var(--btn-text);
-      border-color: var(--primary);
-      font-weight: 700;
+      background: #54a0ff;
+      color: #fff;
+      border-color: #54a0ff;
     }
 
     /* Main Grid */
@@ -536,9 +234,6 @@
       font-size: 17px;
       font-weight: 700;
       margin-bottom: 15px;
-      font-family: 'Cinzel', serif;
-      letter-spacing: 0.5px;
-      color: var(--primary);
     }
 
     /* Reminder Items */
@@ -550,13 +245,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-left: 4px solid var(--primary);
+      border-left: 4px solid #54a0ff;
       backdrop-filter: blur(5px);
       transition: transform 0.2s;
       flex-wrap: wrap;
       gap: 10px;
     }
-    .reminder-item:hover { transform: scale(1.01); border-left-color: var(--primary); }
+    .reminder-item:hover { transform: scale(1.01); }
     .reminder-item.completed {
       opacity: 0.5;
       border-left-color: var(--success);
@@ -568,6 +263,7 @@
       margin-top: 4px;
     }
 
+    /* Action Buttons in Item */
     .btn-group-mini {
       display: flex;
       gap: 6px;
@@ -595,13 +291,13 @@
       gap: 10px;
     }
     .stat-box {
-      background: rgba(0, 0, 0, 0.35);
-      border: 1px solid var(--card-border);
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255,255,255,0.1);
       padding: 15px;
       border-radius: 14px;
       text-align: center;
     }
-    .stat-number { font-size: 24px; font-weight: 800; color: var(--primary); font-family: 'Cinzel', serif; }
+    .stat-number { font-size: 24px; font-weight: 800; color: #fff; }
     .stat-label { font-size: 12px; color: var(--text-muted); }
 
     /* Modals */
@@ -609,47 +305,47 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(10px);
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
       align-items: center;
       justify-content: center;
       z-index: 999;
     }
     .modal.open { display: flex; }
     .modal-content {
-      background: #041812;
-      border: 1.5px solid var(--card-border);
+      background: #141724;
+      border: 1px solid rgba(255,255,255,0.2);
       color: white;
       padding: 25px;
       border-radius: 18px;
       width: 90%;
       max-width: 440px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.85), 0 0 25px var(--glow-1);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.7);
     }
     .modal input, .modal textarea {
       width: 100%;
       padding: 10px;
       margin-top: 4px;
       background: rgba(255,255,255,0.08);
-      border: 1px solid var(--card-border);
+      border: 1px solid rgba(255,255,255,0.2);
       border-radius: 8px;
       color: white;
       outline: none;
       font-family: inherit;
     }
 
-    /* Signature Badge */
+    /* Down-Right Signature Badge */
     .signature-badge {
       position: fixed;
       bottom: 15px;
       right: 20px;
       z-index: 99;
-      background: rgba(5, 26, 20, 0.9);
+      background: rgba(15, 17, 26, 0.8);
       backdrop-filter: blur(10px);
-      border: 1px solid var(--card-border);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       padding: 7px 18px;
       border-radius: 30px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.7), 0 0 15px var(--glow-1);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
       display: flex;
       align-items: center;
       gap: 8px;
@@ -657,87 +353,46 @@
     }
     .sig-text {
       font-size: 11px;
-      color: var(--text-muted);
+      color: #a4b0be;
       letter-spacing: 0.5px;
     }
     .sig-name {
       font-family: 'Great Vibes', cursive;
       font-size: 22px;
-      background: var(--title-gradient);
+      background: linear-gradient(45deg, #00d2d3, #54a0ff, #ff9ff3);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 12px rgba(29, 209, 161, 0.4);
+      text-shadow: 0 0 12px rgba(84, 160, 255, 0.4);
     }
   </style>
 </head>
 <body>
 
-  <!-- Aurora Dynamic Canvas -->
-  <canvas id="auroraCanvas"></canvas>
-  <div class="ambient-aura aura-1"></div>
-  <div class="ambient-aura aura-2"></div>
-
-  <!-- Toast Notification Message -->
-  <div id="toast" class="toast-msg">✨ Aurora Theme Settings Saved!</div>
+  <!-- Moving Starfield Background Canvas -->
+  <canvas id="spaceCanvas"></canvas>
 
   <div class="dashboard">
 
     <!-- Top Header -->
     <div class="glass-card header-card">
       <div class="title-group">
-        <h1>🌊 Ultra Reminders Aurora</h1>
-        <p>Pure Aurora Borealis Lights • Custom Color Palette • Stored Online</p>
-        
-        <!-- Aurora Patterns & Color Changer Bar -->
-        <div class="aurora-control-bar">
-          <div class="control-section">
-            <span class="control-label">Flow:</span>
-            <button class="style-btn active" onclick="setAuroraPattern('waves', this)">🌊 Waves</button>
-            <button class="style-btn" onclick="setAuroraPattern('curtain', this)">🌌 Curtain</button>
-            <button class="style-btn" onclick="setAuroraPattern('vortex', this)">🌀 Vortex</button>
-            <button class="style-btn" onclick="setAuroraPattern('mist', this)">🌿 Mist</button>
-          </div>
-
-          <div class="control-section" style="margin-left: 8px;">
-            <span class="control-label">Color:</span>
-            <div class="color-pill cp-green active" title="Emerald Green" onclick="setAuroraColor('green', this)"></div>
-            <div class="color-pill cp-cyan" title="Cyan / Blue" onclick="setAuroraColor('cyan', this)"></div>
-            <div class="color-pill cp-purple" title="Cosmic Purple" onclick="setAuroraColor('purple', this)"></div>
-            <div class="color-pill cp-ruby" title="Ruby Pink" onclick="setAuroraColor('ruby', this)"></div>
-            <div class="color-pill cp-gold" title="Royal Gold" onclick="setAuroraColor('gold', this)"></div>
-          </div>
-
-          <button class="set-theme-btn" onclick="saveDefaultTheme()">💾 Save Theme</button>
-        </div>
+        <h1>🚀 Ultra Reminders Space</h1>
+        <p>Live Sync • Animated Nebula • Stored Online</p>
       </div>
-
-      <!-- Badi Luxury Black Analog Clock Widget -->
       <div class="clock-widget">
-        <div class="luxury-black-clock">
-          <div class="clock-dial">
-            <span class="dial-num n12">12</span>
-            <span class="dial-num n3">3</span>
-            <span class="dial-num n6">6</span>
-            <span class="dial-num n9">9</span>
-
-            <!-- Solid Pure White Sword Hands -->
-            <div class="c-hand c-hour" id="luxuryHr"></div>
-            <div class="c-hand c-min" id="luxuryMin"></div>
-            <div class="c-hand c-sec" id="luxurySec"></div>
-
-            <div class="c-center-cap"></div>
-            <div class="c-center-dot"></div>
-          </div>
+        <div class="analog-clock">
+          <div class="hand hour-hand" id="hrHand"></div>
+          <div class="hand min-hand" id="minHand"></div>
+          <div class="hand sec-hand" id="secHand"></div>
         </div>
-
-        <div class="digital-time-box">
-          <div class="digital-time" id="digiTime">00:00 AM</div>
+        <div>
+          <div class="digital-time" id="digiTime">00:00:00 AM</div>
           <div class="digital-date" id="digiDate">Loading...</div>
         </div>
       </div>
     </div>
 
-    <!-- Jumping Navigation Bar -->
+    <!-- Jumping Navigation Bar to Other HTML Pages -->
     <div class="nav-bar">
       <a href="https://deepaksharmaiitm.github.io/Test4.html" class="nav-btn">📝 Ret_Generator</a>
       <a href="https://deepaksharmaiitm.github.io/Ultrasavefile.html" class="nav-btn">🧮 Ultra Temp Files</a>
@@ -765,28 +420,30 @@
 
     <!-- Main Content Area -->
     <div class="main-grid">
+      <!-- Reminder Items -->
       <div class="glass-card">
-        <h3 class="card-title">📝 My Reminders</h3>
+        <h3 class="card-title">📝 My Space Reminders</h3>
         <div id="reminderList">Loading reminders from Google Sheet...</div>
       </div>
 
+      <!-- Stats Overview -->
       <div class="glass-card">
-        <h3 class="card-title">📊 Overview</h3>
+        <h3 class="card-title">📊 Space Overview</h3>
         <div class="stats-grid">
           <div class="stat-box">
             <div class="stat-number" id="totalCount">0</div>
             <div class="stat-label">Total</div>
           </div>
           <div class="stat-box">
-            <div class="stat-number" id="pendingCount" style="color:var(--primary);">0</div>
+            <div class="stat-number" id="pendingCount" style="color:#54a0ff;">0</div>
             <div class="stat-label">Pending</div>
           </div>
           <div class="stat-box">
-            <div class="stat-number" id="todayCount" style="color:var(--accent);">0</div>
+            <div class="stat-number" id="todayCount" style="color:#feca57;">0</div>
             <div class="stat-label">Today</div>
           </div>
           <div class="stat-box">
-            <div class="stat-number" id="doneCount" style="color:#54a0ff;">0</div>
+            <div class="stat-number" id="doneCount" style="color:#1dd1a1;">0</div>
             <div class="stat-label">Done</div>
           </div>
         </div>
@@ -804,7 +461,7 @@
   <!-- Add Reminder Modal -->
   <div class="modal" id="addModal">
     <div class="modal-content">
-      <h3 style="margin-bottom:15px; font-family:'Cinzel', serif; color:var(--primary);">➕ Add New Reminder</h3>
+      <h3 style="margin-bottom:15px;">➕ Add New Reminder</h3>
       <form id="reminderForm">
         <div style="margin-bottom:12px;">
           <label style="font-size:12px; color:var(--text-muted);">Reminder Topic:</label>
@@ -833,7 +490,7 @@
   <!-- Edit Reminder Modal -->
   <div class="modal" id="editModal">
     <div class="modal-content">
-      <h3 style="margin-bottom:15px; font-family:'Cinzel', serif; color:var(--primary);">✏️ Edit Reminder</h3>
+      <h3 style="margin-bottom:15px;">✏️ Edit Reminder</h3>
       <form id="editForm">
         <input type="hidden" name="rowIndex" id="editRowIndex">
         <div style="margin-bottom:12px;">
@@ -863,9 +520,9 @@
   <!-- View Task Details Modal -->
   <div class="modal" id="viewModal">
     <div class="modal-content">
-      <h3 style="margin-bottom:15px; font-family:'Cinzel', serif; color:var(--primary);">👁️ Task Details</h3>
-      <div style="background: rgba(255,255,255,0.06); padding: 15px; border-radius: 10px; margin-bottom: 15px; border:1px solid var(--card-border);">
-        <h4 id="viewTaskTitle" style="color: var(--primary); margin-bottom: 8px; font-size: 18px;"></h4>
+      <h3 style="margin-bottom:15px;">👁️ Task Details</h3>
+      <div style="background: rgba(255,255,255,0.06); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+        <h4 id="viewTaskTitle" style="color: #54a0ff; margin-bottom: 8px; font-size: 18px;"></h4>
         <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px;"><strong>📅 Date:</strong> <span id="viewTaskDate"></span></p>
         <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px;"><strong>⏰ Time:</strong> <span id="viewTaskTime"></span></p>
         <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px;"><strong>📊 Status:</strong> <span id="viewTaskStatus"></span></p>
@@ -884,290 +541,77 @@
 
     let reminders = [];
     let currentFilter = 'All';
-    let currentAuroraStyle = 'waves';
-    let currentAuroraColor = 'green';
 
-    /* =========================================================================
-       --- 1. AURORA CANVAS ENGINE ---
-       ========================================================================= */
-    const canvas = document.getElementById('auroraCanvas');
+    /* --- Interactive Moving Space Objects Canvas --- */
+    const canvas = document.getElementById('spaceCanvas');
     const ctx = canvas.getContext('2d');
-    let width, height;
-
-    const colorPalettes = {
-      green: {
-        primary: 'rgba(29, 209, 161, ',
-        secondary: 'rgba(0, 210, 211, ',
-        third: 'rgba(16, 172, 132, ',
-        cssPrimary: '#1dd1a1',
-        cssAccent: '#00d2d3',
-        cssBg: '#01120e',
-        cssCard: 'rgba(5, 34, 28, 0.78)',
-        cssBorder: 'rgba(29, 209, 161, 0.38)',
-        btnGrad: 'linear-gradient(45deg, #10ac84, #1dd1a1)'
-      },
-      cyan: {
-        primary: 'rgba(0, 210, 211, ',
-        secondary: 'rgba(84, 160, 255, ',
-        third: 'rgba(9, 132, 227, ',
-        cssPrimary: '#00d2d3',
-        cssAccent: '#54a0ff',
-        cssBg: '#020d18',
-        cssCard: 'rgba(8, 26, 44, 0.78)',
-        cssBorder: 'rgba(0, 210, 211, 0.38)',
-        btnGrad: 'linear-gradient(45deg, #0984e3, #00cec9)'
-      },
-      purple: {
-        primary: 'rgba(192, 132, 252, ',
-        secondary: 'rgba(244, 114, 182, ',
-        third: 'rgba(147, 51, 234, ',
-        cssPrimary: '#c084fc',
-        cssAccent: '#f472b6',
-        cssBg: '#090318',
-        cssCard: 'rgba(24, 10, 42, 0.78)',
-        cssBorder: 'rgba(192, 132, 252, 0.38)',
-        btnGrad: 'linear-gradient(45deg, #9333ea, #db2777)'
-      },
-      ruby: {
-        primary: 'rgba(251, 113, 133, ',
-        secondary: 'rgba(225, 29, 72, ',
-        third: 'rgba(244, 63, 94, ',
-        cssPrimary: '#fb7185',
-        cssAccent: '#ffd700',
-        cssBg: '#120207',
-        cssCard: 'rgba(36, 8, 18, 0.78)',
-        cssBorder: 'rgba(244, 63, 94, 0.38)',
-        btnGrad: 'linear-gradient(45deg, #e11d48, #be123c)'
-      },
-      gold: {
-        primary: 'rgba(255, 215, 0, ',
-        secondary: 'rgba(245, 158, 11, ',
-        third: 'rgba(212, 175, 55, ',
-        cssPrimary: '#ffd700',
-        cssAccent: '#00d2d3',
-        cssBg: '#080602',
-        cssCard: 'rgba(26, 18, 8, 0.78)',
-        cssBorder: 'rgba(212, 175, 55, 0.38)',
-        btnGrad: 'linear-gradient(45deg, #d4af37, #f59e0b)'
-      }
-    };
+    let stars = [];
 
     function resizeCanvas() {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-      initMistParticles();
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initStars();
     }
-    window.addEventListener('resize', resizeCanvas);
 
-    let auroraTime = 0;
-    let mistParticles = [];
-
-    function initMistParticles() {
-      mistParticles = [];
-      const pal = colorPalettes[currentAuroraColor];
-      for (let i = 0; i < 45; i++) {
-        mistParticles.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          radius: Math.random() * 120 + 80,
-          speedX: (Math.random() - 0.5) * 0.5,
-          speedY: (Math.random() - 0.5) * 0.4,
-          color: i % 2 === 0 ? pal.primary : pal.secondary,
-          opacity: Math.random() * 0.25 + 0.1
+    function initStars() {
+      stars = [];
+      const numStars = 150;
+      for (let i = 0; i < numStars; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          size: Math.random() * 2,
+          speedX: (Math.random() - 0.5) * 0.4,
+          speedY: Math.random() * 0.6 + 0.2,
+          opacity: Math.random() * 0.8 + 0.2
         });
       }
     }
 
-    function renderAuroraEngine() {
-      ctx.clearRect(0, 0, width, height);
-      auroraTime += 0.012;
-      const pal = colorPalettes[currentAuroraColor];
+    function animateSpace() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+      
+      stars.forEach(star => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(180, 210, 255, ${star.opacity})`;
+        ctx.fill();
 
-      if (currentAuroraStyle === 'waves') {
-        for (let layer = 0; layer < 4; layer++) {
-          ctx.beginPath();
-          ctx.moveTo(0, height);
+        star.y += star.speedY;
+        star.x += star.speedX;
 
-          const layerOffset = layer * 0.7;
-          for (let x = 0; x <= width; x += 25) {
-            const y = Math.sin(x * 0.0025 + auroraTime + layerOffset) * 70 +
-                      Math.cos(x * 0.0018 - auroraTime * 0.8) * 45 +
-                      height * (0.32 + layer * 0.16);
-            ctx.lineTo(x, y);
-          }
-          ctx.lineTo(width, height);
-          ctx.closePath();
-
-          const grad = ctx.createLinearGradient(0, height * 0.2, 0, height);
-          if (layer % 2 === 0) {
-            grad.addColorStop(0, pal.primary + '0.20)');
-            grad.addColorStop(0.5, pal.secondary + '0.14)');
-            grad.addColorStop(1, 'rgba(0,0,0,0.02)');
-          } else {
-            grad.addColorStop(0, pal.secondary + '0.16)');
-            grad.addColorStop(0.6, pal.third + '0.10)');
-            grad.addColorStop(1, 'rgba(0,0,0,0.02)');
-          }
-          ctx.fillStyle = grad;
-          ctx.fill();
-        }
-      }
-      else if (currentAuroraStyle === 'curtain') {
-        const columns = 28;
-        const colWidth = width / columns;
-        for (let i = 0; i < columns; i++) {
-          const x = i * colWidth;
-          const curtainHeight = Math.sin(i * 0.35 + auroraTime * 1.5) * 120 + height * 0.75;
-
-          const grad = ctx.createLinearGradient(x, 0, x, curtainHeight);
-          grad.addColorStop(0, 'rgba(0,0,0,0)');
-          grad.addColorStop(0.3, pal.primary + '0.24)');
-          grad.addColorStop(0.7, pal.secondary + '0.18)');
-          grad.addColorStop(1, 'rgba(0,0,0,0)');
-
-          ctx.fillStyle = grad;
-          ctx.fillRect(x - 10, height - curtainHeight, colWidth + 20, curtainHeight);
-        }
-      }
-      else if (currentAuroraStyle === 'vortex') {
-        ctx.save();
-        ctx.translate(width / 2, height / 2);
-        for (let arm = 0; arm < 3; arm++) {
-          ctx.rotate((arm * Math.PI * 2) / 3 + auroraTime * 0.4);
-          for (let r = 50; r < Math.max(width, height) * 0.8; r += 55) {
-            ctx.beginPath();
-            ctx.arc(r * 0.5, r * 0.3, r * 0.35, 0, Math.PI * 2);
-            const alpha = Math.max(0.02, (1 - r / width) * 0.16);
-            ctx.fillStyle = arm % 2 === 0 ? pal.primary + `${alpha})` : pal.secondary + `${alpha})`;
-            ctx.fill();
-          }
-        }
-        ctx.restore();
-      }
-      else if (currentAuroraStyle === 'mist') {
-        mistParticles.forEach(p => {
-          p.x += p.speedX;
-          p.y += p.speedY;
-
-          if (p.x < -p.radius) p.x = width + p.radius;
-          if (p.x > width + p.radius) p.x = -p.radius;
-          if (p.y < -p.radius) p.y = height + p.radius;
-          if (p.y > height + p.radius) p.y = -p.radius;
-
-          const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius);
-          grad.addColorStop(0, p.color + `${p.opacity})`);
-          grad.addColorStop(0.8, p.color + `${p.opacity * 0.3})`);
-          grad.addColorStop(1, 'rgba(0,0,0,0)');
-
-          ctx.fillStyle = grad;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx.fill();
-        });
-      }
-
-      requestAnimationFrame(renderAuroraEngine);
-    }
-
-    function setAuroraPattern(styleName, btn) {
-      currentAuroraStyle = styleName;
-      document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-    }
-
-    function setAuroraColor(colorKey, pill) {
-      currentAuroraColor = colorKey;
-      const pal = colorPalettes[colorKey];
-
-      const root = document.documentElement;
-      root.style.setProperty('--bg-base', pal.cssBg);
-      root.style.setProperty('--card-bg', pal.cssCard);
-      root.style.setProperty('--card-border', pal.cssBorder);
-      root.style.setProperty('--primary', pal.cssPrimary);
-      root.style.setProperty('--accent', pal.cssAccent);
-      root.style.setProperty('--glow-1', pal.primary + '0.25)');
-      root.style.setProperty('--glow-2', pal.secondary + '0.18)');
-      root.style.setProperty('--btn-grad', pal.btnGrad);
-
-      document.querySelectorAll('.color-pill').forEach(p => p.classList.remove('active'));
-      if (pill) pill.classList.add('active');
-
-      initMistParticles();
-    }
-
-    function saveDefaultTheme() {
-      localStorage.setItem('userAuroraStyle', currentAuroraStyle);
-      localStorage.setItem('userAuroraColor', currentAuroraColor);
-      const toast = document.getElementById('toast');
-      toast.style.display = 'block';
-      setTimeout(() => {
-        toast.style.display = 'none';
-      }, 2500);
-    }
-
-    const savedPattern = localStorage.getItem('userAuroraStyle');
-    const savedColor = localStorage.getItem('userAuroraColor');
-
-    if (savedPattern) {
-      currentAuroraStyle = savedPattern;
-      document.querySelectorAll('.style-btn').forEach(b => {
-        if (b.getAttribute('onclick').includes(savedPattern)) b.classList.add('active');
-        else b.classList.remove('active');
+        if (star.y > canvas.height) star.y = 0;
+        if (star.x > canvas.width) star.x = 0;
+        if (star.x < 0) star.x = canvas.width;
       });
+      requestAnimationFrame(animateSpace);
     }
 
-    if (savedColor && colorPalettes[savedColor]) {
-      const targetPill = document.querySelector(`.cp-${savedColor}`);
-      setAuroraColor(savedColor, targetPill);
-    }
-
+    window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
-    renderAuroraEngine();
+    animateSpace();
 
-    /* =========================================================================
-       --- 2. ANALOG & DIGITAL CLOCK ENGINE (ACCURATE & SMOOTH) ---
-       ========================================================================= */
-    const luxuryHr = document.getElementById('luxuryHr');
-    const luxuryMin = document.getElementById('luxuryMin');
-    const luxurySec = document.getElementById('luxurySec');
-    const digiTime = document.getElementById('digiTime');
-    const digiDate = document.getElementById('digiDate');
-
-    let lastMinStr = "";
-    let lastDateStr = "";
-
-    function updateLuxuryClock() {
+    /* --- Clock Logic --- */
+    function updateClock() {
       const now = new Date();
-      const ms = now.getMilliseconds();
-      const s = now.getSeconds() + ms / 1000;
-      const m = now.getMinutes() + s / 60;
-      const h = (now.getHours() % 12) + m / 60;
+      const s = now.getSeconds();
+      const m = now.getMinutes();
+      const h = now.getHours();
 
-      // Center-aligned smooth sweep rotation
-      luxurySec.style.transform = `translateX(-50%) rotate(${s * 6}deg)`;
-      luxuryMin.style.transform = `translateX(-50%) rotate(${m * 6}deg)`;
-      luxuryHr.style.transform = `translateX(-50%) rotate(${h * 30}deg)`;
+      document.getElementById('secHand').style.transform = `rotate(${s * 6}deg)`;
+      document.getElementById('minHand').style.transform = `rotate(${m * 6 + s * 0.1}deg)`;
+      document.getElementById('hrHand').style.transform = `rotate(${h * 30 + m * 0.5}deg)`;
 
-      // Efficient Digital Display (Only updates on minute/day change)
-      const currentMinStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-      if (currentMinStr !== lastMinStr) {
-        digiTime.innerText = currentMinStr;
-        lastMinStr = currentMinStr;
-      }
-
-      const currentDateStr = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-      if (currentDateStr !== lastDateStr) {
-        digiDate.innerText = currentDateStr;
-        lastDateStr = currentDateStr;
-      }
-
-      requestAnimationFrame(updateLuxuryClock);
+      document.getElementById('digiTime').innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+      document.getElementById('digiDate').innerText = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
     }
-    requestAnimationFrame(updateLuxuryClock);
+    setInterval(updateClock, 1000);
+    updateClock();
 
-    /* --- 3. Fetch Reminders --- */
+    /* --- Fetch Reminders --- */
     function fetchReminders() {
-      document.getElementById('reminderList').innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">लोड हो रहा है...</div>';
+      document.getElementById('reminderList').innerHTML = '<div style="text-align:center; padding:20px; color:#8395a7;">शीट से लोड हो रहा है...</div>';
       fetch(SCRIPT_URL)
         .then(res => res.json())
         .then(data => {
@@ -1179,7 +623,7 @@
         });
     }
 
-    /* --- 4. Render Reminders --- */
+    /* --- Render Reminders --- */
     function renderReminders() {
       const query = document.getElementById('searchInput').value.toLowerCase();
       const list = document.getElementById('reminderList');
@@ -1195,13 +639,14 @@
         return true;
       });
 
+      // Update Stats
       document.getElementById('totalCount').innerText = reminders.length;
       document.getElementById('pendingCount').innerText = reminders.filter(r => r.status !== 'Completed').length;
       document.getElementById('todayCount').innerText = reminders.filter(r => r.remindDate === todayStr).length;
       document.getElementById('doneCount').innerText = reminders.filter(r => r.status === 'Completed').length;
 
       if (filtered.length === 0) {
-        list.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px;">कोई रिमाइंडर नहीं मिला।</div>';
+        list.innerHTML = '<div style="text-align:center; color:#8395a7; padding:20px;">कोई रिमाइंडर नहीं मिला।</div>';
         return;
       }
 
@@ -1226,6 +671,7 @@
       }).join('');
     }
 
+    /* --- View Task Details Modal --- */
     function viewDetails(rowIndex) {
       const item = reminders.find(r => r.rowIndex === rowIndex);
       if (!item) return;
@@ -1239,6 +685,7 @@
       openModal('viewModal');
     }
 
+    /* --- Edit Task Modal --- */
     function openEditModal(rowIndex) {
       const item = reminders.find(r => r.rowIndex === rowIndex);
       if (!item) return;
@@ -1252,6 +699,7 @@
       openModal('editModal');
     }
 
+    /* --- Submit Edit --- */
     document.getElementById('editForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const saveBtn = document.getElementById('saveEditBtn');
@@ -1272,6 +720,7 @@
         });
     });
 
+    /* --- Actions --- */
     function deleteReminder(rowIndex) {
       if (!confirm("Reminder Delete confirmation?")) return;
 
@@ -1328,6 +777,7 @@
     function openAddModal() { openModal('addModal'); }
 
     fetchReminders();
+
   </script>
 
 </body>
