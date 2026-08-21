@@ -133,7 +133,6 @@
       flex-wrap: wrap;
     }
 
-    /* Page Color Custom Picker Dropdown & Swatches */
     .color-picker-wrapper {
       display: flex;
       align-items: center;
@@ -271,7 +270,7 @@
     #toast {
       position: fixed;
       bottom: 25px;
-      background: rgba(6, 31, 24, 0.92);
+      background: rgba(6, 31, 24, 0.95);
       backdrop-filter: blur(8px);
       border: 1px solid rgba(74, 222, 128, 0.5);
       color: #dcfce7;
@@ -301,9 +300,8 @@
         <span class="tablet-title">🌿 Cloud Aquarium Tablet</span>
         <div class="action-btn-group">
           
-          <!-- Page Color Selector Component -->
           <div class="color-picker-wrapper">
-            <span class="color-picker-label">🎨 Page Color:</span>
+            <span class="color-picker-label">🎨 Page:</span>
             <div class="color-swatch" style="background:#ffffff;" title="White" onclick="setPageColor('#ffffff', '#1e293b', '#cbd5e1')"></div>
             <div class="color-swatch" style="background:#fef9c3;" title="Yellow" onclick="setPageColor('#fef9c3', '#713f12', '#fde047')"></div>
             <div class="color-swatch" style="background:#dcfce7;" title="Green" onclick="setPageColor('#dcfce7', '#14532d', '#86efac')"></div>
@@ -312,7 +310,7 @@
             <input type="color" class="color-custom-input" title="Custom Color" onchange="setCustomPageColor(this.value)">
           </div>
 
-          <button class="action-btn btn-add" onclick="addNewLine('', true)">➕ New Line</button>
+          <button class="action-btn btn-add" onclick="addNewLine('', true)">➕ Line</button>
           <button class="action-btn btn-save-cloud" id="saveCloudBtn" onclick="saveLinesOnline()">☁️ Save Online</button>
           <button class="action-btn btn-export" onclick="exportLines()">⬇️ Export</button>
         </div>
@@ -329,10 +327,10 @@
   <div id="toast"></div>
 
   <script>
-    // Aapka live Apps Script Cloud Endpoint
-    const CLOUD_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwi7X8qBBPk_kvVZdY0HnVKYkDItUt1gN1OK9cxzERD2e4d_t7eFrwdO_9c_TpaqoCK/exec";
+    // Updated Live Apps Script Endpoint
+    const CLOUD_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhrWQHT6QgIGR7HwfM7Y6B9nxlTPC30Or_VZhKUg73CoIeFMihsePKiMHg_Lc2d1lijg/exec";
 
-    /* --- Aquarium Fishes Simulation (Big, Medium, Small) --- */
+    /* --- Aquarium Engine --- */
     const canvas = document.getElementById('aquariumCanvas');
     const ctx = canvas.getContext('2d');
 
@@ -500,7 +498,7 @@
     }
     animateAquarium();
 
-    /* --- Tablet & Online Cloud Sync System --- */
+    /* --- Tablet & Notebook Core Logic --- */
     const linesContainer = document.getElementById('linesContainer');
     const toast = document.getElementById('toast');
 
@@ -587,7 +585,6 @@
       localStorage.setItem('aquarium_notebook_lines', JSON.stringify(getLinesArray()));
     }
 
-    // Online Cloud Save Trigger
     function saveLinesOnline() {
       const texts = getLinesArray();
       const saveBtn = document.getElementById('saveCloudBtn');
@@ -596,20 +593,14 @@
 
       autoSaveLinesLocal();
 
-      const payload = {
-        action: "upload",
-        fileName: "Aquarium_Notebook_Data.json",
-        mimeType: "application/json",
-        fileData: btoa(unescape(encodeURIComponent(JSON.stringify(texts))))
-      };
-
       fetch(CLOUD_SCRIPT_URL, {
         method: "POST",
-        body: JSON.stringify(payload)
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(texts)
       })
-      .then(res => res.json())
-      .then(data => {
-        showToast('☁️ डेटा ऑनलाइन Cloud पर सुरक्षित हो गया!');
+      .then(() => {
+        showToast('☁️ डेटा ऑनलाइन Cloud पर सुरक्षित (Saved) हो गया!');
       })
       .catch(err => {
         showToast('✅ स्थानीय और Cloud पर डेटा सुरक्षित हो गया!');
@@ -641,7 +632,6 @@
       showToast('📥 फाइल डाउनलोड हो गई!');
     }
 
-    // Online Fetch & Load on Startup
     window.addEventListener('DOMContentLoaded', () => {
       const savedBg = localStorage.getItem('aquarium_page_bg');
       const savedText = localStorage.getItem('aquarium_page_text');
@@ -651,19 +641,33 @@
       }
 
       const localData = localStorage.getItem('aquarium_notebook_lines');
+      let loaded = false;
       if (localData) {
         try {
           const arr = JSON.parse(localData);
           if (Array.isArray(arr) && arr.length > 0) {
+            linesContainer.innerHTML = '';
             arr.forEach(txt => addNewLine(txt, false));
-            return;
+            loaded = true;
           }
         } catch (e) {}
       }
 
-      for (let i = 0; i < 8; i++) {
-        addNewLine('', false);
+      if (!loaded) {
+        for (let i = 0; i < 8; i++) addNewLine('', false);
       }
+
+      // Fetch Online Backup
+      fetch(CLOUD_SCRIPT_URL)
+        .then(res => res.json())
+        .then(resData => {
+          if (resData.status === "success" && Array.isArray(resData.data) && resData.data.length > 0) {
+            linesContainer.innerHTML = '';
+            resData.data.forEach(txt => addNewLine(txt, false));
+            autoSaveLinesLocal();
+          }
+        })
+        .catch(e => console.log("Offline mode active"));
     });
 
     function showToast(msg) {
