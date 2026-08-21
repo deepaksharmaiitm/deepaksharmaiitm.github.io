@@ -129,7 +129,6 @@
       z-index: 10;
     }
 
-    /* 1 to 12 Numbers Dial Layout */
     .clock-numbers {
       position: absolute;
       width: 100%;
@@ -162,7 +161,6 @@
     .n10 { top: 24px; left: 8px; }
     .n11 { top: 10px; left: 20px; }
 
-    /* Clock Hands */
     .hand {
       position: absolute;
       bottom: 50%;
@@ -293,6 +291,34 @@
     }
     .btn-upload:hover { transform: translateY(-2px); opacity: 0.9; }
 
+    /* --- Progress Bar Styles --- */
+    .progress-container {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 10px;
+      margin-top: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: none;
+    }
+    .progress-bar {
+      width: 0%;
+      height: 14px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 10px;
+      transition: width 0.2s ease;
+      box-shadow: 0 0 10px var(--primary);
+    }
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-top: 6px;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: none;
+    }
+
     #status { margin-top: 10px; font-size: 13px; font-weight: bold; }
 
     /* Table & Stats */
@@ -367,10 +393,10 @@
     <div class="glass-card header-card">
       <div class="title-group">
         <h1>🎈 Ultra Temp Files</h1>
-        <p>Deep Ocean Theme • Floating Balloons • Precise Dial Clock</p>
+        <p>Deep Ocean Theme • Live Upload Progress • Precise Dial Clock</p>
       </div>
 
-      <!-- Dial Clock as per Screenshot -->
+      <!-- Dial Clock -->
       <div class="clock-widget-container">
         <div class="analog-clock">
           <div class="clock-center-glow"></div>
@@ -408,7 +434,7 @@
       <a href="dashboard.html" class="nav-btn">📊 Master Dashboard</a>
     </div>
 
-    <!-- Upload Card -->
+    <!-- Upload Card with Live Progress Bar -->
     <div class="glass-card">
       <h3 style="font-size:17px; margin-bottom:4px;">📤 नई फाइल अपलोड करें</h3>
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">फाइलें 24 घंटे तक सुरक्षित रहेंगी • अधिकतम 10 फाइलें (Max 5MB)</p>
@@ -419,6 +445,16 @@
         </div>
         <button class="btn btn-upload" id="uploadBtn" onclick="handleUpload()">Upload to Cloud ⚡</button>
       </div>
+
+      <!-- 1% to 100% Dynamic Progress Bar -->
+      <div class="progress-info" id="progressInfo">
+        <span id="progressState">Uploading...</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-container" id="progressContainer">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
       <div id="status"></div>
     </div>
 
@@ -455,7 +491,7 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbymDdYiqNuT88lejB8TNy6ZU3wfnHHyyWJq5l4aUYnrqbjDTQVTTXNElJx324-7-Deq/exec";
 
-    /* --- Floating Balloons Animation (Bottom to Top) --- */
+    /* --- Floating Balloons Animation --- */
     const canvas = document.getElementById('balloonCanvas');
     const ctx = canvas.getContext('2d');
     let balloons = [];
@@ -503,7 +539,6 @@
         ctx.save();
         ctx.translate(this.x, this.y);
 
-        // String
         ctx.beginPath();
         ctx.moveTo(0, this.radius * 1.2);
         ctx.quadraticCurveTo(Math.sin(this.swayAngle) * 6, this.radius * 1.7, 0, this.radius * 2.2);
@@ -511,7 +546,6 @@
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        // Balloon Body
         ctx.beginPath();
         ctx.ellipse(0, 0, this.radius, this.radius * 1.25, 0, 0, Math.PI * 2);
         ctx.fillStyle = this.color.base;
@@ -520,7 +554,6 @@
         ctx.shadowBlur = 10;
         ctx.fill();
 
-        // Knot
         ctx.beginPath();
         ctx.moveTo(-2, this.radius * 1.25);
         ctx.lineTo(2, this.radius * 1.25);
@@ -529,7 +562,6 @@
         ctx.fillStyle = this.color.base;
         ctx.fill();
 
-        // Highlight
         ctx.beginPath();
         ctx.ellipse(-this.radius * 0.35, -this.radius * 0.45, this.radius * 0.22, this.radius * 0.45, -Math.PI / 6, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
@@ -582,7 +614,7 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    /* --- File Cloud Operations --- */
+    /* --- File Cloud Operations with Live Percentage Tracking --- */
     function loadFiles() {
       const list = document.getElementById('fileList');
       const badge = document.getElementById('fileCountBadge');
@@ -626,6 +658,12 @@
       const fileInput = document.getElementById('fileInput');
       const uploadBtn = document.getElementById('uploadBtn');
       const status = document.getElementById('status');
+      
+      const progressContainer = document.getElementById('progressContainer');
+      const progressInfo = document.getElementById('progressInfo');
+      const progressBar = document.getElementById('progressBar');
+      const progressPercent = document.getElementById('progressPercent');
+      const progressState = document.getElementById('progressState');
 
       if (fileInput.files.length === 0) {
         alert("कृपया पहले कोई फाइल चुनें!");
@@ -638,49 +676,87 @@
         return;
       }
 
+      // UI Reset & Show Progress Bar
       uploadBtn.disabled = true;
       uploadBtn.innerText = "अपलोड हो रहा है...";
-      status.style.color = "#feca57";
-      status.innerText = "⚡ फाइल सुरक्षित रूप से अपलोड हो रही है...";
+      status.innerText = "";
+      
+      progressBar.style.width = "0%";
+      progressPercent.innerText = "0%";
+      progressState.innerText = "⚡ Preparing & Uploading...";
+      progressContainer.style.display = "block";
+      progressInfo.style.display = "flex";
 
       const reader = new FileReader();
       reader.onload = function(e) {
         const rawBase64 = e.target.result.split(',')[1];
-        const payload = {
+        const payload = JSON.stringify({
           action: "upload",
           fileName: file.name,
           mimeType: file.type || "application/octet-stream",
           fileData: rawBase64
+        });
+
+        // XHR for real-time upload progress tracking
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", SCRIPT_URL, true);
+        xhr.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
+
+        xhr.upload.onprogress = function(event) {
+          if (event.lengthComputable) {
+            const percentComplete = Math.round((event.loaded / event.total) * 100);
+            progressBar.style.width = percentComplete + "%";
+            progressPercent.innerText = percentComplete + "%";
+            
+            if (percentComplete === 100) {
+              progressState.innerText = "⚙️ Google Drive processing...";
+            }
+          }
         };
 
-        fetch(SCRIPT_URL, {
-          method: "POST",
-          body: JSON.stringify(payload),
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-          }
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.result === "success" || data.status === "success") {
-            status.style.color = "#1dd1a1";
-            status.innerText = "✅ फाइल सफलता से अपलोड हो गई!";
-            fileInput.value = "";
-            loadFiles();
-          } else {
-            status.style.color = "#ff6b6b";
-            status.innerText = data.message || "अपलोड नहीं हो पाया।";
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          status.style.color = "#ff6b6b";
-          status.innerText = "❌ अपलोड में समस्या आई।";
-        })
-        .finally(() => {
+        xhr.onload = function() {
           uploadBtn.disabled = false;
           uploadBtn.innerText = "Upload to Cloud ⚡";
-        });
+
+          if (xhr.status === 200) {
+            try {
+              const data = JSON.parse(xhr.responseText);
+              if (data.result === "success" || data.status === "success") {
+                status.style.color = "#1dd1a1";
+                status.innerText = "✅ फाइल 100% सफलता से अपलोड हो गई!";
+                fileInput.value = "";
+                loadFiles();
+              } else {
+                status.style.color = "#ff6b6b";
+                status.innerText = data.message || "अपलोड नहीं हो पाया।";
+              }
+            } catch (err) {
+              status.style.color = "#1dd1a1";
+              status.innerText = "✅ फाइल अपलोड हो गई!";
+              fileInput.value = "";
+              loadFiles();
+            }
+          } else {
+            status.style.color = "#ff6b6b";
+            status.innerText = "❌ अपलोड में समस्या आई।";
+          }
+
+          setTimeout(() => {
+            progressContainer.style.display = "none";
+            progressInfo.style.display = "none";
+          }, 3000);
+        };
+
+        xhr.onerror = function() {
+          uploadBtn.disabled = false;
+          uploadBtn.innerText = "Upload to Cloud ⚡";
+          status.style.color = "#ff6b6b";
+          status.innerText = "❌ नेटवर्क समस्या के कारण अपलोड नहीं हो सका।";
+          progressContainer.style.display = "none";
+          progressInfo.style.display = "none";
+        };
+
+        xhr.send(payload);
       };
       reader.readAsDataURL(file);
     }
