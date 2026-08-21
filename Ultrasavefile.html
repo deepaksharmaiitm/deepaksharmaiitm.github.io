@@ -316,7 +316,7 @@
     <!-- Upload Card -->
     <div class="glass-card">
       <h3 style="font-size:17px; margin-bottom:4px;">📤 नई फाइल अपलोड करें</h3>
-      <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">फाइलें 24 घंटे तक सुरक्षित रहेंगी • अधिकतम 20 फाइलें</p>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">फाइलें 24 घंटे तक सुरक्षित रहेंगी • अधिकतम 10 फाइलें (Max 5MB per file)</p>
 
       <div class="upload-section">
         <div class="file-input-wrapper">
@@ -331,7 +331,7 @@
     <div class="glass-card">
       <div class="stats-bar">
         <h3 style="font-size:17px;">📂 सेव की गई फाइलें</h3>
-        <span class="count-badge" id="fileCountBadge">0 / 20 Files</span>
+        <span class="count-badge" id="fileCountBadge">0 / 10 Files</span>
       </div>
 
       <table>
@@ -358,7 +358,8 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQLM1FDXW5eVSNihMQMoWljDu5aDauBNihnRgr_J_N6JVb1rH1Z5s1ULR8E8QoQKZqag/exec";
+    // Aapka Naya Apps Script Web App URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbymDdYiqNuT88lejB8TNy6ZU3wfnHHyyWJq5l4aUYnrqbjDTQVTTXNElJx324-7-Deq/exec";
 
     /* --- Animated Rain Falling Physics --- */
     const canvas = document.getElementById('rainCanvas');
@@ -380,7 +381,7 @@
         this.y = Math.random() * -canvas.height;
         this.length = Math.random() * 20 + 10;
         this.speedY = Math.random() * 9 + 12;
-        this.speedX = -1.5; // slight wind angle
+        this.speedX = -1.5;
         this.opacity = Math.random() * 0.4 + 0.3;
         this.thickness = Math.random() * 1.5 + 0.8;
       }
@@ -416,7 +417,7 @@
       update() {
         this.x += this.vx;
         this.y += this.vy;
-        this.vy += 0.15; // gravity
+        this.vy += 0.15;
         this.alpha -= 0.05;
       }
       draw() {
@@ -508,8 +509,8 @@
           list.innerHTML = files.map(f => `
             <tr>
               <td><strong>${f.name}</strong></td>
-              <td>${f.size}</td>
-              <td style="color:#aaa;">${f.date}</td>
+              <td>${f.size || 'N/A'}</td>
+              <td style="color:#aaa;">${f.date || ''}</td>
               <td style="display:flex; gap:6px;">
                 <a href="${f.url}" target="_blank" class="btn-mini btn-view">👁️ View</a>
                 <button class="btn-mini btn-del" onclick="deleteFile('${f.id}')">🗑️ Delete</button>
@@ -517,7 +518,8 @@
             </tr>
           `).join('');
         })
-        .catch(() => {
+        .catch(err => {
+          console.error(err);
           list.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#ff6b6b;">फाइल लोड करने में समस्या आई।</td></tr>';
         });
     }
@@ -533,8 +535,8 @@
       }
 
       const file = fileInput.files[0];
-      if (file.size > 20 * 1024 * 1024) {
-        alert("फाइल 20MB से छोटी होनी चाहिए!");
+      if (file.size > 5 * 1024 * 1024) {
+        alert("फाइल का साइज़ 5MB से कम होना चाहिए!");
         return;
       }
 
@@ -555,11 +557,14 @@
 
         fetch(SCRIPT_URL, {
           method: "POST",
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          }
         })
         .then(res => res.json())
         .then(data => {
-          if (data.result === "success") {
+          if (data.result === "success" || data.status === "success") {
             status.style.color = "#1dd1a1";
             status.innerText = "✅ फाइल सफलता से अपलोड हो गई!";
             fileInput.value = "";
@@ -569,11 +574,10 @@
             status.innerText = data.message || "अपलोड नहीं हो पाया।";
           }
         })
-        .catch(() => {
-          status.style.color = "#1dd1a1";
-          status.innerText = "✅ फाइल अपलोड हो गई!";
-          fileInput.value = "";
-          setTimeout(loadFiles, 2000);
+        .catch(err => {
+          console.error(err);
+          status.style.color = "#ff6b6b";
+          status.innerText = "❌ अपलोड में समस्या आई।";
         })
         .finally(() => {
           uploadBtn.disabled = false;
@@ -593,7 +597,10 @@
 
       fetch(SCRIPT_URL, {
         method: "POST",
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        }
       })
       .then(() => loadFiles())
       .catch(() => loadFiles());
