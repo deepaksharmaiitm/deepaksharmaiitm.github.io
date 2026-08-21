@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Taj Mahal Heritage Tablet - Ruled Notebook</title>
+  <title>Planted Aquarium Tablet - Interactive Multi-Line Notebook</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,9 +11,10 @@
 
   <style>
     :root {
+      --tablet-body: #ffffff;
       --paper-bg: #ffffff;
       --line-color: #cbd5e1;
-      --margin-line: #ef4444;
+      --margin-line: #f87171;
       --text-color: #1e293b;
     }
 
@@ -24,77 +25,119 @@
     }
 
     body {
-      background-color: #0f172a;
-      background-image: url('pexels-axp-photography-500641970-16386145.jpg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
+      background: radial-gradient(circle at 50% 15%, #0e3d2f 0%, #061f18 45%, #020a08 100%);
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       padding: 20px;
-      font-family: 'Outfit', sans-serif;
+      overflow-x: hidden;
       position: relative;
     }
 
-    /* Royal Marble Frame */
-    .heritage-frame {
+    /* Ambient Natural Aquarium Sunlight */
+    .aquarium-light {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(ellipse at 50% -10%, rgba(74, 222, 128, 0.2) 0%, rgba(14, 116, 144, 0.1) 50%, transparent 85%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Fullscreen Ocean / Aquarium Canvas */
+    #aquariumCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Tablet Device Frame */
+    .tablet-device {
       width: 100%;
-      max-width: 900px;
-      height: 700px;
-      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
-      padding: 16px;
-      border-radius: 28px;
-      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.85), 0 0 0 4px rgba(255, 255, 255, 0.8);
-      position: relative;
-      z-index: 2;
+      max-width: 860px;
+      height: 740px;
+      background: #ffffff;
+      border-radius: 36px;
+      padding: 14px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 0 8px #e2e8f0, 0 0 0 12px #94a3b8;
       display: flex;
       flex-direction: column;
+      position: relative;
+      z-index: 2;
     }
 
-    .frame-inner {
-      width: 100%;
-      height: 100%;
-      background: #ffffff;
-      border-radius: 18px;
-      border: 2px solid #94a3b8;
+    .tablet-header-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 8px;
+      gap: 10px;
+    }
+
+    .camera-dot {
+      width: 8px;
+      height: 8px;
+      background: #334155;
+      border-radius: 50%;
+    }
+
+    .speaker-slot {
+      width: 40px;
+      height: 4px;
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    /* Tablet Screen & Notepad */
+    .tablet-screen {
+      flex: 1;
+      background: var(--paper-bg);
+      border-radius: 20px;
+      border: 1.5px solid #e2e8f0;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.08);
+      transition: background 0.3s ease;
     }
 
-    /* Top Toolbar */
-    .toolbar-bar {
+    .notepad-toolbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 14px;
-      background: #f8fafc;
-      border-bottom: 1.5px solid #cbd5e1;
+      padding: 10px 18px;
+      background: rgba(248, 250, 252, 0.95);
+      border-bottom: 1.5px solid #e2e8f0;
       flex-wrap: wrap;
       gap: 8px;
     }
 
-    .toolbar-title {
-      font-size: 13px;
+    .tablet-title {
+      font-size: 14px;
       font-weight: 700;
-      color: #0f172a;
+      color: #1e293b;
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .toolbar-actions {
+    .action-btn-group {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
     }
 
-    /* Page Color Picker */
+    /* Page Color Picker Component */
     .color-picker-wrapper {
       display: flex;
       align-items: center;
@@ -111,24 +154,23 @@
     }
 
     .color-swatch {
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
-      border: 1.5px solid rgba(0, 0, 0, 0.25);
+      border: 1.5px solid rgba(0,0,0,0.2);
       cursor: pointer;
       transition: transform 0.15s;
     }
 
     .color-swatch:hover {
-      transform: scale(1.2);
+      transform: scale(1.15);
     }
 
-    /* Action Buttons */
-    .btn {
-      padding: 5px 12px;
-      font-size: 11px;
+    .action-btn {
+      padding: 6px 12px;
+      font-size: 12px;
       font-weight: 700;
-      border-radius: 6px;
+      border-radius: 8px;
       border: none;
       cursor: pointer;
       display: inline-flex;
@@ -137,43 +179,48 @@
       transition: transform 0.1s, opacity 0.2s;
     }
 
-    .btn:active { transform: scale(0.95); }
+    .action-btn:active { transform: scale(0.96); }
+
     .btn-add { background: #0284c7; color: #fff; }
     .btn-add:hover { background: #0369a1; }
+
     .btn-save { background: #16a34a; color: #fff; }
     .btn-save:hover { background: #15803d; }
+
     .btn-export { background: #475569; color: #fff; }
     .btn-export:hover { background: #334155; }
 
-    /* Ruled Writing Lines Area */
-    .lines-container {
+    /* Interactive Multi-Line Notebook Paper */
+    .notepad-container {
       flex: 1;
+      position: relative;
+      background: var(--paper-bg);
       overflow-y: auto;
-      padding: 10px 14px 10px 42px;
-      background-color: var(--paper-bg);
-      background-image: linear-gradient(90deg, transparent 34px, var(--margin-line) 35px, var(--margin-line) 36px, transparent 37px);
+      padding: 15px 15px 15px 45px;
+      background-image: linear-gradient(90deg, transparent 38px, var(--margin-line) 39px, var(--margin-line) 40px, transparent 41px);
       background-size: 100% 100%;
       background-attachment: local;
-      transition: background-color 0.3s ease;
+      transition: background 0.3s ease;
     }
 
-    /* Note Row */
+    /* Individual Writing Line Item */
     .note-line {
       display: flex;
       align-items: center;
-      min-height: 34px;
+      min-height: 38px;
       border-bottom: 1px solid var(--line-color);
       position: relative;
+      transition: background 0.15s ease;
     }
 
     .note-line:hover {
-      background: rgba(0, 0, 0, 0.02);
+      background: rgba(0, 0, 0, 0.03);
     }
 
     .line-number {
       position: absolute;
-      left: -34px;
-      font-size: 11px;
+      left: -32px;
+      font-size: 12px;
       font-weight: 700;
       color: #94a3b8;
       width: 22px;
@@ -187,104 +234,370 @@
       outline: none;
       background: transparent;
       font-family: 'Kalam', 'Caveat', cursive, sans-serif;
-      font-size: 18px;
+      font-size: 19px;
       color: var(--text-color);
-      padding: 2px 8px;
-      line-height: 26px;
+      padding: 4px 8px 4px 10px;
+      line-height: 28px;
     }
 
-    /* Line Delete Button */
+    /* Har Line Ka Individual Delete Button */
     .btn-line-delete {
-      background: rgba(239, 68, 68, 0.12);
+      background: rgba(239, 68, 68, 0.1);
       color: #ef4444;
-      border: 1px solid rgba(239, 68, 68, 0.25);
-      border-radius: 4px;
-      width: 22px;
-      height: 22px;
-      font-size: 11px;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 6px;
+      width: 26px;
+      height: 26px;
+      font-size: 13px;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
+      margin-right: 6px;
       opacity: 0.35;
       transition: all 0.2s;
     }
 
-    .note-line:hover .btn-line-delete { opacity: 1; }
-    .btn-line-delete:hover { background: #ef4444; color: #fff; transform: scale(1.1); }
+    .note-line:hover .btn-line-delete {
+      opacity: 1;
+    }
 
-    /* Toast Alert */
+    .btn-line-delete:hover {
+      background: #ef4444;
+      color: #ffffff;
+      transform: scale(1.1);
+    }
+
+    .tablet-footer-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-top: 8px;
+    }
+
+    .home-bar {
+      width: 120px;
+      height: 4px;
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    /* Notification Alert Toast */
     #toast {
       position: fixed;
-      bottom: 20px;
-      background: rgba(15, 23, 42, 0.95);
+      bottom: 25px;
+      background: rgba(6, 31, 24, 0.92);
       backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #ffffff;
-      padding: 8px 18px;
-      border-radius: 20px;
-      font-size: 12px;
+      border: 1px solid rgba(74, 222, 128, 0.5);
+      color: #dcfce7;
+      padding: 10px 22px;
+      border-radius: 30px;
+      font-size: 13px;
       font-weight: 600;
       display: none;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
       z-index: 99;
     }
   </style>
 </head>
 <body>
 
+  <div class="aquarium-light"></div>
+  <canvas id="aquariumCanvas"></canvas>
+
   <!-- Tablet Frame -->
-  <div class="heritage-frame">
-    <div class="frame-inner">
-      
-      <!-- Toolbar with Page Color Switcher -->
-      <div class="toolbar-bar">
-        <span class="toolbar-title">🕌 Heritage Notebook</span>
-        
-        <div class="toolbar-actions">
+  <div class="tablet-device">
+    <div class="tablet-header-bar">
+      <div class="camera-dot"></div>
+      <div class="speaker-slot"></div>
+    </div>
+
+    <!-- Inside Tablet Screen -->
+    <div class="tablet-screen">
+      <div class="notepad-toolbar">
+        <span class="tablet-title">🌿 Planted Aquarium Notebook</span>
+        <div class="action-btn-group">
+          <!-- Page Color Options -->
           <div class="color-picker-wrapper">
             <span class="color-picker-label">🎨 Page:</span>
-            <div class="color-swatch" style="background:#ffffff;" title="Pure White" onclick="setPageColor('#ffffff', '#1e293b', '#cbd5e1', '#ef4444')"></div>
-            <div class="color-swatch" style="background:#fffbf0;" title="Parchment Cream" onclick="setPageColor('#fffbf0', '#1e293b', '#e2e8f0', '#ef4444')"></div>
-            <div class="color-swatch" style="background:#fef9c3;" title="Soft Yellow" onclick="setPageColor('#fef9c3', '#713f12', '#fde047', '#f87171')"></div>
-            <div class="color-swatch" style="background:#dcfce7;" title="Pastel Green" onclick="setPageColor('#dcfce7', '#14532d', '#86efac', '#ef4444')"></div>
-            <div class="color-swatch" style="background:#e0f2fe;" title="Pastel Blue" onclick="setPageColor('#e0f2fe', '#0c4a6e', '#7dd3fc', '#f87171')"></div>
-            <div class="color-swatch" style="background:#fce7f3;" title="Pastel Pink" onclick="setPageColor('#fce7f3', '#831843', '#f472b6', '#ef4444')"></div>
+            <div class="color-swatch" style="background:#ffffff;" title="White" onclick="setPageColor('#ffffff', '#1e293b', '#cbd5e1')"></div>
+            <div class="color-swatch" style="background:#fef9c3;" title="Soft Yellow" onclick="setPageColor('#fef9c3', '#713f12', '#fde047')"></div>
+            <div class="color-swatch" style="background:#dcfce7;" title="Pastel Green" onclick="setPageColor('#dcfce7', '#14532d', '#86efac')"></div>
+            <div class="color-swatch" style="background:#e0f2fe;" title="Pastel Blue" onclick="setPageColor('#e0f2fe', '#0c4a6e', '#7dd3fc')"></div>
+            <div class="color-swatch" style="background:#fce7f3;" title="Pastel Pink" onclick="setPageColor('#fce7f3', '#831843', '#f472b6')"></div>
           </div>
 
-          <button class="btn btn-add" onclick="addNewLine('', true)">➕ Add</button>
-          <button class="btn btn-save" onclick="saveLines()">💾 Save</button>
-          <button class="btn btn-export" onclick="exportLines()">⬇️ Export</button>
+          <button class="action-btn btn-add" onclick="addNewLine('', true)">➕ New Line</button>
+          <button class="action-btn btn-save" onclick="saveLines()">💾 Save</button>
+          <button class="action-btn btn-export" onclick="exportLines()">⬇️ Export</button>
         </div>
       </div>
 
-      <!-- Ruled Writing Area -->
-      <div class="lines-container" id="linesContainer"></div>
+      <!-- Ruled Lined Area with Line-by-Line Delete Buttons -->
+      <div class="notepad-container" id="linesContainer">
+        <!-- Dynamic Lines Injected via JavaScript -->
+      </div>
+    </div>
 
+    <div class="tablet-footer-bar">
+      <div class="home-bar"></div>
     </div>
   </div>
 
   <div id="toast"></div>
 
   <script>
+    /* =========================================================================
+       1. REALISTIC NATURAL PLANTED AQUARIUM SIMULATION (BIG, MEDIUM & SMALL FISH)
+       ========================================================================= */
+    const canvas = document.getElementById('aquariumCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const TROPICAL_SPECIES = [
+      {
+        name: 'Discus / Cichlid',
+        primary: '#f97316',
+        secondary: '#38bdf8',
+        accent: '#0f172a',
+        stripes: true,
+        tailLength: 1.1,
+        bodyRatio: 0.75
+      },
+      {
+        name: 'Electric Blue Ram',
+        primary: '#0284c7',
+        secondary: '#38bdf8',
+        accent: '#facc15',
+        stripes: false,
+        tailLength: 1.25,
+        bodyRatio: 0.55
+      },
+      {
+        name: 'Tiger Barb',
+        primary: '#fbbf24',
+        secondary: '#ea580c',
+        accent: '#1e293b',
+        stripes: true,
+        tailLength: 1.2,
+        bodyRatio: 0.6
+      },
+      {
+        name: 'Red Fire Cichlid',
+        primary: '#dc2626',
+        secondary: '#f97316',
+        accent: '#7f1d1d',
+        stripes: false,
+        tailLength: 1.3,
+        bodyRatio: 0.5
+      },
+      {
+        name: 'Silver Dollar / Angelfish',
+        primary: '#e2e8f0',
+        secondary: '#facc15',
+        accent: '#334155',
+        stripes: true,
+        tailLength: 1.4,
+        bodyRatio: 0.8
+      }
+    ];
+
+    class RealFish {
+      constructor(sizeCategory = null) {
+        this.sizeCategory = sizeCategory;
+        this.reset();
+      }
+
+      reset() {
+        this.species = TROPICAL_SPECIES[Math.floor(Math.random() * TROPICAL_SPECIES.length)];
+        
+        // Size Distribution: Big, Medium, Small
+        const category = this.sizeCategory || (Math.random() < 0.25 ? 'big' : Math.random() < 0.65 ? 'medium' : 'small');
+        if (category === 'big') {
+          this.length = Math.random() * 12 + 42; // Big (42px - 54px)
+          this.baseSpeed = Math.random() * 0.35 + 0.35; // Slow & elegant
+        } else if (category === 'medium') {
+          this.length = Math.random() * 10 + 26; // Medium (26px - 36px)
+          this.baseSpeed = Math.random() * 0.45 + 0.45;
+        } else {
+          this.length = Math.random() * 6 + 14;  // Small (14px - 20px)
+          this.baseSpeed = Math.random() * 0.6 + 0.6;  // Quick
+        }
+
+        this.height = this.length * this.species.bodyRatio;
+        this.direction = Math.random() > 0.5 ? 1 : -1;
+        this.x = this.direction === 1 ? -90 : canvas.width + 90;
+        this.y = Math.random() * (canvas.height - 140) + 60;
+        
+        // Balanced swimming velocity
+        this.speedX = this.baseSpeed * this.direction;
+        this.speedY = Math.random() * 0.2 - 0.1;
+        this.wiggle = Math.random() * Math.PI * 2;
+        this.wiggleSpeed = (category === 'small' ? 0.12 : category === 'big' ? 0.05 : 0.08);
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += Math.sin(this.wiggle * 0.5) * 0.25 + this.speedY;
+        this.wiggle += this.wiggleSpeed;
+
+        if (this.direction === 1 && this.x > canvas.width + 100) this.reset();
+        if (this.direction === -1 && this.x < -100) this.reset();
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        if (this.direction === -1) ctx.scale(-1, 1);
+
+        const L = this.length;
+        const H = this.height;
+        const sway = Math.sin(this.wiggle) * (L * 0.2);
+
+        // Fins (Dorsal, Ventral, Pectoral)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+        ctx.beginPath();
+        ctx.moveTo(-L * 0.1, -H * 0.45);
+        ctx.quadraticCurveTo(-L * 0.3, -H * 1.0, -L * 0.6, -H * 0.2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(-L * 0.2, H * 0.4);
+        ctx.quadraticCurveTo(-L * 0.4, H * 0.85, -L * 0.55, H * 0.2);
+        ctx.fill();
+
+        // Wiggling Tail
+        ctx.beginPath();
+        ctx.moveTo(-L * 0.7, 0);
+        ctx.quadraticCurveTo(-L * (this.species.tailLength + 0.1), -H * 0.8 + sway, -L * this.species.tailLength, sway);
+        ctx.quadraticCurveTo(-L * (this.species.tailLength + 0.1), H * 0.8 + sway, -L * 0.7, 0);
+        ctx.fillStyle = this.species.secondary;
+        ctx.fill();
+
+        // Realistic Anatomical 3D Body Shading
+        const grad = ctx.createRadialGradient(L * 0.15, -H * 0.1, H * 0.1, 0, 0, L);
+        grad.addColorStop(0, '#ffffff');
+        grad.addColorStop(0.3, this.species.primary);
+        grad.addColorStop(1, this.species.accent);
+
+        ctx.beginPath();
+        ctx.moveTo(L * 0.85, 0);
+        ctx.bezierCurveTo(L * 0.6, -H * 0.7, -L * 0.4, -H * 0.65, -L * 0.75, 0);
+        ctx.bezierCurveTo(-L * 0.4, H * 0.65, L * 0.6, H * 0.7, L * 0.85, 0);
+        ctx.closePath();
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // Vertical Stripes
+        if (this.species.stripes) {
+          ctx.strokeStyle = 'rgba(15, 23, 42, 0.75)';
+          ctx.lineWidth = L * 0.09;
+          ctx.lineCap = 'round';
+
+          ctx.beginPath();
+          ctx.moveTo(L * 0.15, -H * 0.45);
+          ctx.lineTo(L * 0.1, H * 0.45);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(-L * 0.3, -H * 0.35);
+          ctx.lineTo(-L * 0.35, H * 0.35);
+          ctx.stroke();
+        }
+
+        // Realistic Eye
+        ctx.beginPath();
+        ctx.arc(L * 0.55, -H * 0.1, H * 0.2, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(L * 0.55, -H * 0.1, H * 0.1, 0, Math.PI * 2);
+        ctx.fillStyle = '#0f172a';
+        ctx.fill();
+
+        ctx.restore();
+      }
+    }
+
+    // Micro Oxygen Bubbles Rising
+    class Bubble {
+      constructor() {
+        this.reset(true);
+      }
+      reset(initial = false) {
+        this.r = Math.random() * 4 + 2.5;
+        this.x = Math.random() * canvas.width;
+        this.y = initial ? Math.random() * canvas.height : canvas.height + 15;
+        this.speedY = Math.random() * 1.3 + 0.7;
+        this.sway = Math.random() * 1.0 + 0.3;
+        this.angle = Math.random() * Math.PI * 2;
+        this.opacity = Math.random() * 0.4 + 0.3;
+      }
+      update() {
+        this.y -= this.speedY;
+        this.angle += 0.03;
+        this.x += Math.sin(this.angle) * (this.sway * 0.35);
+        if (this.y < -15) this.reset(false);
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = 'rgba(74, 222, 128, 0.15)';
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    const fishList = [];
+    const bubbleList = [];
+    
+    // Controlled Population: 3 Big, 5 Medium, 6 Small fishes
+    for (let i = 0; i < 3; i++) fishList.push(new RealFish('big'));
+    for (let i = 0; i < 5; i++) fishList.push(new RealFish('medium'));
+    for (let i = 0; i < 6; i++) fishList.push(new RealFish('small'));
+
+    const bubbleCount = Math.floor(window.innerWidth / 35) + 20;
+    for (let i = 0; i < bubbleCount; i++) bubbleList.push(new Bubble());
+
+    function animateAquarium() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      bubbleList.forEach(b => { b.update(); b.draw(); });
+      fishList.forEach(f => { f.update(); f.draw(); });
+      requestAnimationFrame(animateAquarium);
+    }
+    animateAquarium();
+
+    /* =========================================================================
+       2. NOTEBOOK FUNCTIONS & PAGE COLOR CHANGER
+       ========================================================================= */
     const linesContainer = document.getElementById('linesContainer');
     const toast = document.getElementById('toast');
 
-    // Page Color Changer
-    function setPageColor(bgColor, textColor, lineColor, marginColor) {
+    // Page Color Changer Function
+    function setPageColor(bgColor, textColor, lineColor) {
       document.documentElement.style.setProperty('--paper-bg', bgColor);
       document.documentElement.style.setProperty('--text-color', textColor);
       document.documentElement.style.setProperty('--line-color', lineColor);
-      document.documentElement.style.setProperty('--margin-line', marginColor);
-
-      localStorage.setItem('taj_page_bg', bgColor);
-      localStorage.setItem('taj_page_text', textColor);
-      localStorage.setItem('taj_page_line', lineColor);
-      localStorage.setItem('taj_page_margin', marginColor);
+      localStorage.setItem('aquarium_page_bg', bgColor);
+      localStorage.setItem('aquarium_page_text', textColor);
+      localStorage.setItem('aquarium_page_line', lineColor);
       showToast('🎨 पेज का रंग बदल दिया गया!');
     }
 
-    // Add New Line
+    // Add New Line with its own Delete Button
     function addNewLine(text = '', autoFocus = false) {
       const lineDiv = document.createElement('div');
       lineDiv.className = 'note-line';
@@ -295,8 +608,8 @@
         <button class="btn-line-delete" title="यह लाइन हटाएं" onclick="deleteSingleLine(this)">🗑️</button>
       `;
 
+      // Enter key -> New line automatically
       const input = lineDiv.querySelector('.line-input');
-      
       input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
@@ -316,15 +629,22 @@
         }
       });
 
-      input.addEventListener('input', autoSaveLines);
+      // Auto save on typing
+      input.addEventListener('input', () => {
+        autoSaveLines();
+      });
+
       linesContainer.appendChild(lineDiv);
       reindexLines();
 
-      if (autoFocus) input.focus();
+      if (autoFocus) {
+        input.focus();
+      }
+
       return lineDiv;
     }
 
-    // Delete Single Line
+    // Delete Single Individual Line
     function deleteSingleLine(btn) {
       const line = btn.closest('.note-line');
       line.remove();
@@ -337,7 +657,7 @@
       showToast('🗑️ लाइन हटा दी गई!');
     }
 
-    // Numbering lines (1, 2, 3...)
+    // Re-index Line Numbers (1, 2, 3...)
     function reindexLines() {
       const lines = linesContainer.querySelectorAll('.note-line');
       lines.forEach((line, index) => {
@@ -345,21 +665,22 @@
       });
     }
 
-    // Save locally
+    // Auto Save to LocalStorage
     function autoSaveLines() {
       const texts = [];
       linesContainer.querySelectorAll('.line-input').forEach(inp => {
         texts.push(inp.value);
       });
-      localStorage.setItem('taj_board_lines', JSON.stringify(texts));
+      localStorage.setItem('aquarium_notebook_lines', JSON.stringify(texts));
     }
 
+    // Manual Save Action
     function saveLines() {
       autoSaveLines();
       showToast('✅ सभी लाइनें सुरक्षित (Saved) कर ली गईं!');
     }
 
-    // Download/Export text file
+    // Export to Text File
     function exportLines() {
       const lines = [];
       linesContainer.querySelectorAll('.line-input').forEach((inp, idx) => {
@@ -376,24 +697,23 @@
       const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = 'Heritage_Notes.txt';
+      link.download = 'Aquarium_Notes.txt';
       link.click();
       showToast('📥 फाइल डाउनलोड हो गई!');
     }
 
-    // Load on start
+    // Load saved settings & lines
     window.addEventListener('DOMContentLoaded', () => {
-      // Restore Page Colors
-      const savedBg = localStorage.getItem('taj_page_bg');
-      const savedText = localStorage.getItem('taj_page_text');
-      const savedLine = localStorage.getItem('taj_page_line');
-      const savedMargin = localStorage.getItem('taj_page_margin');
-      if (savedBg && savedText && savedLine && savedMargin) {
-        setPageColor(savedBg, savedText, savedLine, savedMargin);
+      // Restore Page Color
+      const savedBg = localStorage.getItem('aquarium_page_bg');
+      const savedText = localStorage.getItem('aquarium_page_text');
+      const savedLine = localStorage.getItem('aquarium_page_line');
+      if (savedBg && savedText && savedLine) {
+        setPageColor(savedBg, savedText, savedLine);
       }
 
       // Restore Lines
-      const saved = localStorage.getItem('taj_board_lines');
+      const saved = localStorage.getItem('aquarium_notebook_lines');
       if (saved) {
         try {
           const arr = JSON.parse(saved);
@@ -404,7 +724,7 @@
         } catch (e) {}
       }
 
-      for (let i = 0; i < 9; i++) {
+      for (let i = 0; i < 8; i++) {
         addNewLine('', false);
       }
     });
@@ -412,7 +732,7 @@
     function showToast(msg) {
       toast.innerText = msg;
       toast.style.display = 'block';
-      setTimeout(() => { toast.style.display = 'none'; }, 2000);
+      setTimeout(() => { toast.style.display = 'none'; }, 2200);
     }
   </script>
 </body>
