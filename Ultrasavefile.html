@@ -354,11 +354,11 @@
   <!-- Signature Badge -->
   <div class="signature-badge">
     <span class="sig-text">Designed by</span>
-    <span class="sig-name">Deepak Sharma</span>
+    <span class="sig-name">Deepak</span>
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQLM1FDXW5eVSNihMQMoWljDu5aDauBNihnRgr_J_N6JVb1rH1Z5s1ULR8E8QoQKZqag/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKNbcaBOqwLeBmWxunG49CjJmZZt-Ksp4Qeri2BZiPsoq0bPRWqMOmGCkpZBkleOsNFQ/exec";
 
     /* --- Animated Rain Falling Physics --- */
     const canvas = document.getElementById('rainCanvas');
@@ -498,7 +498,7 @@
             files = resData.files;
           }
 
-          badge.innerText = `${files.length} / 10 Files`;
+          badge.innerText = `${files.length} / 20 Files`;
 
           if (files.length === 0) {
             list.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#8395a7;">कोई फाइल उपलब्ध नहीं है।</td></tr>';
@@ -534,7 +534,7 @@
 
       const file = fileInput.files[0];
       if (file.size > 20 * 1024 * 1024) {
-        alert("फाइल 20MB से छोटी होनी चाहिए!");
+        alert("फाइल 10MB से छोटी होनी चाहिए!");
         return;
       }
 
