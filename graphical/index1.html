@@ -1,29 +1,513 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Home | Graphical Site</title><style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;min-height:100vh;color:#fff;overflow-x:hidden;
-background:linear-gradient(135deg,#09001f,#001b3d,#19002f,#003b46);background-size:400% 400%;animation:bg 15s ease infinite}
-@keyframes bg{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-body:before,body:after{content:"";position:fixed;width:320px;height:320px;border-radius:50%;filter:blur(70px);opacity:.35;z-index:-1}
-body:before{background:#00d9ff;top:-80px;left:-80px} body:after{background:#b400ff;right:-80px;bottom:-80px}
-nav{position:sticky;top:15px;z-index:5;margin:15px auto;width:min(1100px,94%);padding:14px 18px;border:1px solid #ffffff30;border-radius:22px;background:#ffffff12;backdrop-filter:blur(18px);display:flex;justify-content:space-between;align-items:center;box-shadow:0 12px 35px #0005}
-.logo{font-size:22px;font-weight:800;letter-spacing:1px}.links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.links a{color:#fff;text-decoration:none;padding:10px 14px;border-radius:14px;transition:.25s}.links a:hover,.links a.active{background:#ffffff22;box-shadow:0 0 18px #00d9ff55}
-main{width:min(1100px,92%);margin:55px auto 30px}.hero{text-align:center;padding:55px 20px}
-h1{font-size:clamp(38px,7vw,72px);line-height:1.05;margin-bottom:18px;text-shadow:0 0 25px #00d9ff55}
-.hero p{font-size:18px;opacity:.85;max-width:700px;margin:auto;line-height:1.6}
-.btn{display:inline-block;margin-top:28px;padding:13px 22px;border-radius:16px;background:linear-gradient(90deg,#00c6ff,#a855f7);color:#fff;text-decoration:none;font-weight:bold;box-shadow:0 8px 30px #00c6ff33}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
-.card{padding:28px;border-radius:24px;background:#ffffff12;border:1px solid #ffffff22;backdrop-filter:blur(16px);box-shadow:0 15px 35px #0003;transition:.3s}
-.card:hover{transform:translateY(-7px);border-color:#ffffff55}.icon{font-size:38px;margin-bottom:15px}.card h2{margin-bottom:10px}.card p{opacity:.75;line-height:1.55}
-footer{text-align:center;padding:30px;opacity:.6}
-</style></head>
-<body><nav><div class="logo">✨ MY GRAPHICAL SITE</div><div class="links">
-<a href="index.html" data-p="Home">Home</a><a href="dashboard.html" data-p="Dashboard">Dashboard</a>
-<a href="services.html" data-p="Services">Services</a><a href="gallery.html" data-p="Gallery">Gallery</a><a href="contact.html" data-p="Contact">Contact</a>
-</div></nav><main><section class="hero"><h1>🌐 Graphical Web</h1><p>A beautiful five-page HTML website with animated backgrounds, glass cards and smooth navigation.</p><a class="btn" href="index.html">← Back to Home</a></section>
-<section class="grid"><div class="card"><div class="icon">🚀</div><h2>Modern Design</h2><p>Clean glassmorphism interface with glowing effects.</p></div><div class="card"><div class="icon">⚡</div><h2>Fast & Offline</h2><p>Works locally without a server.</p></div><div class="card"><div class="icon">🔗</div><h2>Connected Pages</h2><p>All five pages are linked together.</p></div></section></main><footer>© 2026 My Graphical Site • HTML Offline Website</footer>
-<script>
-document.querySelectorAll('.links a').forEach(a=>{if(a.dataset.p==='Home')a.classList.add('active')})
-</script></body></html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deepak Sharma | Ultra Workspace Hub</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Orbitron:wght@500;700;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #070b14;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --primary: #00d2d3;
+      --accent: #54a0ff;
+      --neon-pink: #ff7675;
+      --neon-green: #1dd1a1;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: radial-gradient(circle at 10% 20%, #0f172a 0%, #070b14 80%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient Lighting Background */
+    .glow-sphere {
+      position: fixed;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(0, 210, 211, 0.15) 0%, rgba(0,0,0,0) 70%);
+      top: -100px;
+      left: -100px;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .glow-sphere-2 {
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(84, 160, 255, 0.12) 0%, rgba(0,0,0,0) 70%);
+      bottom: -150px;
+      right: -150px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Glass Panels */
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transition: border-color 0.3s ease;
+    }
+    .glass-card:hover {
+      border-color: rgba(0, 210, 211, 0.4);
+    }
+
+    /* Header & Widget Grid */
+    .header-panel {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .hero-title h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #00d2d3, #54a0ff, #a29bfe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1.5px;
+    }
+    .hero-title p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Minimalist Digital Clock */
+    .time-badge {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 20px;
+      border-radius: 40px;
+    }
+    .time-badge .time {
+      font-family: 'Orbitron', monospace;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .time-badge .date {
+      font-size: 12px;
+      color: var(--text-muted);
+      border-left: 1px solid rgba(255,255,255,0.2);
+      padding-left: 12px;
+    }
+
+    /* Navigation Bar */
+    .nav-rack {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .nav-item {
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-item:hover {
+      background: linear-gradient(135deg, rgba(0,210,211,0.2), rgba(84,160,255,0.2));
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    /* Workspace Dual Column Grid */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 820px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Notes / Scratchpad */
+    .scratchpad textarea {
+      width: 100%;
+      height: 120px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 13px;
+      padding: 12px;
+      resize: none;
+      outline: none;
+      margin-top: 10px;
+      user-select: auto;
+    }
+    .scratchpad textarea:focus {
+      border-color: var(--accent);
+    }
+
+    /* File Storage Drop Area */
+    .dropzone {
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 14px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .dropzone:hover {
+      border-color: var(--primary);
+      background: rgba(0, 210, 211, 0.05);
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-action {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #050b14;
+      font-weight: 700;
+    }
+    .btn-action:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    .btn-del {
+      background: rgba(255, 118, 117, 0.2);
+      color: var(--neon-pink);
+      border: 1px solid rgba(255, 118, 117, 0.4);
+    }
+    .btn-del:hover {
+      background: var(--neon-pink);
+      color: #fff;
+    }
+    .btn-view {
+      background: rgba(0, 210, 211, 0.2);
+      color: var(--primary);
+      border: 1px solid rgba(0, 210, 211, 0.4);
+    }
+    .btn-view:hover {
+      background: var(--primary);
+      color: #000;
+    }
+
+    /* Table Styles */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+    }
+    th, td {
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    th {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+    }
+
+    /* Floating Signature Badge */
+    .signature {
+      position: fixed;
+      bottom: 20px;
+      right: 24px;
+      z-index: 10;
+      background: rgba(10, 16, 28, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 6px 18px;
+      border-radius: 50px;
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sig-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .sig-brand {
+      font-family: 'Great Vibes', cursive;
+      font-size: 20px;
+      background: linear-gradient(45deg, #00d2d3, #54a0ff, #fd79a8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glow-sphere"></div>
+  <div class="glow-sphere-2"></div>
+
+  <div class="container">
+
+    <!-- Top Navigation Card -->
+    <div class="glass-card header-panel">
+      <div class="hero-title">
+        <h1>⚡ ULTRA WORKSPACE</h1>
+        <p>Instant Storage • Quick Notes • Zero Setup Required</p>
+      </div>
+      <div class="time-badge">
+        <div class="time" id="clockTime">00:00:00</div>
+        <div class="date" id="clockDate">-- --- ----</div>
+      </div>
+    </div>
+
+    <!-- Quick Navigation Link Strip -->
+    <div class="nav-rack">
+      <a href="https://deepaksharmaiitm.github.io" class="nav-item">🏠 Home Hub</a>
+      <a href="form.html" class="nav-item">📝 Entry Form</a>
+      <a href="calculator.html" class="nav-item">🧮 Calculator</a>
+      <a href="notes.html" class="nav-item">📓 Notes Pad</a>
+      <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+    </div>
+
+    <!-- Workspace Double Grid: File Upload + Scratchpad -->
+    <div class="workspace-grid">
+      
+      <!-- Upload Zone -->
+      <div class="glass-card">
+        <h3 style="font-size: 16px; margin-bottom: 6px;">📂 Quick Upload (Local Cache)</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">Instant offline browser storage for documents & images</p>
+        
+        <div class="dropzone" onclick="document.getElementById('fileSelector').click()">
+          <input type="file" id="fileSelector" style="display:none" onchange="uploadInstantFile(event)">
+          <div style="font-size: 26px; margin-bottom: 6px;">📤</div>
+          <p style="font-size: 13px; font-weight: 600;">Click or Drop files here</p>
+          <span style="font-size: 11px; color: var(--text-muted);">Max 50MB per file</span>
+        </div>
+        <div id="uploadStatus" style="font-size: 12px; margin-top: 10px; font-weight: 600;"></div>
+      </div>
+
+      <!-- Quick Notepad -->
+      <div class="glass-card scratchpad">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 16px;">📝 Instant Scratchpad</h3>
+          <span id="savedIndicator" style="font-size: 11px; color: var(--neon-green);">Auto-saved</span>
+        </div>
+        <textarea id="quickNote" placeholder="Type quick tasks, ideas, or temporary info here..." oninput="saveNote()"></textarea>
+      </div>
+
+    </div>
+
+    <!-- File Registry Table -->
+    <div class="glass-card">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 16px;">📁 Saved Local Files</h3>
+        <span id="fileCounter" style="font-size: 12px; color: var(--primary); font-weight: 700;">0 Files Stored</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>FILE NAME</th>
+            <th>SIZE</th>
+            <th>DATE ADDED</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody id="fileTableBody">
+          <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No files stored yet.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- Signature Badge -->
+  <div class="signature">
+    <span class="sig-label">Designed by</span>
+    <span class="sig-brand">Deepak Sharma</span>
+  </div>
+
+  <script>
+    /* Clock System */
+    function updateLiveClock() {
+      const now = new Date();
+      document.getElementById('clockTime').textContent = now.toLocaleTimeString('en-US', { hour12: false });
+      document.getElementById('clockDate').textContent = now.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
+
+    /* Local Auto-Saving Scratchpad */
+    const noteArea = document.getElementById('quickNote');
+    noteArea.value = localStorage.getItem('deepak_quick_note') || '';
+
+    function saveNote() {
+      localStorage.setItem('deepak_quick_note', noteArea.value);
+      const ind = document.getElementById('savedIndicator');
+      ind.textContent = 'Saving...';
+      setTimeout(() => { ind.textContent = 'Auto-saved'; }, 500);
+    }
+
+    /* IndexedDB File Engine */
+    let db;
+    const DB_NAME = 'DeepakWorkspaceDB';
+    const STORE = 'vault';
+
+    const request = indexedDB.open(DB_NAME, 1);
+    request.onupgradeneeded = (e) => {
+      db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE)) {
+        db.createObjectStore(STORE, { keyPath: 'id' });
+      }
+    };
+    request.onsuccess = (e) => {
+      db = e.target.result;
+      renderFiles();
+    };
+
+    function formatSize(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024, sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function uploadInstantFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const status = document.getElementById('uploadStatus');
+      status.style.color = 'var(--primary)';
+      status.textContent = 'Processing file...';
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const fileRecord = {
+          id: 'doc_' + Date.now(),
+          name: file.name,
+          size: formatSize(file.size),
+          date: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+          type: file.type,
+          dataUrl: e.target.result
+        };
+
+        const tx = db.transaction(STORE, 'readwrite');
+        tx.objectStore(STORE).add(fileRecord);
+        tx.oncomplete = () => {
+          status.style.color = 'var(--neon-green)';
+          status.textContent = '✅ Stored in offline cache!';
+          event.target.value = '';
+          renderFiles();
+          setTimeout(() => { status.textContent = ''; }, 3000);
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function renderFiles() {
+      if (!db) return;
+      const tx = db.transaction(STORE, 'readonly');
+      const req = tx.objectStore(STORE).getAll();
+
+      req.onsuccess = () => {
+        const files = req.result || [];
+        const tbody = document.getElementById('fileTableBody');
+        document.getElementById('fileCounter').textContent = `${files.length} Files Stored`;
+
+        if (files.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No files stored yet.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = files.map(f => `
+          <tr>
+            <td><strong>${f.name}</strong></td>
+            <td>${f.size}</td>
+            <td style="color: var(--text-muted);">${f.date}</td>
+            <td style="display: flex; gap: 8px;">
+              <button class="btn btn-view" onclick="previewDoc('${f.id}')">View</button>
+              <button class="btn btn-del" onclick="deleteDoc('${f.id}')">Delete</button>
+            </td>
+          </tr>
+        `).join('');
+      };
+    }
+
+    function previewDoc(id) {
+      const tx = db.transaction(STORE, 'readonly');
+      const req = tx.objectStore(STORE).get(id);
+      req.onsuccess = () => {
+        if (req.result && req.result.dataUrl) {
+          const win = window.open();
+          win.document.write('<iframe src="' + req.result.dataUrl + '" frameborder="0" style="width:100vw; height:100vh; margin:0; border:none;"></iframe>');
+        }
+      };
+    }
+
+    function deleteDoc(id) {
+      if (!confirm("Is file ko delete karna chahte hain?")) return;
+      const tx = db.transaction(STORE, 'readwrite');
+      tx.objectStore(STORE).delete(id);
+      tx.oncomplete = () => renderFiles();
+    }
+  </script>
+</body>
+</html>
