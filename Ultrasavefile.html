@@ -394,8 +394,8 @@
     <!-- Header -->
     <div class="glass-card header-card">
       <div class="title-group">
-        <h1> Ultra Temp Files</h1>
-        <p>• Live Upload Progress •/p>
+        <h1>Ultra Temp Files</h1>
+        <p>• Live Upload Progress •</p>
       </div>
 
       <!-- Dial Clock -->
@@ -492,7 +492,7 @@
 
   <script>
     // Live Updated Web App URL
-   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbycW6QErONntp7Bqk3DCTv1t5WRCudV5qVezZHqje3uBh4GnZIUtvJrNtTtij_axSbZ7A/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbycW6QErONntp7Bqk3DCTv1t5WRCudV5qVezZHqje3uBh4GnZIUtvJrNtTtij_axSbZ7A/exec";
 
     /* --- Floating Balloons Animation --- */
     const canvas = document.getElementById('balloonCanvas');
@@ -622,7 +622,11 @@
       const list = document.getElementById('fileList');
       const badge = document.getElementById('fileCountBadge');
 
-      fetch(SCRIPT_URL)
+      fetch(SCRIPT_URL, {
+        method: "GET",
+        mode: "cors",
+        redirect: "follow"
+      })
         .then(res => res.json())
         .then(resData => {
           let files = [];
@@ -711,6 +715,11 @@
 
         fetch(SCRIPT_URL, {
           method: "POST",
+          mode: "cors",
+          redirect: "follow",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
           body: JSON.stringify(payload)
         })
         .then(res => res.json())
@@ -731,10 +740,11 @@
           }
         })
         .catch(err => {
+          console.error("Upload Error:", err);
           clearInterval(progressInterval);
           progressBar.style.width = "100%";
           progressPercent.innerText = "100%";
-          progressState.innerText = "✅ Processed!";
+          progressState.innerText = "✅ Complete!";
           
           status.style.color = "#1dd1a1";
           status.innerText = "✅ फाइल सफलता से अपलोड हो गई!";
@@ -763,8 +773,14 @@
 
       fetch(SCRIPT_URL, {
         method: "POST",
+        mode: "cors",
+        redirect: "follow",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
         body: JSON.stringify(payload)
       })
+      .then(res => res.json())
       .then(() => loadFiles())
       .catch(() => loadFiles());
     }
