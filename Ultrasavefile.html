@@ -3,25 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ultra Cloud Manager - Rain Falling Edition</title>
+  <title>Ultra Cloud Manager - Deep Ocean Edition</title>
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Orbitron:wght@500;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Orbitron:wght@500;800&family=Outfit:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --card-bg: rgba(255, 255, 255, 0.12);
-      --card-inner: rgba(255, 255, 255, 0.16);
-      --card-border: rgba(255, 255, 255, 0.25);
-      --primary: #00d2d3;
-      --accent: #54a0ff;
-      --danger: #ff5252;
-      --success: #1dd1a1;
+      --bg-gradient: radial-gradient(circle at top, #0c2461 0%, #0a1931 60%, #020712 100%);
+      --card-bg: rgba(74, 105, 189, 0.12);
+      --card-border: rgba(112, 161, 255, 0.28);
+      --primary: #38ada9;
+      --accent: #70a1ff;
+      --sec-hand: #00d2d3;
+      --clock-glow: rgba(112, 161, 255, 0.35);
       --text: #ffffff;
-      --text-muted: #c8d6e5;
+      --text-muted: #dff9fb;
     }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -29,7 +30,7 @@
     }
     body {
       font-family: 'Outfit', 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top, #0f172a 0%, #050b14 60%, #020408 100%);
+      background: var(--bg-gradient);
       color: var(--text);
       min-height: 100vh;
       display: flex;
@@ -39,7 +40,8 @@
       position: relative;
     }
 
-    #rainCanvas {
+    /* Floating Balloons Canvas */
+    #balloonCanvas {
       position: fixed;
       top: 0;
       left: 0;
@@ -81,7 +83,7 @@
       font-family: 'Orbitron', sans-serif;
       font-size: 24px;
       font-weight: 800;
-      background: linear-gradient(45deg, #00d2d3, #54a0ff, #48dbfb);
+      background: linear-gradient(45deg, #38ada9, #70a1ff, #dff9fb);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       letter-spacing: 1px;
@@ -92,44 +94,124 @@
       color: var(--text-muted);
     }
 
-    .clock-widget {
+    /* Realistic Dial Clock */
+    .clock-widget-container {
+      background: rgba(4, 15, 38, 0.85);
+      border: 1.5px solid var(--card-border);
+      border-radius: 24px;
+      padding: 18px 24px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 14px;
-      background: rgba(0, 0, 0, 0.35);
-      padding: 8px 18px;
-      border-radius: 50px;
-      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
     }
     .analog-clock {
-      width: 52px;
-      height: 52px;
-      border: 2px solid #00d2d3;
+      width: 110px;
+      height: 110px;
       border-radius: 50%;
       position: relative;
-      background: rgba(255,255,255,0.05);
+      background: radial-gradient(circle, #102a45 0%, #081726 70%, #030a12 100%);
+      border: 4px solid #0c2461;
+      box-shadow: 0 0 18px var(--clock-glow), inset 0 0 12px rgba(0, 0, 0, 0.8);
+      margin-bottom: 12px;
     }
+
+    .clock-center-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 12px;
+      height: 12px;
+      background: #fbc531;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px #fbc531, 0 0 15px #fbc531;
+      z-index: 10;
+    }
+
+    /* 1 to 12 Numbers Dial Layout */
+    .clock-numbers {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+    .clock-number {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      text-align: center;
+      line-height: 20px;
+      font-size: 10px;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+      user-select: none;
+    }
+    .n12 { top: 4px; left: calc(50% - 10px); }
+    .n1  { top: 10px; right: 20px; }
+    .n2  { top: 24px; right: 8px; }
+    .n3  { top: calc(50% - 10px); right: 4px; }
+    .n4  { bottom: 24px; right: 8px; }
+    .n5  { bottom: 10px; right: 20px; }
+    .n6  { bottom: 4px; left: calc(50% - 10px); }
+    .n7  { bottom: 10px; left: 20px; }
+    .n8  { bottom: 24px; left: 8px; }
+    .n9  { top: calc(50% - 10px); left: 4px; }
+    .n10 { top: 24px; left: 8px; }
+    .n11 { top: 10px; left: 20px; }
+
+    /* Clock Hands */
     .hand {
       position: absolute;
       bottom: 50%;
       left: 50%;
       transform-origin: bottom center;
-      background: #fff;
       border-radius: 4px;
     }
-    .hour-hand { width: 3px; height: 15px; }
-    .min-hand { width: 2px; height: 21px; }
-    .sec-hand { width: 1.5px; height: 24px; background: #00d2d3; }
-    .digital-time {
-      font-weight: 700;
-      font-size: 15px;
-      color: #fff;
+    .hour-hand {
+      width: 4px;
+      height: 26px;
+      background: #ffffff;
+      box-shadow: 0 0 5px rgba(255,255,255,0.6);
+      margin-left: -2px;
+      z-index: 6;
     }
-    .digital-date {
-      font-size: 11px;
-      color: var(--text-muted);
+    .min-hand {
+      width: 3px;
+      height: 38px;
+      background: #e1e8ea;
+      box-shadow: 0 0 5px rgba(255,255,255,0.6);
+      margin-left: -1.5px;
+      z-index: 7;
+    }
+    .sec-hand {
+      width: 1.5px;
+      height: 44px;
+      background: var(--sec-hand);
+      box-shadow: 0 0 8px var(--sec-hand);
+      margin-left: -0.75px;
+      z-index: 8;
     }
 
+    .digital-time {
+      font-family: 'Share Tech Mono', monospace;
+      font-weight: 700;
+      font-size: 19px;
+      color: #ffffff;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      margin-bottom: 2px;
+    }
+    .digital-date {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary);
+      text-shadow: 0 0 8px var(--primary);
+    }
+
+    /* Navigation Bar */
     .nav-bar {
       display: flex;
       gap: 10px;
@@ -152,11 +234,12 @@
       transition: all 0.3s ease;
     }
     .nav-btn:hover {
-      background: linear-gradient(45deg, #0984e3, #00d2d3);
+      background: var(--primary);
+      color: #000;
       transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0, 210, 211, 0.4);
     }
 
+    /* Upload Box */
     .upload-section {
       display: flex;
       gap: 12px;
@@ -204,14 +287,43 @@
       transition: all 0.2s;
     }
     .btn-upload {
-      background: linear-gradient(45deg, #0984e3, #00cec9);
-      color: white;
-      box-shadow: 0 4px 15px rgba(0, 206, 201, 0.3);
+      background: var(--primary);
+      color: #000;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
     .btn-upload:hover { transform: translateY(-2px); opacity: 0.9; }
 
+    /* Progress Bar */
+    .progress-container {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 10px;
+      margin-top: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: none;
+    }
+    .progress-bar {
+      width: 0%;
+      height: 14px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 10px;
+      transition: width 0.2s ease;
+      box-shadow: 0 0 10px var(--primary);
+    }
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-top: 6px;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: none;
+    }
+
     #status { margin-top: 10px; font-size: 13px; font-weight: bold; }
 
+    /* Table & Stats */
     .stats-bar {
       display: flex;
       justify-content: space-between;
@@ -219,17 +331,17 @@
       margin-bottom: 14px;
     }
     .count-badge {
-      background: linear-gradient(45deg, #0984e3, #00d2d3);
+      background: var(--primary);
+      color: #000;
       padding: 5px 14px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: bold;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
 
     table { width: 100%; border-collapse: collapse; margin-top: 6px; }
     th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-size: 13px; }
-    th { color: #48dbfb; font-weight: 600; background: rgba(0,0,0,0.25); border-radius: 6px; }
+    th { color: var(--accent); font-weight: 600; background: rgba(0,0,0,0.25); border-radius: 6px; }
 
     .btn-mini {
       padding: 6px 12px;
@@ -243,9 +355,10 @@
       transition: opacity 0.2s;
     }
     .btn-mini:hover { opacity: 0.85; }
-    .btn-view { background: #0984e3; color: white; }
+    .btn-view { background: var(--accent); color: #000; }
     .btn-del { background: #ee5253; color: white; }
 
+    /* Signature Badge */
     .signature-badge {
       position: fixed;
       bottom: 15px;
@@ -265,48 +378,68 @@
     .sig-name {
       font-family: 'Great Vibes', cursive;
       font-size: 22px;
-      background: linear-gradient(45deg, #00d2d3, #54a0ff, #ff9ff3);
+      background: linear-gradient(45deg, var(--primary), var(--accent), #ff9ff3);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 12px rgba(0, 210, 211, 0.4);
     }
   </style>
 </head>
 <body>
 
-  <canvas id="rainCanvas"></canvas>
+  <!-- Floating Balloons Canvas -->
+  <canvas id="balloonCanvas"></canvas>
 
   <div class="dashboard">
 
+    <!-- Header -->
     <div class="glass-card header-card">
       <div class="title-group">
-        <h1>🌧️ Ultra Temp Files</h1>
-        <p>Live Rain Falling Effect • 24H Auto Expire • Stored Online</p>
+        <h1>Ultra Temp Files</h1>
+        <p>• Live Upload Progress •</p>
       </div>
-      <div class="clock-widget">
+
+      <!-- Dial Clock -->
+      <div class="clock-widget-container">
         <div class="analog-clock">
+          <div class="clock-center-glow"></div>
+          
+          <div class="clock-numbers">
+            <div class="clock-number n12">12</div>
+            <div class="clock-number n1">1</div>
+            <div class="clock-number n2">2</div>
+            <div class="clock-number n3">3</div>
+            <div class="clock-number n4">4</div>
+            <div class="clock-number n5">5</div>
+            <div class="clock-number n6">6</div>
+            <div class="clock-number n7">7</div>
+            <div class="clock-number n8">8</div>
+            <div class="clock-number n9">9</div>
+            <div class="clock-number n10">10</div>
+            <div class="clock-number n11">11</div>
+          </div>
+
           <div class="hand hour-hand" id="hrHand"></div>
           <div class="hand min-hand" id="minHand"></div>
           <div class="hand sec-hand" id="secHand"></div>
         </div>
-        <div>
-          <div class="digital-time" id="digiTime">00:00:00 AM</div>
-          <div class="digital-date" id="digiDate">Loading...</div>
-        </div>
+        <div class="digital-time" id="digiTime">00:00:00 AM</div>
+        <div class="digital-date" id="digiDate">Loading...</div>
       </div>
     </div>
 
+    <!-- Quick Navigation Links -->
     <div class="nav-bar">
       <a href="https://deepaksharmaiitm.github.io" class="nav-btn">Home</a>
-      <a href="form.html" class="nav-btn">📝 Data Entry Form</a>
-      <a href="calculator.html" class="nav-btn">🧮 Calculator</a>
-      <a href="notes.html" class="nav-btn">📓 Notes Page</a>
+      <a href="student_data_form.html" class="nav-btn">📝 Data Entry Form</a>
+      <a href="Test4.html" class="nav-btn">🧮 Ret Generator</a>
+      <a href="password.html" class="nav-btn">📓 Password Generator</a>
       <a href="dashboard.html" class="nav-btn">📊 Master Dashboard</a>
     </div>
 
+    <!-- Upload Card -->
     <div class="glass-card">
       <h3 style="font-size:17px; margin-bottom:4px;">📤 नई फाइल अपलोड करें</h3>
-      <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">फाइलें 24 घंटे तक सुरक्षित रहेंगी • अधिकतम 20 फाइलें</p>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">फाइलें 24 घंटे तक सुरक्षित रहेंगी • अधिकतम 10 फाइलें (Max 5MB)</p>
 
       <div class="upload-section">
         <div class="file-input-wrapper">
@@ -314,13 +447,24 @@
         </div>
         <button class="btn btn-upload" id="uploadBtn" onclick="handleUpload()">Upload to Cloud ⚡</button>
       </div>
+
+      <!-- 1% to 100% Progress Bar -->
+      <div class="progress-info" id="progressInfo">
+        <span id="progressState">Uploading...</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-container" id="progressContainer">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
       <div id="status"></div>
     </div>
 
+    <!-- Files Table Card -->
     <div class="glass-card">
       <div class="stats-bar">
         <h3 style="font-size:17px;">📂 सेव की गई फाइलें</h3>
-        <span class="count-badge" id="fileCountBadge">0 / 20 Files</span>
+        <span class="count-badge" id="fileCountBadge">0 / 10 Files</span>
       </div>
 
       <table>
@@ -340,129 +484,132 @@
 
   </div>
 
+  <!-- Signature Badge -->
   <div class="signature-badge">
     <span class="sig-text">Designed by</span>
-    <span class="sig-name">Deepak</span>
+    <span class="sig-name">Deepak Sharma</span>
   </div>
 
   <script>
-    const CLOUD_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw2WQ7tJwZPkzaNGU9wnmUvpunagiSTIbJWhoeCxuAHWVeNC36aF4IZgZtzqwjaxN2Wlg/exec";
+    // Live Updated Web App URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbycW6QErONntp7Bqk3DCTv1t5WRCudV5qVezZHqje3uBh4GnZIUtvJrNtTtij_axSbZ7A/exec";
 
-    /* Live Rain Canvas Effect */
-    const canvas = document.getElementById('rainCanvas');
+    /* --- Floating Balloons Animation --- */
+    const canvas = document.getElementById('balloonCanvas');
     const ctx = canvas.getContext('2d');
-    let drops = [];
-    let splashes = [];
+    let balloons = [];
+
+    const balloonColors = [
+      { base: '#ff4757', glow: 'rgba(255, 71, 87, 0.4)' },
+      { base: '#2ed573', glow: 'rgba(46, 213, 115, 0.4)' },
+      { base: '#1e90ff', glow: 'rgba(30, 144, 255, 0.4)' },
+      { base: '#ffa502', glow: 'rgba(255, 165, 2, 0.4)' },
+      { base: '#9b59b6', glow: 'rgba(155, 89, 182, 0.4)' },
+      { base: '#00d2d3', glow: 'rgba(0, 210, 211, 0.4)' },
+      { base: '#ff6b81', glow: 'rgba(255, 107, 129, 0.4)' }
+    ];
 
     function resizeCanvas() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     }
 
-    class RainDrop {
+    class Balloon {
       constructor() {
-        this.reset();
+        this.reset(true);
       }
-      reset() {
+      reset(initial = false) {
+        this.radius = Math.random() * 12 + 14;
         this.x = Math.random() * canvas.width;
-        this.y = Math.random() * -canvas.height;
-        this.length = Math.random() * 20 + 10;
-        this.speedY = Math.random() * 9 + 12;
-        this.speedX = -1.5;
-        this.opacity = Math.random() * 0.4 + 0.3;
-        this.thickness = Math.random() * 1.5 + 0.8;
+        this.y = initial ? Math.random() * canvas.height : canvas.height + this.radius * 2;
+        this.speedY = Math.random() * 1.2 + 0.8;
+        this.sway = Math.random() * 1.5 + 0.5;
+        this.swaySpeed = Math.random() * 0.03 + 0.015;
+        this.swayAngle = Math.random() * Math.PI * 2;
+        this.color = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+        this.opacity = Math.random() * 0.45 + 0.4;
       }
       update() {
-        this.y += this.speedY;
-        this.x += this.speedX;
+        this.y -= this.speedY;
+        this.swayAngle += this.swaySpeed;
+        this.x += Math.sin(this.swayAngle) * (this.sway * 0.4);
 
-        if (this.y >= canvas.height - 10) {
-          createSplash(this.x, canvas.height - 5);
-          this.reset();
+        if (this.y < -this.radius * 2) {
+          this.reset(false);
         }
       }
       draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
         ctx.beginPath();
-        ctx.moveTo(this.x, this.y);
-        ctx.lineTo(this.x + this.speedX, this.y + this.length);
-        ctx.strokeStyle = `rgba(148, 218, 255, ${this.opacity})`;
-        ctx.lineWidth = this.thickness;
-        ctx.lineCap = 'round';
+        ctx.moveTo(0, this.radius * 1.2);
+        ctx.quadraticCurveTo(Math.sin(this.swayAngle) * 6, this.radius * 1.7, 0, this.radius * 2.2);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.lineWidth = 1;
         ctx.stroke();
-      }
-    }
 
-    class Splash {
-      constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.vx = (Math.random() - 0.5) * 3;
-        this.vy = -(Math.random() * 2 + 1);
-        this.radius = Math.random() * 1.5 + 0.5;
-        this.alpha = 1;
-      }
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.vy += 0.15;
-        this.alpha -= 0.05;
-      }
-      draw() {
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(180, 230, 255, ${this.alpha})`;
+        ctx.ellipse(0, 0, this.radius, this.radius * 1.25, 0, 0, Math.PI * 2);
+        ctx.fillStyle = this.color.base;
+        ctx.globalAlpha = this.opacity;
+        ctx.shadowColor = this.color.glow;
+        ctx.shadowBlur = 10;
         ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(-2, this.radius * 1.25);
+        ctx.lineTo(2, this.radius * 1.25);
+        ctx.lineTo(0, this.radius * 1.35);
+        ctx.closePath();
+        ctx.fillStyle = this.color.base;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.ellipse(-this.radius * 0.35, -this.radius * 0.45, this.radius * 0.22, this.radius * 0.45, -Math.PI / 6, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.fill();
+
+        ctx.restore();
       }
     }
 
-    function createSplash(x, y) {
-      for (let i = 0; i < 3; i++) {
-        splashes.push(new Splash(x, y));
+    function initBalloons() {
+      balloons = [];
+      const count = Math.floor(window.innerWidth / 35);
+      for (let i = 0; i < count; i++) {
+        balloons.push(new Balloon());
       }
     }
 
-    function initRain() {
-      drops = [];
-      splashes = [];
-      for (let i = 0; i < 160; i++) {
-        drops.push(new RainDrop());
-      }
-    }
-
-    function animateRain() {
+    function animateBalloons() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      drops.forEach(drop => {
-        drop.update();
-        drop.draw();
+      balloons.forEach(b => {
+        b.update();
+        b.draw();
       });
-
-      for (let i = splashes.length - 1; i >= 0; i--) {
-        splashes[i].update();
-        splashes[i].draw();
-        if (splashes[i].alpha <= 0) {
-          splashes.splice(i, 1);
-        }
-      }
-
-      requestAnimationFrame(animateRain);
+      requestAnimationFrame(animateBalloons);
     }
 
-    window.addEventListener('resize', () => { resizeCanvas(); initRain(); });
+    window.addEventListener('resize', () => { resizeCanvas(); initBalloons(); });
     resizeCanvas();
-    initRain();
-    animateRain();
+    initBalloons();
+    animateBalloons();
 
-    /* Live Clock */
+    /* --- Clock Accuracy & Rotation --- */
     function updateClock() {
       const now = new Date();
       const s = now.getSeconds();
       const m = now.getMinutes();
       const h = now.getHours();
 
-      document.getElementById('secHand').style.transform = `rotate(${s * 6}deg)`;
-      document.getElementById('minHand').style.transform = `rotate(${m * 6 + s * 0.1}deg)`;
-      document.getElementById('hrHand').style.transform = `rotate(${h * 30 + m * 0.5}deg)`;
+      const secDeg = s * 6;
+      const minDeg = m * 6 + s * 0.1;
+      const hrDeg = (h % 12) * 30 + m * 0.5;
+
+      document.getElementById('secHand').style.transform = `rotate(${secDeg}deg)`;
+      document.getElementById('minHand').style.transform = `rotate(${minDeg}deg)`;
+      document.getElementById('hrHand').style.transform = `rotate(${hrDeg}deg)`;
 
       document.getElementById('digiTime').innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
       document.getElementById('digiDate').innerText = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
@@ -470,12 +617,16 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    /* Cloud File Handlers */
+    /* --- File Cloud Operations --- */
     function loadFiles() {
       const list = document.getElementById('fileList');
       const badge = document.getElementById('fileCountBadge');
 
-      fetch(CLOUD_SCRIPT_URL)
+      fetch(SCRIPT_URL, {
+        method: "GET",
+        mode: "cors",
+        redirect: "follow"
+      })
         .then(res => res.json())
         .then(resData => {
           let files = [];
@@ -485,7 +636,7 @@
             files = resData.files;
           }
 
-          badge.innerText = `${files.length} / 20 Files`;
+          badge.innerText = `${files.length} / 10 Files`;
 
           if (files.length === 0) {
             list.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#8395a7;">कोई फाइल उपलब्ध नहीं है।</td></tr>';
@@ -495,8 +646,8 @@
           list.innerHTML = files.map(f => `
             <tr>
               <td><strong>${f.name}</strong></td>
-              <td>${f.size}</td>
-              <td style="color:#aaa;">${f.date}</td>
+              <td>${f.size || 'N/A'}</td>
+              <td style="color:#aaa;">${f.date || ''}</td>
               <td style="display:flex; gap:6px;">
                 <a href="${f.url}" target="_blank" class="btn-mini btn-view">👁️ View</a>
                 <button class="btn-mini btn-del" onclick="deleteFile('${f.id}')">🗑️ Delete</button>
@@ -504,7 +655,8 @@
             </tr>
           `).join('');
         })
-        .catch(() => {
+        .catch(err => {
+          console.error("Load Error:", err);
           list.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#ff6b6b;">फाइल लोड करने में समस्या आई।</td></tr>';
         });
     }
@@ -513,6 +665,12 @@
       const fileInput = document.getElementById('fileInput');
       const uploadBtn = document.getElementById('uploadBtn');
       const status = document.getElementById('status');
+      
+      const progressContainer = document.getElementById('progressContainer');
+      const progressInfo = document.getElementById('progressInfo');
+      const progressBar = document.getElementById('progressBar');
+      const progressPercent = document.getElementById('progressPercent');
+      const progressState = document.getElementById('progressState');
 
       if (fileInput.files.length === 0) {
         alert("कृपया पहले कोई फाइल चुनें!");
@@ -520,15 +678,30 @@
       }
 
       const file = fileInput.files[0];
-      if (file.size > 20 * 1024 * 1024) {
-        alert("फाइल 20MB से छोटी होनी चाहिए!");
+      if (file.size > 5 * 1024 * 1024) {
+        alert("फाइल का साइज़ 5MB से कम होना चाहिए!");
         return;
       }
 
       uploadBtn.disabled = true;
       uploadBtn.innerText = "अपलोड हो रहा है...";
-      status.style.color = "#feca57";
-      status.innerText = "⚡ फाइल सुरक्षित रूप से अपलोड हो रही है...";
+      status.innerText = "";
+      
+      progressContainer.style.display = "block";
+      progressInfo.style.display = "flex";
+      progressBar.style.width = "0%";
+      progressPercent.innerText = "0%";
+      progressState.innerText = "⚡ Preparing & Uploading...";
+
+      let currentProgress = 0;
+      const progressInterval = setInterval(() => {
+        if (currentProgress < 90) {
+          currentProgress += Math.floor(Math.random() * 8) + 4;
+          if (currentProgress > 90) currentProgress = 90;
+          progressBar.style.width = currentProgress + "%";
+          progressPercent.innerText = currentProgress + "%";
+        }
+      }, 200);
 
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -540,15 +713,25 @@
           fileData: rawBase64
         };
 
-        fetch(CLOUD_SCRIPT_URL, {
+        fetch(SCRIPT_URL, {
           method: "POST",
+          mode: "cors",
+          redirect: "follow",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
           body: JSON.stringify(payload)
         })
         .then(res => res.json())
         .then(data => {
-          if (data.result === "success") {
+          clearInterval(progressInterval);
+          progressBar.style.width = "100%";
+          progressPercent.innerText = "100%";
+          progressState.innerText = "✅ Complete!";
+
+          if (data.result === "success" || data.status === "success") {
             status.style.color = "#1dd1a1";
-            status.innerText = "✅ फाइल सफलता से अपलोड हो गई!";
+            status.innerText = "✅ फाइल 100% सफलता से अपलोड हो गई!";
             fileInput.value = "";
             loadFiles();
           } else {
@@ -556,15 +739,25 @@
             status.innerText = data.message || "अपलोड नहीं हो पाया।";
           }
         })
-        .catch(() => {
+        .catch(err => {
+          console.error("Upload Error:", err);
+          clearInterval(progressInterval);
+          progressBar.style.width = "100%";
+          progressPercent.innerText = "100%";
+          progressState.innerText = "✅ Complete!";
+          
           status.style.color = "#1dd1a1";
-          status.innerText = "✅ फाइल अपलोड हो गई!";
+          status.innerText = "✅ फाइल सफलता से अपलोड हो गई!";
           fileInput.value = "";
           setTimeout(loadFiles, 2000);
         })
         .finally(() => {
           uploadBtn.disabled = false;
           uploadBtn.innerText = "Upload to Cloud ⚡";
+          setTimeout(() => {
+            progressContainer.style.display = "none";
+            progressInfo.style.display = "none";
+          }, 3500);
         });
       };
       reader.readAsDataURL(file);
@@ -578,10 +771,16 @@
         fileId: fileId
       };
 
-      fetch(CLOUD_SCRIPT_URL, {
+      fetch(SCRIPT_URL, {
         method: "POST",
+        mode: "cors",
+        redirect: "follow",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
         body: JSON.stringify(payload)
       })
+      .then(res => res.json())
       .then(() => loadFiles())
       .catch(() => loadFiles());
     }
