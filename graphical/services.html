@@ -1,29 +1,168 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Services | Graphical Site</title><style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;min-height:100vh;color:#fff;overflow-x:hidden;
-background:linear-gradient(135deg,#09001f,#001b3d,#19002f,#003b46);background-size:400% 400%;animation:bg 15s ease infinite}
-@keyframes bg{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-body:before,body:after{content:"";position:fixed;width:320px;height:320px;border-radius:50%;filter:blur(70px);opacity:.35;z-index:-1}
-body:before{background:#00d9ff;top:-80px;left:-80px} body:after{background:#b400ff;right:-80px;bottom:-80px}
-nav{position:sticky;top:15px;z-index:5;margin:15px auto;width:min(1100px,94%);padding:14px 18px;border:1px solid #ffffff30;border-radius:22px;background:#ffffff12;backdrop-filter:blur(18px);display:flex;justify-content:space-between;align-items:center;box-shadow:0 12px 35px #0005}
-.logo{font-size:22px;font-weight:800;letter-spacing:1px}.links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.links a{color:#fff;text-decoration:none;padding:10px 14px;border-radius:14px;transition:.25s}.links a:hover,.links a.active{background:#ffffff22;box-shadow:0 0 18px #00d9ff55}
-main{width:min(1100px,92%);margin:55px auto 30px}.hero{text-align:center;padding:55px 20px}
-h1{font-size:clamp(38px,7vw,72px);line-height:1.05;margin-bottom:18px;text-shadow:0 0 25px #00d9ff55}
-.hero p{font-size:18px;opacity:.85;max-width:700px;margin:auto;line-height:1.6}
-.btn{display:inline-block;margin-top:28px;padding:13px 22px;border-radius:16px;background:linear-gradient(90deg,#00c6ff,#a855f7);color:#fff;text-decoration:none;font-weight:bold;box-shadow:0 8px 30px #00c6ff33}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
-.card{padding:28px;border-radius:24px;background:#ffffff12;border:1px solid #ffffff22;backdrop-filter:blur(16px);box-shadow:0 15px 35px #0003;transition:.3s}
-.card:hover{transform:translateY(-7px);border-color:#ffffff55}.icon{font-size:38px;margin-bottom:15px}.card h2{margin-bottom:10px}.card p{opacity:.75;line-height:1.55}
-footer{text-align:center;padding:30px;opacity:.6}
-</style></head>
-<body><nav><div class="logo">✨ MY GRAPHICAL SITE</div><div class="links">
-<a href="index.html" data-p="Home">Home</a><a href="dashboard.html" data-p="Dashboard">Dashboard</a>
-<a href="services.html" data-p="Services">Services</a><a href="gallery.html" data-p="Gallery">Gallery</a><a href="contact.html" data-p="Contact">Contact</a>
-</div></nav><main><section class="hero"><h1>🛠️ Services</h1><p>A stylish services page for displaying your features or tools.</p><a class="btn" href="index.html">← Back to Home</a></section>
-<section class="grid"><div class="card"><div class="icon">💻</div><h2>Web Tools</h2><p>Add your HTML utilities and offline tools.</p></div><div class="card"><div class="icon">📄</div><h2>Documents</h2><p>Create document and PDF related shortcuts.</p></div><div class="card"><div class="icon">🔐</div><h2>Security</h2><p>Add secure tools and useful security resources.</p></div></section></main><footer>© 2026 My Graphical Site • HTML Offline Website</footer>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RET Generator</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family:'Segoe UI',Arial,sans-serif;
+    background:linear-gradient(135deg,#a1c4fd 0%,#c2e9fb 30%,#d4fc79 70%,#f6d365 100%);
+    background-attachment:fixed;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+.panel {
+    width:100%;
+    max-width:900px;
+    background:rgba(255,255,255,0.25);
+    backdrop-filter:blur(15px);
+    border-radius:24px;
+    padding:40px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.15);
+}
+h1 { text-align:center; color:blue; margin-bottom:10px; }
+h2 { text-align:center; color:red; margin-bottom:30px; }
+label { display:block; margin-top:15px; font-weight:bold; color:green; }
+input[type=text], textarea, input[type=file] {
+    width:100%; padding:12px; margin-top:8px; border-radius:10px; border:1px solid #ccc; font-size:15px;
+}
+textarea { height:120px; resize:vertical; }
+
+button.main-btn {
+    width:100%; margin-top:25px; padding:15px; border:none; border-radius:12px;
+    background:#2563eb; color:white; font-size:16px; font-weight:bold; cursor:pointer;
+}
+button.main-btn:hover { background:#1d4ed8; }
+.bottom-right-text { position:fixed; bottom:20px; right:20px; font-size:18px; font-weight:bold; color:#333; }
+</style>
+</head>
+<body>
+
+<div class="panel">
+    <h1>RED Generator</h1>
+    <h2>.PXF to .RET File Converter Tool</h2>
+
+    <label>1. Select Source .PXF File</label>
+    <input type="file" id="uploadFile" accept=".PXF,.txt" onchange="processFile()">
+
+    <label>2. .RET File Name</label>
+    <input type="text" id="fileName" value="">
+
+    <label>3. Filtered RET Content Preview</label>
+    <textarea id="fileContent" placeholder=".PXF File Data..."></textarea>
+    <p style="color: red; font-weight: bold; text-align: center; margin-top: 10px;">
+        Please Check Data before Submitting
+    </p>
+
+    <button class="main-btn" onclick="generateAndDownloadFile()">.RET File Download</button>
+
+</div>
+
+<div class="bottom-right-text">Deepak Sharma</div>
+
 <script>
-document.querySelectorAll('.links a').forEach(a=>{if(a.dataset.p==='Services')a.classList.add('active')})
-</script></body></html>
+window.onload = function() {
+    setAutomaticFileName();
+};
+
+function setAutomaticFileName() {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    const currentDateStr = `${day}${month}${year}`;
+    
+    document.getElementById("fileName").value = `477844001_${currentDateStr}_14_01.RET`;
+}
+
+function processFile() {
+    const fileInput = document.getElementById('uploadFile');
+    if (fileInput.files.length === 0) return;
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        const text = e.target.result;
+        let outputLines = [];
+
+        const rawLines = text.split(/\r?\n/);
+
+        for (let i = 0; i < rawLines.length; i++) {
+            let line = rawLines[i].trim();
+            if (line === "") continue;
+
+            // Agar ek hi line mein data jud gaya hai, to identifier 477844001 se alag karein
+            let records = line.split(/(?=477844001)/g);
+
+            for (let record of records) {
+                record = record.trim();
+                if (!record) continue;
+
+                let values = record.split('|');
+
+                // Check standard 20 fields format
+                if (values.length >= 20) {
+                    let val2 = values[1] ? values[1].trim() : "";
+                    let val3 = values[2] ? values[2].trim() : "";
+                    let val5 = values[4] ? values[4].trim() : ""; 
+                    let val8 = values[7] ? values[7].trim() : "";
+                    let fixed00 = values[18] ? values[18].trim() : "00";
+                    let val20 = values[19] ? values[19].trim() : "";
+
+                    outputLines.push(`${val2}|${val5}|${val3}|${val8}|${fixed00}|${val20}`);
+                } 
+                // Agar data pehle se 6 fields ke layout mein hai
+                else if (values.length >= 6) {
+                    let val2 = values[0] ? values[0].trim() : "";
+                    let val5 = values[1] ? values[1].trim() : "";
+                    let val3 = values[2] ? values[2].trim() : "";
+                    let val8 = values[3] ? values[3].trim() : "";
+                    let fixed00 = values[4] ? values[4].trim() : "00";
+                    let val20 = values[5] ? values[5].trim() : "";
+
+                    outputLines.push(`${val2}|${val5}|${val3}|${val8}|${fixed00}|${val20}`);
+                }
+            }
+        }
+
+        if(outputLines.length === 0) {
+            alert("Warning: Valid data not found!");
+            return;
+        }
+
+        document.getElementById('fileContent').value = outputLines.join('\r\n');
+    };
+    reader.readAsText(file);
+}
+
+function generateAndDownloadFile() {
+    var fileName = document.getElementById("fileName").value.trim();
+    var fileContent = document.getElementById("fileContent").value;
+
+    if (fileContent == "") {
+        alert("Please upload .PXF file.");
+        return;
+    }
+
+    const blob = new Blob([fileContent], {type: "text/plain;charset=utf-8"});
+    const link = document.createElement("a");
+    
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+    
+    alert(".RET File Download Folder mein successfully bhej di gayi hai!");
+}
+</script>
+</body>
+</html>
