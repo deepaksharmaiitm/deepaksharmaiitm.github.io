@@ -1,168 +1,316 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RET Generator</title>
-<style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-    font-family:'Segoe UI',Arial,sans-serif;
-    background:linear-gradient(135deg,#a1c4fd 0%,#c2e9fb 30%,#d4fc79 70%,#f6d365 100%);
-    background-attachment:fixed;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:20px;
-}
-.panel {
-    width:100%;
-    max-width:900px;
-    background:rgba(255,255,255,0.25);
-    backdrop-filter:blur(15px);
-    border-radius:24px;
-    padding:40px;
-    box-shadow:0 20px 40px rgba(0,0,0,0.15);
-}
-h1 { text-align:center; color:blue; margin-bottom:10px; }
-h2 { text-align:center; color:red; margin-bottom:30px; }
-label { display:block; margin-top:15px; font-weight:bold; color:green; }
-input[type=text], textarea, input[type=file] {
-    width:100%; padding:12px; margin-top:8px; border-radius:10px; border:1px solid #ccc; font-size:15px;
-}
-textarea { height:120px; resize:vertical; }
-
-button.main-btn {
-    width:100%; margin-top:25px; padding:15px; border:none; border-radius:12px;
-    background:#2563eb; color:white; font-size:16px; font-weight:bold; cursor:pointer;
-}
-button.main-btn:hover { background:#1d4ed8; }
-.bottom-right-text { position:fixed; bottom:20px; right:20px; font-size:18px; font-weight:bold; color:#333; }
-</style>
+  <meta charset="UTF-8">
+  <title>Google Drive/Sheets Connected Portal</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 20px; margin: 0; }
+    .container { max-width: 600px; margin: auto; }
+    .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    .admin-card { max-width: 900px; margin: auto; }
+    input, button { width: 100%; padding: 11px; margin: 8px 0; box-sizing: border-box; border-radius: 5px; border: 1px solid #ccc; font-size: 14px; }
+    button { font-weight: bold; cursor: pointer; border: none; }
+    .btn-login { background: #0066cc; color: white; }
+    .btn-reg { background: #28a745; color: white; }
+    .btn-submit { background: #007bff; color: white; }
+    .btn-publish { background: #6f42c1; color: white; }
+    .btn-logout { background: #dc3545; color: white; width: auto; padding: 8px 16px; }
+    .hidden { display: none; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 13px; }
+    th { background: #f8f9fa; }
+    .badge-locked { background: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+    .badge-admin { background: #ffeeba; color: #856404; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+    .form-box { background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
+    .loader { color: #0066cc; font-weight: bold; text-align: center; }
+  </style>
 </head>
 <body>
 
-<div class="panel">
-    <h1>RED Generator</h1>
-    <h2>.PXF to .RET File Converter Tool</h2>
+<div class="container" id="mainWrapper">
 
-    <label>1. Select Source .PXF File</label>
-    <input type="file" id="uploadFile" accept=".PXF,.txt" onchange="processFile()">
+  <!-- 1. LOGIN / SIGNUP SCREEN -->
+  <div id="authScreen" class="card">
+    <h2 style="text-align: center; margin-top: 0;">Drive Connected Portal</h2>
+    <input type="text" id="authUsername" placeholder="Username (Admin: admin)">
+    <input type="password" id="authPassword" placeholder="Password (Admin: admin123)">
+    
+    <button class="btn-login" onclick="handleLogin()">Login</button>
+    <button class="btn-reg" onclick="handleRegister()">Register (Naya User)</button>
+    <p style="font-size: 12px; color: #666; text-align: center;">Admin Login: <b>admin</b> | Password: <b>admin123</b></p>
+  </div>
 
-    <label>2. .RET File Name</label>
-    <input type="text" id="fileName" value="">
+  <!-- 2. USER SCREEN -->
+  <div id="userScreen" class="card hidden">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h3>Namaste, <span id="userGreeting" style="color: #0066cc;"></span></h3>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+    <hr style="margin: 15px 0;">
 
-    <label>3. Filtered RET Content Preview</label>
-    <textarea id="fileContent" placeholder=".PXF File Data..."></textarea>
-    <p style="color: red; font-weight: bold; text-align: center; margin-top: 10px;">
-        Please Check Data before Submitting
-    </p>
+    <div id="userLoadingMsg" class="loader hidden">Google Drive/Sheet se verify ho raha hai...</div>
 
-    <button class="main-btn" onclick="generateAndDownloadFile()">.RET File Download</button>
+    <!-- User Form View -->
+    <div id="userFormArea">
+      <h4 id="userFormTitle" style="color: #333; margin-top: 0;"></h4>
+      <div id="userDynamicInputs"></div>
+      <button class="btn-submit" id="submitBtn" onclick="submitUserForm()">Final Submit (Google Drive me Save Karein)</button>
+    </div>
+
+    <!-- User Locked View -->
+    <div id="userLockedArea" class="hidden">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h4 style="color: #28a745; margin: 0;">Aapka Data Jamā Ho Chuka Hai</h4>
+        <span class="badge-locked">Submitted (Locked)</span>
+      </div>
+      <p style="color: #666; font-size: 13px;">Yeh record Google Sheet me lock hai aur edit nahi kiya ja sakta.</p>
+      <div id="lockedDataContainer" class="form-box"></div>
+    </div>
+  </div>
+
+  <!-- 3. ADMIN SCREEN -->
+  <div id="adminScreen" class="card admin-card hidden">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h2 style="margin: 0; color: #6f42c1;">Admin Control Center</h2>
+        <span class="badge-admin">Google Sheets / Drive Database</span>
+      </div>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+    <hr style="margin: 15px 0;">
+
+    <!-- Naya Form Banane Ka Tool -->
+    <div class="form-box">
+      <h4 style="margin-top: 0;">1. Nayi Jaankari Mangne Ke Liye Naya Form Banayein</h4>
+      <input type="text" id="adminNewFormTitle" placeholder="Form Title (e.g. Admission Form / KYC Update)">
+      <input type="text" id="adminNewFormFields" placeholder="Fields comma lagakar likhein (e.g. Full Name, Father Name, Mobile, Address)">
+      <button class="btn-publish" onclick="adminPublishForm()">Publish Form (Users Ke Liye)</button>
+    </div>
+
+    <!-- Google Sheet Live Data Table -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 25px;">
+      <h3 style="margin: 0;">2. Google Sheet me Jama Hua Data</h3>
+      <button onclick="fetchAdminDataFromDrive()" style="width:auto; padding:6px 14px; background:#17a2b8; color:white;">Refresh Data</button>
+    </div>
+    
+    <div id="adminDataTableArea" style="overflow-x: auto;">
+      <p class="loader">Sheet se data load ho raha hai...</p>
+    </div>
+  </div>
 
 </div>
 
-<div class="bottom-right-text">Deepak Sharma</div>
-
 <script>
-window.onload = function() {
-    setAutomaticFileName();
-};
+  // Aapka Google Apps Script Web App URL
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzOMEf3NBIF5_cU4uA3Fhe8lndrp7noB-YuVDqM5mRpjsbLApZvvvFeO7k5-bZr-wkD/exec";
 
-function setAutomaticFileName() {
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const year = today.getFullYear();
-    const currentDateStr = `${day}${month}${year}`;
-    
-    document.getElementById("fileName").value = `477844001_${currentDateStr}_14_01.RET`;
-}
+  let loggedUser = null;
 
-function processFile() {
-    const fileInput = document.getElementById('uploadFile');
-    if (fileInput.files.length === 0) return;
+  // Default Form Configuration
+  if (!localStorage.getItem('portal_form_config')) {
+    localStorage.setItem('portal_form_config', JSON.stringify({
+      formId: 'form_drive_1',
+      title: 'General Registration Form',
+      fields: ['Full Name', 'Address', 'Contact Number']
+    }));
+  }
 
-    const file = fileInput.files[0];
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-        const text = e.target.result;
-        let outputLines = [];
+  // --- 1. AUTHENTICATION ---
+  function handleRegister() {
+    const u = document.getElementById('authUsername').value.trim();
+    const p = document.getElementById('authPassword').value.trim();
+    if (!u || !p) return alert("Username aur Password dono bharein.");
+    if (u.toLowerCase() === 'admin') return alert("Admin reserved hai.");
 
-        const rawLines = text.split(/\r?\n/);
+    if (localStorage.getItem('user_acc_' + u)) return alert("User pehle se registered hai! Login karein.");
+    localStorage.setItem('user_acc_' + u, JSON.stringify({ password: p }));
+    alert("Registration safal hua! Ab Login karein.");
+  }
 
-        for (let i = 0; i < rawLines.length; i++) {
-            let line = rawLines[i].trim();
-            if (line === "") continue;
+  function handleLogin() {
+    const u = document.getElementById('authUsername').value.trim();
+    const p = document.getElementById('authPassword').value.trim();
 
-            // Agar ek hi line mein data jud gaya hai, to identifier 477844001 se alag karein
-            let records = line.split(/(?=477844001)/g);
-
-            for (let record of records) {
-                record = record.trim();
-                if (!record) continue;
-
-                let values = record.split('|');
-
-                // Check standard 20 fields format
-                if (values.length >= 20) {
-                    let val2 = values[1] ? values[1].trim() : "";
-                    let val3 = values[2] ? values[2].trim() : "";
-                    let val5 = values[4] ? values[4].trim() : ""; 
-                    let val8 = values[7] ? values[7].trim() : "";
-                    let fixed00 = values[18] ? values[18].trim() : "00";
-                    let val20 = values[19] ? values[19].trim() : "";
-
-                    outputLines.push(`${val2}|${val5}|${val3}|${val8}|${fixed00}|${val20}`);
-                } 
-                // Agar data pehle se 6 fields ke layout mein hai
-                else if (values.length >= 6) {
-                    let val2 = values[0] ? values[0].trim() : "";
-                    let val5 = values[1] ? values[1].trim() : "";
-                    let val3 = values[2] ? values[2].trim() : "";
-                    let val8 = values[3] ? values[3].trim() : "";
-                    let fixed00 = values[4] ? values[4].trim() : "00";
-                    let val20 = values[5] ? values[5].trim() : "";
-
-                    outputLines.push(`${val2}|${val5}|${val3}|${val8}|${fixed00}|${val20}`);
-                }
-            }
-        }
-
-        if(outputLines.length === 0) {
-            alert("Warning: Valid data not found!");
-            return;
-        }
-
-        document.getElementById('fileContent').value = outputLines.join('\r\n');
-    };
-    reader.readAsText(file);
-}
-
-function generateAndDownloadFile() {
-    var fileName = document.getElementById("fileName").value.trim();
-    var fileContent = document.getElementById("fileContent").value;
-
-    if (fileContent == "") {
-        alert("Please upload .PXF file.");
-        return;
+    if (u.toLowerCase() === 'admin' && p === 'admin123') {
+      loggedUser = 'admin';
+      loadAdminView();
+      return;
     }
 
-    const blob = new Blob([fileContent], {type: "text/plain;charset=utf-8"});
-    const link = document.createElement("a");
+    const stored = localStorage.getItem('user_acc_' + u);
+    if (!stored) return alert("Account nahi mila! Pehle Register karein.");
+    if (JSON.parse(stored).password !== p) return alert("Galat Password!");
+
+    loggedUser = u;
+    loadUserView();
+  }
+
+  // --- 2. USER WORKFLOW ---
+  async function loadUserView() {
+    document.getElementById('authScreen').classList.add('hidden');
+    document.getElementById('adminScreen').classList.add('hidden');
+    document.getElementById('userScreen').classList.remove('hidden');
+    document.getElementById('mainWrapper').className = 'container';
+    document.getElementById('userGreeting').innerText = loggedUser;
+
+    const currentForm = JSON.parse(localStorage.getItem('portal_form_config'));
     
-    link.href = URL.createObjectURL(blob);
-    link.download = fileName;
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
-    
-    alert(".RET File Download Folder mein successfully bhej di gayi hai!");
-}
+    // Form Layout Render
+    document.getElementById('userFormTitle').innerText = currentForm.title;
+    let inputsHtml = "";
+    currentForm.fields.forEach(field => {
+      const fieldId = 'input_' + field.replace(/\s+/g, '_');
+      inputsHtml += `<label><b>${field}:</b></label><input type="text" id="${fieldId}" placeholder="${field} bharein">`;
+    });
+    document.getElementById('userDynamicInputs').innerHTML = inputsHtml;
+
+    // Check Drive Database for submission status
+    document.getElementById('userLoadingMsg').classList.remove('hidden');
+    document.getElementById('userFormArea').classList.add('hidden');
+
+    try {
+      const res = await fetch(SCRIPT_URL);
+      const result = await res.json();
+      document.getElementById('userLoadingMsg').classList.add('hidden');
+
+      const userRecord = result.data.find(r => r.username === loggedUser && r.formTitle === currentForm.title);
+
+      if (userRecord) {
+        // Locked Mode
+        document.getElementById('userLockedArea').classList.remove('hidden');
+        let html = `<p><strong>Form:</strong> ${userRecord.formTitle}</p><hr style="border:0; border-top:1px solid #ddd;">`;
+        for (const [k, v] of Object.entries(userRecord.responses)) {
+          html += `<p><strong>${k}:</strong> ${v}</p>`;
+        }
+        document.getElementById('lockedDataContainer').innerHTML = html;
+      } else {
+        // Input Mode
+        document.getElementById('userLockedArea').classList.add('hidden');
+        document.getElementById('userFormArea').classList.remove('hidden');
+      }
+    } catch(err) {
+      document.getElementById('userLoadingMsg').classList.add('hidden');
+      document.getElementById('userFormArea').classList.remove('hidden');
+    }
+  }
+
+  async function submitUserForm() {
+    const currentForm = JSON.parse(localStorage.getItem('portal_form_config'));
+    const submittedValues = {};
+    let isBlank = false;
+
+    currentForm.fields.forEach(field => {
+      const fieldId = 'input_' + field.replace(/\s+/g, '_');
+      const val = document.getElementById(fieldId).value.trim();
+      if (!val) isBlank = true;
+      submittedValues[field] = val;
+    });
+
+    if (isBlank) return alert("Sabhi fields bharna anivarya hai.");
+
+    const btn = document.getElementById('submitBtn');
+    btn.innerText = "Google Drive me save ho raha hai...";
+    btn.disabled = true;
+
+    const payload = {
+      username: loggedUser,
+      formTitle: currentForm.title,
+      responses: submittedValues
+    };
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      alert("Data Google Drive/Sheet me safaltapoorvak lock ho gaya!");
+      location.reload();
+    } catch (err) {
+      alert("Google Drive me save karte waqt dikkat aayi.");
+      btn.disabled = false;
+      btn.innerText = "Final Submit";
+    }
+  }
+
+  // --- 3. ADMIN WORKFLOW ---
+  function loadAdminView() {
+    document.getElementById('authScreen').classList.add('hidden');
+    document.getElementById('userScreen').classList.add('hidden');
+    document.getElementById('adminScreen').classList.remove('hidden');
+    document.getElementById('mainWrapper').className = 'container admin-card';
+
+    fetchAdminDataFromDrive();
+  }
+
+  async function fetchAdminDataFromDrive() {
+    const container = document.getElementById('adminDataTableArea');
+    container.innerHTML = "<p class='loader'>Google Sheet se live data fetch ho raha hai...</p>";
+
+    try {
+      const res = await fetch(SCRIPT_URL);
+      const result = await res.json();
+      const records = result.data || [];
+
+      if (records.length === 0) {
+        container.innerHTML = "<p style='color:#666; margin-top:15px;'>Google Sheet me abhi koi data nahi hai.</p>";
+        return;
+      }
+
+      let html = `<table>
+        <tr>
+          <th>Username</th>
+          <th>Form Name</th>
+          <th>Submitted Details</th>
+          <th>Timestamp</th>
+        </tr>`;
+
+      records.forEach(row => {
+        let detailsText = "";
+        for (const [k, v] of Object.entries(row.responses)) {
+          detailsText += `<b>${k}:</b> ${v}<br>`;
+        }
+
+        html += `<tr>
+          <td><b style="color:#0066cc;">${row.username}</b></td>
+          <td>${row.formTitle}</td>
+          <td>${detailsText}</td>
+          <td>${row.time}</td>
+        </tr>`;
+      });
+
+      html += `</table>`;
+      container.innerHTML = html;
+    } catch(err) {
+      container.innerHTML = "<p style='color:red;'>Google Sheet se data load nahi ho paya. Kripya check karein ki Script 'Anyone' access par deploy hai.</p>";
+    }
+  }
+
+  function adminPublishForm() {
+    const title = document.getElementById('adminNewFormTitle').value.trim();
+    const fieldsRaw = document.getElementById('adminNewFormFields').value.trim();
+
+    if (!title || !fieldsRaw) return alert("Form ka Title aur Fields dono bharna zaroori hai.");
+
+    const fieldsArray = fieldsRaw.split(',').map(f => f.trim()).filter(Boolean);
+    const newConfig = {
+      formId: 'form_' + Date.now(),
+      title: title,
+      fields: fieldsArray
+    };
+
+    localStorage.setItem('portal_form_config', JSON.stringify(newConfig));
+    alert("Naya form safaltapoorvak publish ho gaya!");
+    document.getElementById('adminNewFormTitle').value = "";
+    document.getElementById('adminNewFormFields').value = "";
+  }
+
+  function logout() {
+    location.reload();
+  }
 </script>
+
 </body>
 </html>
