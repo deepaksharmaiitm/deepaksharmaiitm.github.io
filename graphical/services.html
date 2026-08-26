@@ -2,378 +2,674 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <title>8-Column Dynamic Google Sheets Portal</title>
+  <title>Smart Portal - Multi-Column & Excel Export</title>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f7; padding: 20px; margin: 0; }
-    .container { max-width: 650px; margin: auto; }
-    .admin-wide { max-width: 1100px; }
-    .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-top: 15px; }
-    
-    .portal-tabs { display: flex; gap: 10px; margin-bottom: 10px; }
-    .tab-btn { flex: 1; padding: 12px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; background: #cbd5e1; color: #334155; font-size: 15px; }
-    .tab-btn.active-user { background: #0066cc; color: white; }
-    .tab-btn.active-admin { background: #6f42c1; color: white; }
+    :root {
+      --primary-color: #6366f1;
+      --accent-color: #06b6d4;
+    }
 
-    input, button { width: 100%; padding: 10px; margin: 6px 0; box-sizing: border-box; border-radius: 5px; border: 1px solid #ccc; font-size: 14px; }
-    button { font-weight: bold; cursor: pointer; border: none; }
-    .btn-user-login { background: #0066cc; color: white; }
-    .btn-user-reg { background: #28a745; color: white; }
-    .btn-admin-login { background: #6f42c1; color: white; }
-    .btn-submit { background: #0d6efd; color: white; }
-    .btn-publish { background: #198754; color: white; padding: 12px; font-size: 15px; }
-    .btn-logout { background: #dc3545; color: white; width: auto; padding: 8px 16px; }
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+      min-height: 100vh;
+      padding: 25px 15px;
+      margin: 0;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    #particleCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .container {
+      max-width: 780px;
+      margin: auto;
+      position: relative;
+      z-index: 2;
+    }
+    .admin-wide { max-width: 1150px; }
+    
+    .card {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      margin-top: 15px;
+      color: #ffffff;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .portal-tabs { display: flex; gap: 12px; margin-bottom: 15px; }
+    .tab-btn {
+      flex: 1;
+      padding: 14px;
+      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 14px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 15px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+    .tab-btn.active-user {
+      background: rgba(99, 102, 241, 0.4);
+      color: #ffffff;
+      border-color: #818cf8;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+    }
+    .tab-btn.active-admin {
+      background: rgba(236, 72, 153, 0.4);
+      color: #ffffff;
+      border-color: #f472b6;
+      box-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
+    }
+
+    .form-grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (max-width: 600px) {
+      .form-grid-2col { grid-template-columns: 1fr; }
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      margin-top: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
+      color: #ffffff;
+      font-size: 14px;
+      outline: none;
+      transition: 0.3s;
+    }
+    input::placeholder { color: rgba(255, 255, 255, 0.6); }
+    input:focus {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: #818cf8;
+      box-shadow: 0 0 15px rgba(129, 140, 248, 0.4);
+    }
+    
+    button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+    button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    
+    .btn-user-login { background: linear-gradient(135deg, #4f46e5, #06b6d4); color: white; }
+    .btn-user-reg { background: linear-gradient(135deg, #059669, #10b981); color: white; }
+    .btn-admin-login { background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; }
+    .btn-submit { background: linear-gradient(135deg, #3b82f6, #06b6d4); color: white; font-size: 16px; padding: 14px; }
+    .btn-publish { background: linear-gradient(135deg, #10b981, #3b82f6); color: white; padding: 12px; }
+    .btn-reset-pass { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 11px; }
+    .btn-export { background: linear-gradient(135deg, #059669, #10b981); color: white; width: auto; padding: 8px 18px; border-radius: 8px; }
+    .btn-refresh { background: #6366f1; color: white; width: auto; padding: 8px 16px; border-radius: 8px; }
+    .btn-add-field { background: rgba(99, 102, 241, 0.25); color: #c7d2fe; border: 1px dashed #818cf8; width: auto; padding: 8px 16px; }
+    .btn-remove-field { background: rgba(239, 68, 68, 0.3); color: #fca5a5; width: auto; padding: 8px 12px; }
+    .btn-logout { background: rgba(239, 68, 68, 0.8); color: white; width: auto; padding: 8px 18px; }
+
     .hidden { display: none; }
     
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
-    th, td { border: 1px solid #dee2e6; padding: 8px; text-align: left; font-size: 12px; }
-    th { background: #f8f9fa; font-weight: 600; }
-    .badge-locked { background: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .form-box { background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
-    .loader { color: #0066cc; font-weight: bold; text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; background: rgba(0, 0, 0, 0.25); border-radius: 10px; overflow: hidden; }
+    th, td { border: 1px solid rgba(255, 255, 255, 0.12); padding: 12px 10px; text-align: left; font-size: 13px; color: #f1f5f9; }
+    th { background: rgba(255, 255, 255, 0.1); color: #e2e8f0; font-weight: 700; white-space: nowrap; }
+    tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.04); }
+    
+    .badge-locked { background: rgba(16, 185, 129, 0.25); color: #6ee7b7; border: 1px solid #10b981; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 12px; }
+    .form-box { background: rgba(0, 0, 0, 0.2); padding: 20px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.15); margin-bottom: 20px; }
+    .field-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .loader { color: #818cf8; font-weight: 700; text-align: center; margin: 15px 0; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
 
-<div class="container" id="mainWrapper">
+  <canvas id="particleCanvas"></canvas>
 
-  <!-- TOP SWITCH TABS -->
-  <div class="portal-tabs" id="tabContainer">
-    <button class="tab-btn active-user" id="userTabBtn" onclick="switchPortal('user')">👤 User Portal</button>
-    <button class="tab-btn" id="adminTabBtn" onclick="switchPortal('admin')">🔐 Admin Portal</button>
-  </div>
+  <div class="container" id="mainWrapper">
 
-  <!-- 1. USER AUTH SCREEN -->
-  <div id="userAuthScreen" class="card">
-    <h2 style="color: #0066cc; margin-top: 0; text-align: center;">User Login & Register</h2>
-    <input type="text" id="userUsername" placeholder="Username">
-    <input type="password" id="userPassword" placeholder="Password">
-    <button class="btn-user-login" onclick="handleUserLogin()">Login (User)</button>
-    <button class="btn-user-reg" onclick="handleUserRegister()">Naya Account Banayein (Register)</button>
-  </div>
-
-  <!-- 2. ADMIN AUTH SCREEN -->
-  <div id="adminAuthScreen" class="card hidden">
-    <h2 style="color: #6f42c1; margin-top: 0; text-align: center;">Admin Secure Login</h2>
-    <input type="text" id="adminUsername" placeholder="Admin Username (admin)">
-    <input type="password" id="adminPassword" placeholder="Admin Password (admin123)">
-    <button class="btn-admin-login" onclick="handleAdminLogin()">Secure Admin Login</button>
-  </div>
-
-  <!-- 3. USER DASHBOARD -->
-  <div id="userDashboard" class="card hidden">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3>Namaste, <span id="userGreeting" style="color: #0066cc;"></span></h3>
-      <button class="btn-logout" onclick="logout()">Logout</button>
-    </div>
-    <hr style="margin: 15px 0;">
-
-    <div id="userLoadingMsg" class="loader hidden">Google Drive/Sheet se record verify ho raha hai...</div>
-
-    <!-- Active Form Fill Area -->
-    <div id="userFormArea">
-      <h4 id="userFormTitle" style="color: #333; margin-top: 0;"></h4>
-      <div id="userDynamicInputs"></div>
-      <button class="btn-submit" id="submitBtn" onclick="submitUserForm()">Submit & Lock Data</button>
+    <!-- PORTAL TABS -->
+    <div class="portal-tabs" id="tabContainer">
+      <button class="tab-btn active-user" id="userTabBtn" onclick="switchPortal('user')">👤 User Portal</button>
+      <button class="tab-btn" id="adminTabBtn" onclick="switchPortal('admin')">🔐 Admin Portal</button>
     </div>
 
-    <!-- Read-Only Locked View -->
-    <div id="userLockedArea" class="hidden">
+    <!-- 1. USER AUTH -->
+    <div id="userAuthScreen" class="card" style="max-width: 480px; margin: auto;">
+      <h2 style="color: #818cf8; margin-top: 0; text-align: center;">User Login & Register</h2>
+      <input type="text" id="userUsername" placeholder="Username">
+      <input type="password" id="userPassword" placeholder="Password">
+      <button class="btn-user-login" onclick="handleUserLogin()">Login (User)</button>
+      <button class="btn-user-reg" onclick="handleUserRegister()">Create New Account</button>
+      <p style="text-align: center; color: #94a3b8; font-size: 12px; margin-top: 12px; margin-bottom: 0;">
+        Please contact to Admin for forget Password.
+      </p>
+    </div>
+
+    <!-- 2. ADMIN AUTH -->
+    <div id="adminAuthScreen" class="card hidden" style="max-width: 480px; margin: auto;">
+      <h2 style="color: #f472b6; margin-top: 0; text-align: center;">Admin Control Center</h2>
+      <input type="text" id="adminUsername" placeholder="Admin id">
+      <input type="password" id="adminPassword" placeholder="Admin Password">
+      <button class="btn-admin-login" onclick="handleAdminLogin()">Secure Admin Login</button>
+    </div>
+
+    <!-- 3. USER DASHBOARD -->
+    <div id="userDashboard" class="card hidden">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h4 style="color: #28a745; margin: 0;">Aapka Data Jamā Ho Chuka Hai</h4>
-        <span class="badge-locked">Submitted (Locked)</span>
+        <h3 style="margin:0;">Bank Name- <span id="userGreeting" style="color: #818cf8;"></span></h3>
+        <button class="btn-logout" onclick="logout()">Logout</button>
       </div>
-      <p style="color: #666; font-size: 13px;">Yeh data Google Sheet me 8 alag columns me lock hai aur edit nahi kiya ja sakta.</p>
-      <div id="lockedDataContainer" class="form-box"></div>
-    </div>
-  </div>
+      <hr style="border:0; border-top:1px solid rgba(255,255,255,0.15); margin: 15px 0;">
 
-  <!-- 4. ADMIN DASHBOARD -->
-  <div id="adminDashboard" class="card hidden">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <div>
-        <h2 style="margin: 0; color: #6f42c1;">Admin Control Panel</h2>
-        <small style="color: #28a745; font-weight: bold;">Google Sheets 8-Columns Database Connected</small>
+      <div id="userLoadingMsg" class="loader hidden">Verifying records...</div>
+
+      <!-- Active Form Area -->
+      <div id="userFormArea">
+        <h3 id="userFormTitle" style="color: #f8fafc; margin-top: 0; margin-bottom: 20px; text-align: center;"></h3>
+        <div id="userDynamicInputs" class="form-grid-2col"></div>
+        <button class="btn-submit" id="submitBtn" onclick="submitUserForm()">Submit Information</button>
       </div>
-      <button class="btn-logout" onclick="logout()">Logout</button>
-    </div>
-    <hr style="margin: 15px 0;">
 
-    <!-- 8-Column Form Builder -->
-    <div class="form-box">
-      <h4 style="margin-top: 0; color: #333;">1. Naya 8-Column Form Banayein</h4>
-      <label><b>Form Name / Title:</b></label>
-      <input type="text" id="adminFormTitle" placeholder="Jaise: Employee Full KYC Form 2026">
+      <!-- Read-Only Locked View -->
+      <div id="userLockedArea" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <h4 style="color: #6ee7b7; margin: 0;">Submitted Information</h4>
+          <span class="badge-locked">Locked Record</span>
+        </div>
+        
+        <div class="form-box">
+          <p id="lockedFormTitle" style="margin: 0 0 10px 0; font-weight: bold; color: #818cf8;"></p>
+          <hr style="border:0; border-top:1px solid rgba(255,255,255,0.15); margin-bottom: 15px;">
+          <div id="lockedDataContainer" class="form-grid-2col"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. ADMIN DASHBOARD -->
+    <div id="adminDashboard" class="card hidden">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2 style="margin: 0; color: #f472b6;">Admin Management</h2>
+          <small style="color: #6ee7b7; font-weight: bold;">● Google Sheets Connected (Multi-Column)</small>
+        </div>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+      </div>
+      <hr style="border:0; border-top:1px solid rgba(255,255,255,0.15); margin: 15px 0;">
+
+      <!-- ADMIN RESET USER PASSWORD TOOL -->
+      <div class="form-box" style="border-color: rgba(245, 158, 11, 0.4);">
+        <h3 style="margin-top: 0; color: #fbbf24;">🔑 Reset User Password (Manual Override)</h3>
+        <p style="font-size: 13px; color: #cbd5e1; margin-top: 0;">Agar koi user password bhool gaya hai, toh yahan se uska password turant update karein:</p>
+        <div class="form-grid-2col" style="margin-bottom: 10px;">
+          <input type="text" id="adminTargetUser" placeholder="Enter Target Username (e.g. deepak)" style="margin:0;">
+          <input type="password" id="adminNewUserPass" placeholder="Enter New Password" style="margin:0;">
+        </div>
+        <button class="btn-reset-pass" onclick="adminResetUserPassword()">Update User Password</button>
+      </div>
+
+      <!-- DYNAMIC FORM CREATOR -->
+      <div class="form-box">
+        <h3 style="margin-top: 0; color: #f8fafc;">1. Create Dynamic Form</h3>
+        <label style="font-size:13px; color:#cbd5e1;"><b>Form Title:</b></label>
+        <input type="text" id="adminFormTitle" placeholder="e.g. Student Registration 2026 / KYC Verification">
+        
+        <label style="margin-top: 15px; display: block; font-size:13px; color:#cbd5e1;"><b>Form Fields (Har field ka sheet me alag column banega):</b></label>
+        <div id="adminFieldsContainer" class="form-grid-2col" style="margin-top: 8px;"></div>
+        
+        <div style="display:flex; gap: 10px; margin-top: 10px;">
+          <button type="button" class="btn-add-field" onclick="addFieldInput()">+ Add Another Field</button>
+        </div>
+        
+        <button class="btn-publish" style="margin-top: 15px;" onclick="adminPublishDynamicForm()">Publish Form For Users</button>
+      </div>
+
+      <!-- SUBMITTED DATA TABLE WITH EXCEL EXPORT -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 25px; flex-wrap: wrap; gap: 10px;">
+        <h3 style="margin: 0;">2. Google Sheet Submitted Data</h3>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-export" onclick="exportTableToCSV()">📥 Export to Excel / CSV</button>
+          <button class="btn-refresh" onclick="fetchAdminData(true)">⚡ Quick Refresh</button>
+        </div>
+      </div>
       
-      <p style="font-size: 13px; color: #555; margin: 8px 0;"><b>8 Columns ke Naam Set Karein:</b></p>
-      <div class="grid-2">
-        <input type="text" id="col_1" placeholder="Column 1 (e.g. Full Name)">
-        <input type="text" id="col_2" placeholder="Column 2 (e.g. Father Name)">
-        <input type="text" id="col_3" placeholder="Column 3 (e.g. Mobile Number)">
-        <input type="text" id="col_4" placeholder="Column 4 (e.g. Aadhaar Number)">
-        <input type="text" id="col_5" placeholder="Column 5 (e.g. Full Address)">
-        <input type="text" id="col_6" placeholder="Column 6 (e.g. City / State)">
-        <input type="text" id="col_7" placeholder="Column 7 (e.g. Department / Role)">
-        <input type="text" id="col_8" placeholder="Column 8 (e.g. Remarks / Account No)">
+      <div id="adminDataTableArea" style="overflow-x: auto;">
+        <p class="loader">Loading latest records...</p>
       </div>
-      <button class="btn-publish" onclick="adminPublish8ColForm()">Publish 8-Column Form (Users Ke Liye)</button>
     </div>
 
-    <!-- Live Data Table -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 25px;">
-      <h3 style="margin: 0;">2. Google Sheet me Jama Data (8 Columns)</h3>
-      <button onclick="fetchAdminData()" style="width:auto; padding:6px 14px; background:#17a2b8; color:white;">Refresh Data</button>
-    </div>
-    
-    <div id="adminDataTableArea" style="overflow-x: auto;">
-      <p class="loader">Data load ho raha hai...</p>
-    </div>
   </div>
 
-</div>
+  <script>
+    // --- 1. FALLING PARTICLES ENGINE ---
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
 
-<script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzOMEf3NBIF5_cU4uA3Fhe8lndrp7noB-YuVDqM5mRpjsbLApZvvvFeO7k5-bZr-wkD/exec";
-
-  let loggedUser = null;
-
-  // Default 8-Column Configuration
-  if (!localStorage.getItem('portal_8col_config')) {
-    localStorage.setItem('portal_8col_config', JSON.stringify({
-      formId: 'form_8col_v1',
-      title: 'Full Details Verification Form',
-      fields: [
-        'Full Name', 'Father Name', 'Mobile Number', 'Aadhaar Number',
-        'Address', 'City', 'Designation / Class', 'Remarks'
-      ]
-    }));
-  }
-
-  function switchPortal(type) {
-    const userTab = document.getElementById('userTabBtn');
-    const adminTab = document.getElementById('adminTabBtn');
-    const userAuth = document.getElementById('userAuthScreen');
-    const adminAuth = document.getElementById('adminAuthScreen');
-
-    if (type === 'user') {
-      userTab.className = 'tab-btn active-user';
-      adminTab.className = 'tab-btn';
-      userAuth.classList.remove('hidden');
-      adminAuth.classList.add('hidden');
-    } else {
-      adminTab.className = 'tab-btn active-admin';
-      userTab.className = 'tab-btn';
-      adminAuth.classList.remove('hidden');
-      userAuth.classList.add('hidden');
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     }
-  }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
 
-  // --- USER AUTH ---
-  function handleUserRegister() {
-    const u = document.getElementById('userUsername').value.trim();
-    const p = document.getElementById('userPassword').value.trim();
-    if (!u || !p) return alert("Username aur Password dono bharein.");
-    if (u.toLowerCase() === 'admin') return alert("Admin naam reserved hai.");
+    const colors = ['#6366f1', '#ec4899', '#06b6d4', '#10b981', '#f59e0b', '#ffffff', '#a855f7'];
 
-    if (localStorage.getItem('user_acc_' + u)) return alert("User pehle se registered hai! Login karein.");
-    
-    localStorage.setItem('user_acc_' + u, JSON.stringify({ password: p }));
-    alert("User registration safal hua! Ab Login karein.");
-  }
-
-  function handleUserLogin() {
-    const u = document.getElementById('userUsername').value.trim();
-    const p = document.getElementById('userPassword').value.trim();
-
-    const stored = localStorage.getItem('user_acc_' + u);
-    if (!stored) return alert("Account nahi mila! Pehle register karein.");
-    if (JSON.parse(stored).password !== p) return alert("Galat Password!");
-
-    loggedUser = u;
-    openUserPortal();
-  }
-
-  // --- ADMIN AUTH ---
-  function handleAdminLogin() {
-    const u = document.getElementById('adminUsername').value.trim();
-    const p = document.getElementById('adminPassword').value.trim();
-
-    if (u === 'admin' && p === 'admin123') {
-      loggedUser = 'admin';
-      openAdminPortal();
-    } else {
-      alert("Galat Admin Username ya Password!");
-    }
-  }
-
-  // --- USER WORKFLOW ---
-  async function openUserPortal() {
-    document.getElementById('tabContainer').classList.add('hidden');
-    document.getElementById('userAuthScreen').classList.add('hidden');
-    document.getElementById('userDashboard').classList.remove('hidden');
-    document.getElementById('userGreeting').innerText = loggedUser;
-
-    const currentForm = JSON.parse(localStorage.getItem('portal_8col_config'));
-    document.getElementById('userFormTitle').innerText = currentForm.title;
-
-    let inputsHtml = "";
-    currentForm.fields.forEach((field, index) => {
-      inputsHtml += `<label><b>${field}:</b></label><input type="text" id="user_input_${index}" placeholder="${field} bharein">`;
-    });
-    document.getElementById('userDynamicInputs').innerHTML = inputsHtml;
-
-    document.getElementById('userLoadingMsg').classList.remove('hidden');
-    document.getElementById('userFormArea').classList.add('hidden');
-
-    try {
-      const res = await fetch(SCRIPT_URL, { redirect: "follow" });
-      const result = await res.json();
-      document.getElementById('userLoadingMsg').classList.add('hidden');
-
-      const userRecord = (result.data || []).find(r => r.username === loggedUser && r.formTitle === currentForm.title);
-
-      if (userRecord) {
-        document.getElementById('userLockedArea').classList.remove('hidden');
-        let html = `<p><strong>Form:</strong> ${userRecord.formTitle}</p><hr style="border:0; border-top:1px solid #ddd;">`;
-        currentForm.fields.forEach((fName, idx) => {
-          html += `<p><strong>${fName}:</strong> ${userRecord['col' + (idx+1)] || 'N/A'}</p>`;
-        });
-        document.getElementById('lockedDataContainer').innerHTML = html;
-      } else {
-        document.getElementById('userLockedArea').classList.add('hidden');
-        document.getElementById('userFormArea').classList.remove('hidden');
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * -canvas.height;
+        this.size = Math.random() * 6 + 3;
+        this.speed = Math.random() * 1.5 + 0.8;
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.rotation = Math.random() * 360;
+        this.rotationSpeed = (Math.random() - 0.5) * 2;
+        this.sway = Math.random() * 2;
+        this.swaySpeed = Math.random() * 0.02 + 0.01;
       }
-    } catch (e) {
-      document.getElementById('userLoadingMsg').classList.add('hidden');
-      document.getElementById('userFormArea').classList.remove('hidden');
+      update() {
+        this.y += this.speed;
+        this.x += Math.sin(this.y * this.swaySpeed) * this.sway;
+        this.rotation += this.rotationSpeed;
+        if (this.y > canvas.height + 20) {
+          this.reset();
+          this.y = -10;
+        }
+      }
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate((this.rotation * Math.PI) / 180);
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = 0.65;
+        ctx.fillRect(-this.size / 2, -this.size / 4, this.size, this.size / 2);
+        ctx.restore();
+      }
     }
-  }
 
-  async function submitUserForm() {
-    const currentForm = JSON.parse(localStorage.getItem('portal_8col_config'));
-    const valuesArray = [];
-    let isBlank = false;
+    for (let i = 0; i < 70; i++) { particles.push(new Particle()); }
 
-    currentForm.fields.forEach((field, index) => {
-      const val = document.getElementById(`user_input_${index}`).value.trim();
-      if (!val) isBlank = true;
-      valuesArray.push(val);
-    });
-
-    if (isBlank) return alert("Sabhi 8 fields bharna zaroori hai.");
-
-    const btn = document.getElementById('submitBtn');
-    btn.innerText = "Google Sheet me save ho raha hai...";
-    btn.disabled = true;
-
-    const payload = {
-      username: loggedUser,
-      formTitle: currentForm.title,
-      values: valuesArray
-    };
-
-    try {
-      await fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      alert("Data Google Sheet ke 8 columns me lock ho gaya!");
-      setTimeout(() => location.reload(), 1000);
-    } catch (err) {
-      alert("Save karne me samasya aayi.");
-      btn.disabled = false;
-      btn.innerText = "Submit & Lock Data";
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(animateParticles);
     }
-  }
+    animateParticles();
 
-  // --- ADMIN WORKFLOW ---
-  function openAdminPortal() {
-    document.getElementById('tabContainer').classList.add('hidden');
-    document.getElementById('adminAuthScreen').classList.add('hidden');
-    document.getElementById('adminDashboard').classList.remove('hidden');
-    document.getElementById('mainWrapper').className = 'container admin-wide';
+    // --- 2. PORTAL ENGINE ---
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzOMEf3NBIF5_cU4uA3Fhe8lndrp7noB-YuVDqM5mRpjsbLApZvvvFeO7k5-bZr-wkD/exec";
 
-    fetchAdminData();
-  }
+    let loggedUser = null;
+    let cachedSheetData = null;
 
-  async function fetchAdminData() {
-    const container = document.getElementById('adminDataTableArea');
-    container.innerHTML = "<p class='loader'>Google Sheet se records fetch ho rahe hain...</p>";
+    if (!localStorage.getItem('portal_dynamic_config')) {
+      localStorage.setItem('portal_dynamic_config', JSON.stringify({
+        formId: 'form_dyn_' + Date.now(),
+        title: 'Full Verification & Details Form',
+        fields: ['Full Name', 'Father Name', 'Mobile Number', 'ID Number', 'Address', 'City']
+      }));
+    }
 
-    const currentForm = JSON.parse(localStorage.getItem('portal_8col_config'));
+    function switchPortal(type) {
+      const userTab = document.getElementById('userTabBtn');
+      const adminTab = document.getElementById('adminTabBtn');
+      const userAuth = document.getElementById('userAuthScreen');
+      const adminAuth = document.getElementById('adminAuthScreen');
 
-    try {
-      const res = await fetch(SCRIPT_URL, { redirect: "follow" });
-      const result = await res.json();
-      const records = result.data || [];
+      if (type === 'user') {
+        userTab.className = 'tab-btn active-user';
+        adminTab.className = 'tab-btn';
+        userAuth.classList.remove('hidden');
+        adminAuth.classList.add('hidden');
+      } else {
+        adminTab.className = 'tab-btn active-admin';
+        userTab.className = 'tab-btn';
+        adminAuth.classList.remove('hidden');
+        userAuth.classList.add('hidden');
+      }
+    }
 
-      if (records.length === 0) {
-        container.innerHTML = "<p style='color:#666; margin-top:15px;'>Google Sheet me abhi koi record nahi mila.</p>";
+    function handleUserRegister() {
+      const u = document.getElementById('userUsername').value.trim();
+      const p = document.getElementById('userPassword').value.trim();
+      if (!u || !p) return alert("Username aur Password dono bharein.");
+      if (u.toLowerCase() === 'admin') return alert("Admin reserved hai.");
+
+      if (localStorage.getItem('acc_' + u)) return alert("User pehle se registered hai! Login karein.");
+      localStorage.setItem('acc_' + u, JSON.stringify({ password: p }));
+      alert("Registration Safal! Ab login karein.");
+    }
+
+    function handleUserLogin() {
+      const u = document.getElementById('userUsername').value.trim();
+      const p = document.getElementById('userPassword').value.trim();
+      const stored = localStorage.getItem('acc_' + u);
+      if (!stored) return alert("Account nahi mila! Pehle register karein.");
+      if (JSON.parse(stored).password !== p) return alert("Galat Password!");
+
+      loggedUser = u;
+      openUserPortal();
+    }
+
+    function handleAdminLogin() {
+      const u = document.getElementById('adminUsername').value.trim();
+      const p = document.getElementById('adminPassword').value.trim();
+      if (u === 'admin' && p === 'Radhe@79875') {
+        loggedUser = 'admin';
+        openAdminPortal();
+      } else {
+        alert("Galat Admin Username ya Password!");
+      }
+    }
+
+    // --- ADMIN RESET PASSWORD FUNCTION ---
+    function adminResetUserPassword() {
+      const targetUser = document.getElementById('adminTargetUser').value.trim();
+      const newPass = document.getElementById('adminNewUserPass').value.trim();
+
+      if (!targetUser || !newPass) {
+        return alert("Target Username aur Naya Password dono daalna zaroori hai.");
+      }
+
+      const stored = localStorage.getItem('acc_' + targetUser);
+      if (!stored) {
+        return alert(`User '${targetUser}' system me nahi mila! Kripya sahi username check karein.`);
+      }
+
+      const accData = JSON.parse(stored);
+      accData.password = newPass;
+      localStorage.setItem('acc_' + targetUser, JSON.stringify(accData));
+
+      alert(`Safalta: User '${targetUser}' ka password successfully update ho gaya hai!`);
+      document.getElementById('adminTargetUser').value = '';
+      document.getElementById('adminNewUserPass').value = '';
+    }
+
+    async function openUserPortal() {
+      document.getElementById('tabContainer').classList.add('hidden');
+      document.getElementById('userAuthScreen').classList.add('hidden');
+      document.getElementById('userDashboard').classList.remove('hidden');
+      document.getElementById('userGreeting').innerText = loggedUser;
+
+      const currentForm = JSON.parse(localStorage.getItem('portal_dynamic_config'));
+      document.getElementById('userFormTitle').innerText = currentForm.title;
+
+      const localSaved = localStorage.getItem(`local_sub_${currentForm.formId}_${loggedUser}`);
+      if (localSaved) {
+        showLockedView(currentForm, JSON.parse(localSaved));
         return;
       }
 
-      let html = `<table><tr>
-        <th>Username</th>
-        <th>Timestamp</th>`;
+      let inputsHtml = "";
+      currentForm.fields.forEach((field, index) => {
+        inputsHtml += `
+          <div class="form-group">
+            <label style="font-size:13px; color:#cbd5e1; font-weight: 600;">${field}:</label>
+            <input type="text" id="user_input_${index}" placeholder="Enter ${field}">
+          </div>
+        `;
+      });
+      document.getElementById('userDynamicInputs').innerHTML = inputsHtml;
+
+      document.getElementById('userLoadingMsg').classList.remove('hidden');
+      document.getElementById('userFormArea').classList.add('hidden');
+
+      try {
+        const res = await fetch(SCRIPT_URL, { redirect: "follow" });
+        const result = await res.json();
+        cachedSheetData = result.data || [];
+        document.getElementById('userLoadingMsg').classList.add('hidden');
+
+        const userRecord = cachedSheetData.find(r => r.username === loggedUser && r.formTitle === currentForm.title);
+        if (userRecord) {
+          showLockedView(currentForm, userRecord.values);
+        } else {
+          document.getElementById('userLockedArea').classList.add('hidden');
+          document.getElementById('userFormArea').classList.remove('hidden');
+        }
+      } catch (e) {
+        document.getElementById('userLoadingMsg').classList.add('hidden');
+        document.getElementById('userFormArea').classList.remove('hidden');
+      }
+    }
+
+    function showLockedView(formConfig, values) {
+      document.getElementById('userFormArea').classList.add('hidden');
+      document.getElementById('userLockedArea').classList.remove('hidden');
       
-      // Dynamic Headers based on active 8 columns
-      currentForm.fields.forEach(f => {
-        html += `<th>${f}</th>`;
+      document.getElementById('lockedFormTitle').innerText = `Form: ${formConfig.title}`;
+      
+      let html = "";
+      formConfig.fields.forEach((fName, idx) => {
+        html += `
+          <div class="form-group" style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+            <span style="font-size: 12px; color: #94a3b8; font-weight: bold;">${fName}</span>
+            <span style="font-size: 14px; color: #f1f5f9; margin-top: 4px; font-weight: 500;">${values[idx] || 'N/A'}</span>
+          </div>
+        `;
       });
-      html += `</tr>`;
+      document.getElementById('lockedDataContainer').innerHTML = html;
+    }
 
-      records.forEach(row => {
+    async function submitUserForm() {
+      const currentForm = JSON.parse(localStorage.getItem('portal_dynamic_config'));
+      const valuesArray = [];
+      let isBlank = false;
+
+      currentForm.fields.forEach((field, index) => {
+        const val = document.getElementById(`user_input_${index}`).value.trim();
+        if (!val) isBlank = true;
+        valuesArray.push(val);
+      });
+
+      if (isBlank) return alert("Sabhi fields bharna anivarya hai.");
+
+      const btn = document.getElementById('submitBtn');
+      btn.innerText = "Saving to Google Sheet...";
+      btn.disabled = true;
+
+      localStorage.setItem(`local_sub_${currentForm.formId}_${loggedUser}`, JSON.stringify(valuesArray));
+
+      const payload = {
+        username: loggedUser,
+        formTitle: currentForm.title,
+        fieldNames: currentForm.fields,
+        values: valuesArray
+      };
+
+      try {
+        fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        alert("Data Google Sheet me safaltapoorvak lock ho gaya!");
+        showLockedView(currentForm, valuesArray);
+      } catch (err) {
+        showLockedView(currentForm, valuesArray);
+      }
+    }
+
+    function openAdminPortal() {
+      document.getElementById('tabContainer').classList.add('hidden');
+      document.getElementById('adminAuthScreen').classList.add('hidden');
+      document.getElementById('adminDashboard').classList.remove('hidden');
+      document.getElementById('mainWrapper').className = 'container admin-wide';
+
+      renderAdminFieldInputs();
+      fetchAdminData(false);
+    }
+
+    function renderAdminFieldInputs() {
+      const currentForm = JSON.parse(localStorage.getItem('portal_dynamic_config'));
+      document.getElementById('adminFormTitle').value = currentForm.title;
+      const container = document.getElementById('adminFieldsContainer');
+      container.innerHTML = "";
+
+      currentForm.fields.forEach((field) => {
+        addFieldInput(field);
+      });
+    }
+
+    function addFieldInput(defaultValue = "") {
+      const container = document.getElementById('adminFieldsContainer');
+      const div = document.createElement('div');
+      div.className = 'field-row';
+      div.innerHTML = `
+        <input type="text" class="admin-dynamic-field" value="${defaultValue}" placeholder="Field Name" style="margin: 0;">
+        <button type="button" class="btn-remove-field" onclick="this.parentElement.remove()" style="margin: 0;">✕</button>
+      `;
+      container.appendChild(div);
+    }
+
+    function adminPublishDynamicForm() {
+      const title = document.getElementById('adminFormTitle').value.trim();
+      const inputs = document.querySelectorAll('.admin-dynamic-field');
+      const fields = [];
+
+      inputs.forEach(inp => {
+        const val = inp.value.trim();
+        if (val) fields.push(val);
+      });
+
+      if (!title || fields.length === 0) {
+        return alert("Title aur kam se kam ek field ka naam bharna zaroori hai.");
+      }
+
+      const newConfig = {
+        formId: 'form_dyn_' + Date.now(),
+        title: title,
+        fields: fields
+      };
+
+      localStorage.setItem('portal_dynamic_config', JSON.stringify(newConfig));
+      alert("Naya form safaltapoorvak publish ho gaya! Sabhi users ko naye fields dikhenge.");
+      location.reload();
+    }
+
+    async function fetchAdminData(forceRefresh = false) {
+      const container = document.getElementById('adminDataTableArea');
+      
+      if (!cachedSheetData || forceRefresh) {
+        container.innerHTML = "<p class='loader'>Fetching live records from Google Sheet...</p>";
+        try {
+          const res = await fetch(SCRIPT_URL, { redirect: "follow" });
+          const result = await res.json();
+          cachedSheetData = result.data || [];
+        } catch (err) {
+          container.innerHTML = "<p style='color:#f87171;'>Data fetch karne me samasya aayi.</p>";
+          return;
+        }
+      }
+
+      const currentForm = JSON.parse(localStorage.getItem('portal_dynamic_config'));
+
+      if (cachedSheetData.length === 0) {
+        container.innerHTML = "<p style='color:#94a3b8; margin-top:15px;'>Google Sheet me koi record nahi mila.</p>";
+        return;
+      }
+
+      let html = `<table id="submissionsTable"><thead><tr>
+        <th>Username</th>
+        <th>Timestamp</th>
+        <th>Form Title</th>`;
+      
+      currentForm.fields.forEach(f => { html += `<th>${f}</th>`; });
+      html += `</tr></thead><tbody>`;
+
+      cachedSheetData.forEach(row => {
         html += `<tr>
-          <td><b style="color:#0066cc;">${row.username}</b></td>
+          <td><b style="color:#818cf8;">${row.username}</b></td>
           <td>${row.time}</td>
-          <td>${row.col1}</td>
-          <td>${row.col2}</td>
-          <td>${row.col3}</td>
-          <td>${row.col4}</td>
-          <td>${row.col5}</td>
-          <td>${row.col6}</td>
-          <td>${row.col7}</td>
-          <td>${row.col8}</td>
-        </tr>`;
+          <td>${row.formTitle}</td>`;
+        
+        currentForm.fields.forEach((_, idx) => {
+          html += `<td>${(row.values && row.values[idx] !== undefined) ? row.values[idx] : '-'}</td>`;
+        });
+
+        html += `</tr>`;
       });
 
-      html += `</table>`;
+      html += `</tbody></table>`;
       container.innerHTML = html;
-    } catch (err) {
-      container.innerHTML = "<p style='color:red;'>Data fetch karne me dikkat aayi.</p>";
-    }
-  }
-
-  function adminPublish8ColForm() {
-    const title = document.getElementById('adminFormTitle').value.trim();
-    const fields = [];
-
-    for (let i = 1; i <= 8; i++) {
-      const val = document.getElementById(`col_${i}`).value.trim();
-      if (!val) return alert(`Kripya Column ${i} ka naam bharein.`);
-      fields.push(val);
     }
 
-    if (!title) return alert("Kripya Form ka Title bharein.");
+    function exportTableToCSV() {
+      if (!cachedSheetData || cachedSheetData.length === 0) {
+        return alert("Download karne ke liye koi data available nahi hai.");
+      }
 
-    const newConfig = {
-      formId: 'form_' + Date.now(),
-      title: title,
-      fields: fields
-    };
+      const currentForm = JSON.parse(localStorage.getItem('portal_dynamic_config'));
+      
+      let csv = [];
+      let headers = ['Username', 'Timestamp', 'Form Title'].concat(currentForm.fields);
+      csv.push(headers.map(h => `"${h.replace(/"/g, '""')}"`).join(','));
 
-    localStorage.setItem('portal_8col_config', JSON.stringify(newConfig));
-    alert("Naya 8-Column form publish ho gaya!");
-    location.reload();
-  }
+      cachedSheetData.forEach(row => {
+        let rowData = [
+          row.username,
+          row.time,
+          row.formTitle
+        ];
+        
+        currentForm.fields.forEach((_, idx) => {
+          let cellVal = (row.values && row.values[idx] !== undefined) ? row.values[idx] : '';
+          rowData.push(cellVal);
+        });
 
-  function logout() {
-    location.reload();
-  }
-</script>
+        csv.push(rowData.map(c => `"${String(c).replace(/"/g, '""')}"`).join(','));
+      });
+
+      const csvString = "\uFEFF" + csv.join("\r\n");
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `User_Submissions_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function logout() {
+      location.reload();
+    }
+  </script>
 
 </body>
 </html>
