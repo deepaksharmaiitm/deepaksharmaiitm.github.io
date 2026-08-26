@@ -54,7 +54,7 @@
     <div id="userFormArea">
       <h4 id="userFormTitle" style="color: #333; margin-top: 0;"></h4>
       <div id="userDynamicInputs"></div>
-      <button class="btn-submit" id="submitBtn" onclick="submitUserForm()">Final Submit (Google Drive me Save Karein)</button>
+      <button class="btn-submit" id="submitBtn" onclick="submitUserForm()">Final Submit (Google Sheet me Lock Karein)</button>
     </div>
 
     <!-- User Locked View -->
@@ -73,7 +73,7 @@
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <div>
         <h2 style="margin: 0; color: #6f42c1;">Admin Control Center</h2>
-        <span class="badge-admin">Google Sheets / Drive Database</span>
+        <span class="badge-admin">Google Sheets Live Data</span>
       </div>
       <button class="btn-logout" onclick="logout()">Logout</button>
     </div>
@@ -101,18 +101,22 @@
 </div>
 
 <script>
-  // Aapka Google Apps Script Web App URL
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzOMEf3NBIF5_cU4uA3Fhe8lndrp7noB-YuVDqM5mRpjsbLApZvvvFeO7k5-bZr-wkD/exec";
 
   let loggedUser = null;
 
-  // Default Form Configuration
   if (!localStorage.getItem('portal_form_config')) {
     localStorage.setItem('portal_form_config', JSON.stringify({
       formId: 'form_drive_1',
       title: 'General Registration Form',
       fields: ['Full Name', 'Address', 'Contact Number']
     }));
+  }
+
+  // --- HELPER FUNCTION: ROBUST GOOGLE DATA FETCHER ---
+  async function fetchGoogleData() {
+    const res = await fetch(SCRIPT_URL, { redirect: "follow" });
+    return await res.json();
   }
 
   // --- 1. AUTHENTICATION ---
@@ -155,7 +159,6 @@
 
     const currentForm = JSON.parse(localStorage.getItem('portal_form_config'));
     
-    // Form Layout Render
     document.getElementById('userFormTitle').innerText = currentForm.title;
     let inputsHtml = "";
     currentForm.fields.forEach(field => {
@@ -164,19 +167,16 @@
     });
     document.getElementById('userDynamicInputs').innerHTML = inputsHtml;
 
-    // Check Drive Database for submission status
     document.getElementById('userLoadingMsg').classList.remove('hidden');
     document.getElementById('userFormArea').classList.add('hidden');
 
     try {
-      const res = await fetch(SCRIPT_URL);
-      const result = await res.json();
+      const result = await fetchGoogleData();
       document.getElementById('userLoadingMsg').classList.add('hidden');
 
-      const userRecord = result.data.find(r => r.username === loggedUser && r.formTitle === currentForm.title);
+      const userRecord = (result.data || []).find(r => r.username === loggedUser && r.formTitle === currentForm.title);
 
       if (userRecord) {
-        // Locked Mode
         document.getElementById('userLockedArea').classList.remove('hidden');
         let html = `<p><strong>Form:</strong> ${userRecord.formTitle}</p><hr style="border:0; border-top:1px solid #ddd;">`;
         for (const [k, v] of Object.entries(userRecord.responses)) {
@@ -184,7 +184,6 @@
         }
         document.getElementById('lockedDataContainer').innerHTML = html;
       } else {
-        // Input Mode
         document.getElementById('userLockedArea').classList.add('hidden');
         document.getElementById('userFormArea').classList.remove('hidden');
       }
@@ -209,7 +208,7 @@
     if (isBlank) return alert("Sabhi fields bharna anivarya hai.");
 
     const btn = document.getElementById('submitBtn');
-    btn.innerText = "Google Drive me save ho raha hai...";
+    btn.innerText = "Google Sheet me save ho raha hai...";
     btn.disabled = true;
 
     const payload = {
@@ -226,10 +225,10 @@
         body: JSON.stringify(payload)
       });
 
-      alert("Data Google Drive/Sheet me safaltapoorvak lock ho gaya!");
-      location.reload();
+      alert("Data Google Sheet me safaltapoorvak lock ho gaya!");
+      setTimeout(() => location.reload(), 1000);
     } catch (err) {
-      alert("Google Drive me save karte waqt dikkat aayi.");
+      alert("Google Sheet me save karte waqt dikkat aayi.");
       btn.disabled = false;
       btn.innerText = "Final Submit";
     }
@@ -250,12 +249,11 @@
     container.innerHTML = "<p class='loader'>Google Sheet se live data fetch ho raha hai...</p>";
 
     try {
-      const res = await fetch(SCRIPT_URL);
-      const result = await res.json();
+      const result = await fetchGoogleData();
       const records = result.data || [];
 
       if (records.length === 0) {
-        container.innerHTML = "<p style='color:#666; margin-top:15px;'>Google Sheet me abhi koi data nahi hai.</p>";
+        container.innerHTML = "<p style='color:#666; margin-top:15px;'>Google Sheet me abhi koi record nahi mila.</p>";
         return;
       }
 
@@ -284,7 +282,7 @@
       html += `</table>`;
       container.innerHTML = html;
     } catch(err) {
-      container.innerHTML = "<p style='color:red;'>Google Sheet se data load nahi ho paya. Kripya check karein ki Script 'Anyone' access par deploy hai.</p>";
+      container.innerHTML = "<p style='color:red;'>Google Sheet se data load nahi ho paya. Kripya Apps Script me <b>Manage deployments -> New Version -> Who has access: Anyone</b> set karein.</p>";
     }
   }
 
