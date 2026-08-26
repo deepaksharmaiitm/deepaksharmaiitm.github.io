@@ -2,25 +2,33 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <title>Google Drive/Sheets Connected Portal</title>
+  <title>8-Column Dynamic Google Sheets Portal</title>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 20px; margin: 0; }
-    .container { max-width: 600px; margin: auto; }
-    .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-bottom: 20px; }
-    .admin-card { max-width: 900px; margin: auto; }
-    input, button { width: 100%; padding: 11px; margin: 8px 0; box-sizing: border-box; border-radius: 5px; border: 1px solid #ccc; font-size: 14px; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f7; padding: 20px; margin: 0; }
+    .container { max-width: 650px; margin: auto; }
+    .admin-wide { max-width: 1100px; }
+    .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-top: 15px; }
+    
+    .portal-tabs { display: flex; gap: 10px; margin-bottom: 10px; }
+    .tab-btn { flex: 1; padding: 12px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; background: #cbd5e1; color: #334155; font-size: 15px; }
+    .tab-btn.active-user { background: #0066cc; color: white; }
+    .tab-btn.active-admin { background: #6f42c1; color: white; }
+
+    input, button { width: 100%; padding: 10px; margin: 6px 0; box-sizing: border-box; border-radius: 5px; border: 1px solid #ccc; font-size: 14px; }
     button { font-weight: bold; cursor: pointer; border: none; }
-    .btn-login { background: #0066cc; color: white; }
-    .btn-reg { background: #28a745; color: white; }
-    .btn-submit { background: #007bff; color: white; }
-    .btn-publish { background: #6f42c1; color: white; }
+    .btn-user-login { background: #0066cc; color: white; }
+    .btn-user-reg { background: #28a745; color: white; }
+    .btn-admin-login { background: #6f42c1; color: white; }
+    .btn-submit { background: #0d6efd; color: white; }
+    .btn-publish { background: #198754; color: white; padding: 12px; font-size: 15px; }
     .btn-logout { background: #dc3545; color: white; width: auto; padding: 8px 16px; }
     .hidden { display: none; }
+    
     table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
-    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 13px; }
-    th { background: #f8f9fa; }
+    th, td { border: 1px solid #dee2e6; padding: 8px; text-align: left; font-size: 12px; }
+    th { background: #f8f9fa; font-weight: 600; }
     .badge-locked { background: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-    .badge-admin { background: #ffeeba; color: #856404; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .form-box { background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
     .loader { color: #0066cc; font-weight: bold; text-align: center; }
   </style>
@@ -29,72 +37,96 @@
 
 <div class="container" id="mainWrapper">
 
-  <!-- 1. LOGIN / SIGNUP SCREEN -->
-  <div id="authScreen" class="card">
-    <h2 style="text-align: center; margin-top: 0;">Drive Connected Portal</h2>
-    <input type="text" id="authUsername" placeholder="Username (Admin: admin)">
-    <input type="password" id="authPassword" placeholder="Password (Admin: admin123)">
-    
-    <button class="btn-login" onclick="handleLogin()">Login</button>
-    <button class="btn-reg" onclick="handleRegister()">Register (Naya User)</button>
-    <p style="font-size: 12px; color: #666; text-align: center;">Admin Login: <b>admin</b> | Password: <b>admin123</b></p>
+  <!-- TOP SWITCH TABS -->
+  <div class="portal-tabs" id="tabContainer">
+    <button class="tab-btn active-user" id="userTabBtn" onclick="switchPortal('user')">👤 User Portal</button>
+    <button class="tab-btn" id="adminTabBtn" onclick="switchPortal('admin')">🔐 Admin Portal</button>
   </div>
 
-  <!-- 2. USER SCREEN -->
-  <div id="userScreen" class="card hidden">
+  <!-- 1. USER AUTH SCREEN -->
+  <div id="userAuthScreen" class="card">
+    <h2 style="color: #0066cc; margin-top: 0; text-align: center;">User Login & Register</h2>
+    <input type="text" id="userUsername" placeholder="Username">
+    <input type="password" id="userPassword" placeholder="Password">
+    <button class="btn-user-login" onclick="handleUserLogin()">Login (User)</button>
+    <button class="btn-user-reg" onclick="handleUserRegister()">Naya Account Banayein (Register)</button>
+  </div>
+
+  <!-- 2. ADMIN AUTH SCREEN -->
+  <div id="adminAuthScreen" class="card hidden">
+    <h2 style="color: #6f42c1; margin-top: 0; text-align: center;">Admin Secure Login</h2>
+    <input type="text" id="adminUsername" placeholder="Admin Username (admin)">
+    <input type="password" id="adminPassword" placeholder="Admin Password (admin123)">
+    <button class="btn-admin-login" onclick="handleAdminLogin()">Secure Admin Login</button>
+  </div>
+
+  <!-- 3. USER DASHBOARD -->
+  <div id="userDashboard" class="card hidden">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <h3>Namaste, <span id="userGreeting" style="color: #0066cc;"></span></h3>
       <button class="btn-logout" onclick="logout()">Logout</button>
     </div>
     <hr style="margin: 15px 0;">
 
-    <div id="userLoadingMsg" class="loader hidden">Google Drive/Sheet se verify ho raha hai...</div>
+    <div id="userLoadingMsg" class="loader hidden">Google Drive/Sheet se record verify ho raha hai...</div>
 
-    <!-- User Form View -->
+    <!-- Active Form Fill Area -->
     <div id="userFormArea">
       <h4 id="userFormTitle" style="color: #333; margin-top: 0;"></h4>
       <div id="userDynamicInputs"></div>
-      <button class="btn-submit" id="submitBtn" onclick="submitUserForm()">Final Submit (Google Sheet me Lock Karein)</button>
+      <button class="btn-submit" id="submitBtn" onclick="submitUserForm()">Submit & Lock Data</button>
     </div>
 
-    <!-- User Locked View -->
+    <!-- Read-Only Locked View -->
     <div id="userLockedArea" class="hidden">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <h4 style="color: #28a745; margin: 0;">Aapka Data Jamā Ho Chuka Hai</h4>
         <span class="badge-locked">Submitted (Locked)</span>
       </div>
-      <p style="color: #666; font-size: 13px;">Yeh record Google Sheet me lock hai aur edit nahi kiya ja sakta.</p>
+      <p style="color: #666; font-size: 13px;">Yeh data Google Sheet me 8 alag columns me lock hai aur edit nahi kiya ja sakta.</p>
       <div id="lockedDataContainer" class="form-box"></div>
     </div>
   </div>
 
-  <!-- 3. ADMIN SCREEN -->
-  <div id="adminScreen" class="card admin-card hidden">
+  <!-- 4. ADMIN DASHBOARD -->
+  <div id="adminDashboard" class="card hidden">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <div>
-        <h2 style="margin: 0; color: #6f42c1;">Admin Control Center</h2>
-        <span class="badge-admin">Google Sheets Live Data</span>
+        <h2 style="margin: 0; color: #6f42c1;">Admin Control Panel</h2>
+        <small style="color: #28a745; font-weight: bold;">Google Sheets 8-Columns Database Connected</small>
       </div>
       <button class="btn-logout" onclick="logout()">Logout</button>
     </div>
     <hr style="margin: 15px 0;">
 
-    <!-- Naya Form Banane Ka Tool -->
+    <!-- 8-Column Form Builder -->
     <div class="form-box">
-      <h4 style="margin-top: 0;">1. Nayi Jaankari Mangne Ke Liye Naya Form Banayein</h4>
-      <input type="text" id="adminNewFormTitle" placeholder="Form Title (e.g. Admission Form / KYC Update)">
-      <input type="text" id="adminNewFormFields" placeholder="Fields comma lagakar likhein (e.g. Full Name, Father Name, Mobile, Address)">
-      <button class="btn-publish" onclick="adminPublishForm()">Publish Form (Users Ke Liye)</button>
+      <h4 style="margin-top: 0; color: #333;">1. Naya 8-Column Form Banayein</h4>
+      <label><b>Form Name / Title:</b></label>
+      <input type="text" id="adminFormTitle" placeholder="Jaise: Employee Full KYC Form 2026">
+      
+      <p style="font-size: 13px; color: #555; margin: 8px 0;"><b>8 Columns ke Naam Set Karein:</b></p>
+      <div class="grid-2">
+        <input type="text" id="col_1" placeholder="Column 1 (e.g. Full Name)">
+        <input type="text" id="col_2" placeholder="Column 2 (e.g. Father Name)">
+        <input type="text" id="col_3" placeholder="Column 3 (e.g. Mobile Number)">
+        <input type="text" id="col_4" placeholder="Column 4 (e.g. Aadhaar Number)">
+        <input type="text" id="col_5" placeholder="Column 5 (e.g. Full Address)">
+        <input type="text" id="col_6" placeholder="Column 6 (e.g. City / State)">
+        <input type="text" id="col_7" placeholder="Column 7 (e.g. Department / Role)">
+        <input type="text" id="col_8" placeholder="Column 8 (e.g. Remarks / Account No)">
+      </div>
+      <button class="btn-publish" onclick="adminPublish8ColForm()">Publish 8-Column Form (Users Ke Liye)</button>
     </div>
 
-    <!-- Google Sheet Live Data Table -->
+    <!-- Live Data Table -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 25px;">
-      <h3 style="margin: 0;">2. Google Sheet me Jama Hua Data</h3>
-      <button onclick="fetchAdminDataFromDrive()" style="width:auto; padding:6px 14px; background:#17a2b8; color:white;">Refresh Data</button>
+      <h3 style="margin: 0;">2. Google Sheet me Jama Data (8 Columns)</h3>
+      <button onclick="fetchAdminData()" style="width:auto; padding:6px 14px; background:#17a2b8; color:white;">Refresh Data</button>
     </div>
     
     <div id="adminDataTableArea" style="overflow-x: auto;">
-      <p class="loader">Sheet se data load ho raha hai...</p>
+      <p class="loader">Data load ho raha hai...</p>
     </div>
   </div>
 
@@ -105,65 +137,88 @@
 
   let loggedUser = null;
 
-  if (!localStorage.getItem('portal_form_config')) {
-    localStorage.setItem('portal_form_config', JSON.stringify({
-      formId: 'form_drive_1',
-      title: 'General Registration Form',
-      fields: ['Full Name', 'Address', 'Contact Number']
+  // Default 8-Column Configuration
+  if (!localStorage.getItem('portal_8col_config')) {
+    localStorage.setItem('portal_8col_config', JSON.stringify({
+      formId: 'form_8col_v1',
+      title: 'Full Details Verification Form',
+      fields: [
+        'Full Name', 'Father Name', 'Mobile Number', 'Aadhaar Number',
+        'Address', 'City', 'Designation / Class', 'Remarks'
+      ]
     }));
   }
 
-  // --- HELPER FUNCTION: ROBUST GOOGLE DATA FETCHER ---
-  async function fetchGoogleData() {
-    const res = await fetch(SCRIPT_URL, { redirect: "follow" });
-    return await res.json();
+  function switchPortal(type) {
+    const userTab = document.getElementById('userTabBtn');
+    const adminTab = document.getElementById('adminTabBtn');
+    const userAuth = document.getElementById('userAuthScreen');
+    const adminAuth = document.getElementById('adminAuthScreen');
+
+    if (type === 'user') {
+      userTab.className = 'tab-btn active-user';
+      adminTab.className = 'tab-btn';
+      userAuth.classList.remove('hidden');
+      adminAuth.classList.add('hidden');
+    } else {
+      adminTab.className = 'tab-btn active-admin';
+      userTab.className = 'tab-btn';
+      adminAuth.classList.remove('hidden');
+      userAuth.classList.add('hidden');
+    }
   }
 
-  // --- 1. AUTHENTICATION ---
-  function handleRegister() {
-    const u = document.getElementById('authUsername').value.trim();
-    const p = document.getElementById('authPassword').value.trim();
+  // --- USER AUTH ---
+  function handleUserRegister() {
+    const u = document.getElementById('userUsername').value.trim();
+    const p = document.getElementById('userPassword').value.trim();
     if (!u || !p) return alert("Username aur Password dono bharein.");
-    if (u.toLowerCase() === 'admin') return alert("Admin reserved hai.");
+    if (u.toLowerCase() === 'admin') return alert("Admin naam reserved hai.");
 
     if (localStorage.getItem('user_acc_' + u)) return alert("User pehle se registered hai! Login karein.");
+    
     localStorage.setItem('user_acc_' + u, JSON.stringify({ password: p }));
-    alert("Registration safal hua! Ab Login karein.");
+    alert("User registration safal hua! Ab Login karein.");
   }
 
-  function handleLogin() {
-    const u = document.getElementById('authUsername').value.trim();
-    const p = document.getElementById('authPassword').value.trim();
-
-    if (u.toLowerCase() === 'admin' && p === 'admin123') {
-      loggedUser = 'admin';
-      loadAdminView();
-      return;
-    }
+  function handleUserLogin() {
+    const u = document.getElementById('userUsername').value.trim();
+    const p = document.getElementById('userPassword').value.trim();
 
     const stored = localStorage.getItem('user_acc_' + u);
-    if (!stored) return alert("Account nahi mila! Pehle Register karein.");
+    if (!stored) return alert("Account nahi mila! Pehle register karein.");
     if (JSON.parse(stored).password !== p) return alert("Galat Password!");
 
     loggedUser = u;
-    loadUserView();
+    openUserPortal();
   }
 
-  // --- 2. USER WORKFLOW ---
-  async function loadUserView() {
-    document.getElementById('authScreen').classList.add('hidden');
-    document.getElementById('adminScreen').classList.add('hidden');
-    document.getElementById('userScreen').classList.remove('hidden');
-    document.getElementById('mainWrapper').className = 'container';
+  // --- ADMIN AUTH ---
+  function handleAdminLogin() {
+    const u = document.getElementById('adminUsername').value.trim();
+    const p = document.getElementById('adminPassword').value.trim();
+
+    if (u === 'admin' && p === 'admin123') {
+      loggedUser = 'admin';
+      openAdminPortal();
+    } else {
+      alert("Galat Admin Username ya Password!");
+    }
+  }
+
+  // --- USER WORKFLOW ---
+  async function openUserPortal() {
+    document.getElementById('tabContainer').classList.add('hidden');
+    document.getElementById('userAuthScreen').classList.add('hidden');
+    document.getElementById('userDashboard').classList.remove('hidden');
     document.getElementById('userGreeting').innerText = loggedUser;
 
-    const currentForm = JSON.parse(localStorage.getItem('portal_form_config'));
-    
+    const currentForm = JSON.parse(localStorage.getItem('portal_8col_config'));
     document.getElementById('userFormTitle').innerText = currentForm.title;
+
     let inputsHtml = "";
-    currentForm.fields.forEach(field => {
-      const fieldId = 'input_' + field.replace(/\s+/g, '_');
-      inputsHtml += `<label><b>${field}:</b></label><input type="text" id="${fieldId}" placeholder="${field} bharein">`;
+    currentForm.fields.forEach((field, index) => {
+      inputsHtml += `<label><b>${field}:</b></label><input type="text" id="user_input_${index}" placeholder="${field} bharein">`;
     });
     document.getElementById('userDynamicInputs').innerHTML = inputsHtml;
 
@@ -171,7 +226,8 @@
     document.getElementById('userFormArea').classList.add('hidden');
 
     try {
-      const result = await fetchGoogleData();
+      const res = await fetch(SCRIPT_URL, { redirect: "follow" });
+      const result = await res.json();
       document.getElementById('userLoadingMsg').classList.add('hidden');
 
       const userRecord = (result.data || []).find(r => r.username === loggedUser && r.formTitle === currentForm.title);
@@ -179,33 +235,32 @@
       if (userRecord) {
         document.getElementById('userLockedArea').classList.remove('hidden');
         let html = `<p><strong>Form:</strong> ${userRecord.formTitle}</p><hr style="border:0; border-top:1px solid #ddd;">`;
-        for (const [k, v] of Object.entries(userRecord.responses)) {
-          html += `<p><strong>${k}:</strong> ${v}</p>`;
-        }
+        currentForm.fields.forEach((fName, idx) => {
+          html += `<p><strong>${fName}:</strong> ${userRecord['col' + (idx+1)] || 'N/A'}</p>`;
+        });
         document.getElementById('lockedDataContainer').innerHTML = html;
       } else {
         document.getElementById('userLockedArea').classList.add('hidden');
         document.getElementById('userFormArea').classList.remove('hidden');
       }
-    } catch(err) {
+    } catch (e) {
       document.getElementById('userLoadingMsg').classList.add('hidden');
       document.getElementById('userFormArea').classList.remove('hidden');
     }
   }
 
   async function submitUserForm() {
-    const currentForm = JSON.parse(localStorage.getItem('portal_form_config'));
-    const submittedValues = {};
+    const currentForm = JSON.parse(localStorage.getItem('portal_8col_config'));
+    const valuesArray = [];
     let isBlank = false;
 
-    currentForm.fields.forEach(field => {
-      const fieldId = 'input_' + field.replace(/\s+/g, '_');
-      const val = document.getElementById(fieldId).value.trim();
+    currentForm.fields.forEach((field, index) => {
+      const val = document.getElementById(`user_input_${index}`).value.trim();
       if (!val) isBlank = true;
-      submittedValues[field] = val;
+      valuesArray.push(val);
     });
 
-    if (isBlank) return alert("Sabhi fields bharna anivarya hai.");
+    if (isBlank) return alert("Sabhi 8 fields bharna zaroori hai.");
 
     const btn = document.getElementById('submitBtn');
     btn.innerText = "Google Sheet me save ho raha hai...";
@@ -214,7 +269,7 @@
     const payload = {
       username: loggedUser,
       formTitle: currentForm.title,
-      responses: submittedValues
+      values: valuesArray
     };
 
     try {
@@ -225,31 +280,34 @@
         body: JSON.stringify(payload)
       });
 
-      alert("Data Google Sheet me safaltapoorvak lock ho gaya!");
+      alert("Data Google Sheet ke 8 columns me lock ho gaya!");
       setTimeout(() => location.reload(), 1000);
     } catch (err) {
-      alert("Google Sheet me save karte waqt dikkat aayi.");
+      alert("Save karne me samasya aayi.");
       btn.disabled = false;
-      btn.innerText = "Final Submit";
+      btn.innerText = "Submit & Lock Data";
     }
   }
 
-  // --- 3. ADMIN WORKFLOW ---
-  function loadAdminView() {
-    document.getElementById('authScreen').classList.add('hidden');
-    document.getElementById('userScreen').classList.add('hidden');
-    document.getElementById('adminScreen').classList.remove('hidden');
-    document.getElementById('mainWrapper').className = 'container admin-card';
+  // --- ADMIN WORKFLOW ---
+  function openAdminPortal() {
+    document.getElementById('tabContainer').classList.add('hidden');
+    document.getElementById('adminAuthScreen').classList.add('hidden');
+    document.getElementById('adminDashboard').classList.remove('hidden');
+    document.getElementById('mainWrapper').className = 'container admin-wide';
 
-    fetchAdminDataFromDrive();
+    fetchAdminData();
   }
 
-  async function fetchAdminDataFromDrive() {
+  async function fetchAdminData() {
     const container = document.getElementById('adminDataTableArea');
-    container.innerHTML = "<p class='loader'>Google Sheet se live data fetch ho raha hai...</p>";
+    container.innerHTML = "<p class='loader'>Google Sheet se records fetch ho rahe hain...</p>";
+
+    const currentForm = JSON.parse(localStorage.getItem('portal_8col_config'));
 
     try {
-      const result = await fetchGoogleData();
+      const res = await fetch(SCRIPT_URL, { redirect: "follow" });
+      const result = await res.json();
       const records = result.data || [];
 
       if (records.length === 0) {
@@ -257,52 +315,59 @@
         return;
       }
 
-      let html = `<table>
-        <tr>
-          <th>Username</th>
-          <th>Form Name</th>
-          <th>Submitted Details</th>
-          <th>Timestamp</th>
-        </tr>`;
+      let html = `<table><tr>
+        <th>Username</th>
+        <th>Timestamp</th>`;
+      
+      // Dynamic Headers based on active 8 columns
+      currentForm.fields.forEach(f => {
+        html += `<th>${f}</th>`;
+      });
+      html += `</tr>`;
 
       records.forEach(row => {
-        let detailsText = "";
-        for (const [k, v] of Object.entries(row.responses)) {
-          detailsText += `<b>${k}:</b> ${v}<br>`;
-        }
-
         html += `<tr>
           <td><b style="color:#0066cc;">${row.username}</b></td>
-          <td>${row.formTitle}</td>
-          <td>${detailsText}</td>
           <td>${row.time}</td>
+          <td>${row.col1}</td>
+          <td>${row.col2}</td>
+          <td>${row.col3}</td>
+          <td>${row.col4}</td>
+          <td>${row.col5}</td>
+          <td>${row.col6}</td>
+          <td>${row.col7}</td>
+          <td>${row.col8}</td>
         </tr>`;
       });
 
       html += `</table>`;
       container.innerHTML = html;
-    } catch(err) {
-      container.innerHTML = "<p style='color:red;'>Google Sheet se data load nahi ho paya. Kripya Apps Script me <b>Manage deployments -> New Version -> Who has access: Anyone</b> set karein.</p>";
+    } catch (err) {
+      container.innerHTML = "<p style='color:red;'>Data fetch karne me dikkat aayi.</p>";
     }
   }
 
-  function adminPublishForm() {
-    const title = document.getElementById('adminNewFormTitle').value.trim();
-    const fieldsRaw = document.getElementById('adminNewFormFields').value.trim();
+  function adminPublish8ColForm() {
+    const title = document.getElementById('adminFormTitle').value.trim();
+    const fields = [];
 
-    if (!title || !fieldsRaw) return alert("Form ka Title aur Fields dono bharna zaroori hai.");
+    for (let i = 1; i <= 8; i++) {
+      const val = document.getElementById(`col_${i}`).value.trim();
+      if (!val) return alert(`Kripya Column ${i} ka naam bharein.`);
+      fields.push(val);
+    }
 
-    const fieldsArray = fieldsRaw.split(',').map(f => f.trim()).filter(Boolean);
+    if (!title) return alert("Kripya Form ka Title bharein.");
+
     const newConfig = {
       formId: 'form_' + Date.now(),
       title: title,
-      fields: fieldsArray
+      fields: fields
     };
 
-    localStorage.setItem('portal_form_config', JSON.stringify(newConfig));
-    alert("Naya form safaltapoorvak publish ho gaya!");
-    document.getElementById('adminNewFormTitle').value = "";
-    document.getElementById('adminNewFormFields').value = "";
+    localStorage.setItem('portal_8col_config', JSON.stringify(newConfig));
+    alert("Naya 8-Column form publish ho gaya!");
+    location.reload();
   }
 
   function logout() {
