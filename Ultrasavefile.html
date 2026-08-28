@@ -23,11 +23,7 @@
       --text-muted: #dff9fb;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Outfit', 'Segoe UI', sans-serif;
       background: var(--bg-gradient);
@@ -129,14 +125,7 @@
       z-index: 10;
     }
 
-    /* 1 to 12 Numbers Dial Layout */
-    .clock-numbers {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-    }
+    .clock-numbers { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
     .clock-number {
       position: absolute;
       width: 20px;
@@ -162,7 +151,6 @@
     .n10 { top: 24px; left: 8px; }
     .n11 { top: 10px; left: 20px; }
 
-    /* Clock Hands */
     .hand {
       position: absolute;
       bottom: 50%;
@@ -250,7 +238,6 @@
     .file-input-wrapper {
       flex: 1;
       min-width: 240px;
-      position: relative;
     }
     input[type="file"] {
       width: 100%;
@@ -292,6 +279,7 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
     .btn-upload:hover { transform: translateY(-2px); opacity: 0.9; }
+    .btn-upload:disabled { opacity: 0.6; cursor: not-allowed; }
 
     /* Progress Bar */
     .progress-container {
@@ -439,7 +427,7 @@
     <!-- Upload Card -->
     <div class="glass-card">
       <h3 style="font-size:17px; margin-bottom:4px;">📤 नई फाइल अपलोड करें</h3>
-      <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">फाइलें 24 घंटे तक सुरक्षित रहेंगी • अधिकतम 10 फाइलें (Max 5MB)</p>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">फाइलें सुरक्षित Supabase क्लाउड पर सेव होंगी • अधिकतम 10 फाइलें (Max 5MB)</p>
 
       <div class="upload-section">
         <div class="file-input-wrapper">
@@ -491,8 +479,10 @@
   </div>
 
   <script>
-    // Live Updated Web App URL
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw2WQ7tJwZPkzaNGU9wnmUvpunagiSTIbJWhoeCxuAHWVeNC36aF4IZgZtzqwjaxN2Wlg/exec";
+    // Supabase Credentials
+    const PROJECT_URL = "https://tudgmsdicyxshybbdgos.supabase.co";
+    const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1ZGdtc2RpY3l4c2h5YmJkZ29zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5MjA3MDYsImV4cCI6MjEwMzQ5NjcwNn0.x2D-lLA7DLZ8a2CWGgGoIBzvHjOXxChQurchw-8e2k4";
+    const BUCKET_NAME = "cloud-files";
 
     /* --- Floating Balloons Animation --- */
     const canvas = document.getElementById('balloonCanvas');
@@ -515,9 +505,7 @@
     }
 
     class Balloon {
-      constructor() {
-        this.reset(true);
-      }
+      constructor() { this.reset(true); }
       reset(initial = false) {
         this.radius = Math.random() * 12 + 14;
         this.x = Math.random() * canvas.width;
@@ -533,15 +521,11 @@
         this.y -= this.speedY;
         this.swayAngle += this.swaySpeed;
         this.x += Math.sin(this.swayAngle) * (this.sway * 0.4);
-
-        if (this.y < -this.radius * 2) {
-          this.reset(false);
-        }
+        if (this.y < -this.radius * 2) this.reset(false);
       }
       draw() {
         ctx.save();
         ctx.translate(this.x, this.y);
-
         ctx.beginPath();
         ctx.moveTo(0, this.radius * 1.2);
         ctx.quadraticCurveTo(Math.sin(this.swayAngle) * 6, this.radius * 1.7, 0, this.radius * 2.2);
@@ -569,7 +553,6 @@
         ctx.ellipse(-this.radius * 0.35, -this.radius * 0.45, this.radius * 0.22, this.radius * 0.45, -Math.PI / 6, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
         ctx.fill();
-
         ctx.restore();
       }
     }
@@ -577,17 +560,12 @@
     function initBalloons() {
       balloons = [];
       const count = Math.floor(window.innerWidth / 35);
-      for (let i = 0; i < count; i++) {
-        balloons.push(new Balloon());
-      }
+      for (let i = 0; i < count; i++) balloons.push(new Balloon());
     }
 
     function animateBalloons() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      balloons.forEach(b => {
-        b.update();
-        b.draw();
-      });
+      balloons.forEach(b => { b.update(); b.draw(); });
       requestAnimationFrame(animateBalloons);
     }
 
@@ -617,51 +595,58 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    /* --- File Cloud Operations --- */
-    function loadFiles() {
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    /* --- Native Fetch Operations --- */
+    async function loadFiles() {
       const list = document.getElementById('fileList');
       const badge = document.getElementById('fileCountBadge');
 
-      fetch(SCRIPT_URL, {
-        method: "GET",
-        mode: "cors",
-        redirect: "follow"
-      })
-        .then(res => res.json())
-        .then(resData => {
-          let files = [];
-          if (Array.isArray(resData)) {
-            files = resData;
-          } else if (resData && Array.isArray(resData.files)) {
-            files = resData.files;
+      try {
+        const res = await fetch(`${PROJECT_URL}/rest/v1/files?select=*&order=created_at.desc`, {
+          headers: {
+            "apikey": ANON_KEY,
+            "Authorization": `Bearer ${ANON_KEY}`
           }
+        });
 
-          badge.innerText = `${files.length} / 10 Files`;
+        if (!res.ok) throw new Error("डेटा लोड नहीं हो सका");
+        const files = await res.json();
 
-          if (files.length === 0) {
-            list.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#8395a7;">कोई फाइल उपलब्ध नहीं है।</td></tr>';
-            return;
-          }
+        badge.innerText = `${files.length} / 10 Files`;
 
-          list.innerHTML = files.map(f => `
+        if (!files || files.length === 0) {
+          list.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#8395a7;">कोई फाइल उपलब्ध नहीं है।</td></tr>';
+          return;
+        }
+
+        list.innerHTML = files.map(f => {
+          const dateStr = new Date(f.created_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+          return `
             <tr>
-              <td><strong>${f.name}</strong></td>
+              <td><strong>${escapeHtml(f.name)}</strong></td>
               <td>${f.size || 'N/A'}</td>
-              <td style="color:#aaa;">${f.date || ''}</td>
+              <td style="color:#aaa;">${dateStr}</td>
               <td style="display:flex; gap:6px;">
-                <a href="${f.url}" target="_blank" class="btn-mini btn-view">👁️ View</a>
-                <button class="btn-mini btn-del" onclick="deleteFile('${f.id}')">🗑️ Delete</button>
+                <a href="${f.url}" target="_blank" class="btn-mini btn-view">👁️ View / Download</a>
+                <button class="btn-mini btn-del" onclick="deleteFile('${f.id}', '${f.file_path}')">🗑️ Delete</button>
               </td>
             </tr>
-          `).join('');
-        })
-        .catch(err => {
-          console.error("Load Error:", err);
-          list.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#ff6b6b;">फाइल लोड करने में समस्या आई।</td></tr>';
-        });
+          `;
+        }).join('');
+      } catch (err) {
+        console.error("Load Error:", err);
+        list.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#ff6b6b;">Error: ${err.message}</td></tr>`;
+      }
     }
 
-    function handleUpload() {
+    async function handleUpload() {
       const fileInput = document.getElementById('fileInput');
       const uploadBtn = document.getElementById('uploadBtn');
       const status = document.getElementById('status');
@@ -672,7 +657,7 @@
       const progressPercent = document.getElementById('progressPercent');
       const progressState = document.getElementById('progressState');
 
-      if (fileInput.files.length === 0) {
+      if (!fileInput.files || fileInput.files.length === 0) {
         alert("कृपया पहले कोई फाइल चुनें!");
         return;
       }
@@ -689,103 +674,121 @@
       
       progressContainer.style.display = "block";
       progressInfo.style.display = "flex";
-      progressBar.style.width = "0%";
-      progressPercent.innerText = "0%";
-      progressState.innerText = "⚡ Preparing & Uploading...";
+      progressBar.style.width = "10%";
+      progressPercent.innerText = "10%";
+      progressState.innerText = "⚡ Uploading to Supabase Storage...";
 
-      let currentProgress = 0;
-      const progressInterval = setInterval(() => {
-        if (currentProgress < 90) {
-          currentProgress += Math.floor(Math.random() * 8) + 4;
-          if (currentProgress > 90) currentProgress = 90;
-          progressBar.style.width = currentProgress + "%";
-          progressPercent.innerText = currentProgress + "%";
-        }
-      }, 200);
+      try {
+        const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const filePath = `${Date.now()}_${cleanName}`;
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const rawBase64 = e.target.result.split(',')[1];
-        const payload = {
-          action: "upload",
-          fileName: file.name,
-          mimeType: file.type || "application/octet-stream",
-          fileData: rawBase64
-        };
-
-        fetch(SCRIPT_URL, {
-          method: "POST",
-          mode: "cors",
-          redirect: "follow",
+        // 1. Direct Upload to Supabase Storage
+        const uploadRes = await fetch(`${PROJECT_URL}/storage/v1/object/${BUCKET_NAME}/${filePath}`, {
+          method: 'POST',
           headers: {
-            "Content-Type": "text/plain;charset=utf-8"
+            'apikey': ANON_KEY,
+            'Authorization': `Bearer ${ANON_KEY}`,
+            'Content-Type': file.type || 'application/octet-stream',
+            'x-upsert': 'true'
           },
-          body: JSON.stringify(payload)
-        })
-        .then(res => res.json())
-        .then(data => {
-          clearInterval(progressInterval);
-          progressBar.style.width = "100%";
-          progressPercent.innerText = "100%";
-          progressState.innerText = "✅ Complete!";
-
-          if (data.result === "success" || data.status === "success") {
-            status.style.color = "#1dd1a1";
-            status.innerText = "✅ फाइल 100% सफलता से अपलोड हो गई!";
-            fileInput.value = "";
-            loadFiles();
-          } else {
-            status.style.color = "#ff6b6b";
-            status.innerText = data.message || "अपलोड नहीं हो पाया।";
-          }
-        })
-        .catch(err => {
-          console.error("Upload Error:", err);
-          clearInterval(progressInterval);
-          progressBar.style.width = "100%";
-          progressPercent.innerText = "100%";
-          progressState.innerText = "✅ Complete!";
-          
-          status.style.color = "#1dd1a1";
-          status.innerText = "✅ फाइल सफलता से अपलोड हो गई!";
-          fileInput.value = "";
-          setTimeout(loadFiles, 2000);
-        })
-        .finally(() => {
-          uploadBtn.disabled = false;
-          uploadBtn.innerText = "Upload to Cloud ⚡";
-          setTimeout(() => {
-            progressContainer.style.display = "none";
-            progressInfo.style.display = "none";
-          }, 3500);
+          body: file
         });
-      };
-      reader.readAsDataURL(file);
+
+        if (!uploadRes.ok) {
+          const errJson = await uploadRes.json().catch(() => ({}));
+          throw new Error(errJson.message || "Storage Upload Failed");
+        }
+
+        progressBar.style.width = "75%";
+        progressPercent.innerText = "75%";
+        progressState.innerText = "💾 Saving File Information...";
+
+        // 2. Generate Public URL
+        const publicUrl = `${PROJECT_URL}/storage/v1/object/public/${BUCKET_NAME}/${filePath}`;
+
+        // 3. Save details to database
+        const dbRes = await fetch(`${PROJECT_URL}/rest/v1/files`, {
+          method: 'POST',
+          headers: {
+            'apikey': ANON_KEY,
+            'Authorization': `Bearer ${ANON_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify({
+            name: file.name,
+            size: formatBytes(file.size),
+            file_path: filePath,
+            url: publicUrl
+          })
+        });
+
+        if (!dbRes.ok) {
+          const dbErr = await dbRes.json().catch(() => ({}));
+          throw new Error(dbErr.message || "Database insert failed");
+        }
+
+        progressBar.style.width = "100%";
+        progressPercent.innerText = "100%";
+        progressState.innerText = "✅ Complete!";
+
+        status.style.color = "#1dd1a1";
+        status.innerText = "✅ फाइल सफलता से अपलोड हो गई!";
+        fileInput.value = "";
+        loadFiles();
+      } catch (err) {
+        console.error("Upload Error:", err);
+        progressBar.style.width = "100%";
+        progressPercent.innerText = "Error";
+        status.style.color = "#ff6b6b";
+        status.innerText = "Error: " + err.message;
+      } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.innerText = "Upload to Cloud ⚡";
+        setTimeout(() => {
+          progressContainer.style.display = "none";
+          progressInfo.style.display = "none";
+        }, 3500);
+      }
     }
 
-    function deleteFile(fileId) {
+    async function deleteFile(id, filePath) {
       if (!confirm("क्या आप वाकई इस फाइल को हटाना चाहते हैं?")) return;
 
-      const payload = {
-        action: "delete",
-        fileId: fileId
-      };
+      try {
+        // 1. Delete from Storage
+        if (filePath) {
+          await fetch(`${PROJECT_URL}/storage/v1/object/${BUCKET_NAME}/${filePath}`, {
+            method: 'DELETE',
+            headers: {
+              'apikey': ANON_KEY,
+              'Authorization': `Bearer ${ANON_KEY}`
+            }
+          });
+        }
 
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "cors",
-        redirect: "follow",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify(payload)
-      })
-      .then(res => res.json())
-      .then(() => loadFiles())
-      .catch(() => loadFiles());
+        // 2. Delete from DB Table
+        await fetch(`${PROJECT_URL}/rest/v1/files?id=eq.${id}`, {
+          method: 'DELETE',
+          headers: {
+            'apikey': ANON_KEY,
+            'Authorization': `Bearer ${ANON_KEY}`
+          }
+        });
+
+        loadFiles();
+      } catch (err) {
+        alert("हटाने में समस्या आई: " + err.message);
+      }
     }
 
-    loadFiles();
+    function escapeHtml(str) {
+      return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    window.onload = function() {
+      loadFiles();
+    };
   </script>
 </body>
 </html>
