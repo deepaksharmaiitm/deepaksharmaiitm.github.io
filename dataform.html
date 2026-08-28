@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Portal 2026 - Ultra Modern Multi-Column Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-glow: rgba(99, 102, 241, 0.45);
+      --accent: #06b6d4;
+      --accent-glow: rgba(6, 182, 212, 0.4);
+      --pink: #ec4899;
+      --pink-glow: rgba(236, 72, 153, 0.4);
+      --bg-dark: #070913;
+      --card-bg: rgba(18, 22, 45, 0.65);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --glass-highlight: rgba(255, 255, 255, 0.06);
+    }
+
+    * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    
+    body {
+      background: radial-gradient(circle at 20% 20%, #1e1b4b 0%, #0c0f24 50%, #05060f 100%);
+      min-height: 100vh;
+      margin: 0;
+      padding: 25px 15px;
+      color: #f8fafc;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* 2026 Background Floating Ambient Orbs Canvas */
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none !important;
+      z-index: 1;
+    }
+
+    .container { max-width: 680px; margin: 0 auto; position: relative; z-index: 10; }
+    .admin-wide { max-width: 1200px; }
+    
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      padding: 28px;
+      border-radius: 24px;
+      margin-top: 15px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -50%; width: 200%; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--primary), var(--pink), transparent);
+    }
+
+    .tabs { display: flex; gap: 12px; margin-bottom: 20px; }
+    .tab-btn {
+      flex: 1; padding: 14px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px;
+      cursor: pointer; font-weight: 700; font-size: 14px; background: rgba(255, 255, 255, 0.04); color: #94a3b8;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(6, 182, 212, 0.3));
+      color: #ffffff;
+      border-color: #818cf8;
+      box-shadow: 0 0 25px var(--primary-glow);
+    }
+
+    input {
+      width: 100%; padding: 13px 16px; margin: 6px 0; border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.18); background: rgba(0, 0, 0, 0.35); color: #fff;
+      font-size: 14px; outline: none; transition: 0.3s;
+    }
+    input:focus {
+      border-color: #818cf8;
+      box-shadow: 0 0 18px var(--primary-glow);
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    button.btn-main {
+      width: 100%; padding: 14px; margin-top: 12px; border: none;
+      border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; color: #fff;
+      transition: all 0.25s ease;
+      letter-spacing: 0.3px;
+    }
+    button.btn-main:hover { filter: brightness(1.2); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+
+    .btn-blue { background: linear-gradient(135deg, #4f46e5, #06b6d4); box-shadow: 0 4px 15px var(--primary-glow); }
+    .btn-green { background: linear-gradient(135deg, #059669, #10b981); }
+    .btn-pink { background: linear-gradient(135deg, #ec4899, #8b5cf6); box-shadow: 0 4px 15px var(--pink-glow); }
+    .btn-amber { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .btn-red { background: #ef4444; width: auto; padding: 7px 16px; border-radius: 10px; }
+    
+    .btn-action-unlock {
+      background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px; margin-right: 5px;
+      transition: 0.2s;
+    }
+    .btn-action-unlock:hover { background: #f59e0b; color: #000; box-shadow: 0 0 12px rgba(245, 158, 11, 0.5); }
+
+    .btn-action-del {
+      background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px;
+      transition: 0.2s;
+    }
+    .btn-action-del:hover { background: #ef4444; color: #fff; box-shadow: 0 0 12px rgba(239, 68, 68, 0.5); }
+
+    .btn-small { width: auto; padding: 9px 16px; margin: 0; border-radius: 10px; cursor: pointer; font-weight: 700; border: none; }
+    
+    .hidden { display: none !important; }
+    .status-box { padding: 12px; border-radius: 12px; margin: 12px 0; font-size: 13px; text-align: center; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 650px) { .grid { grid-template-columns: 1fr; } }
+    
+    .form-box { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.12); margin-bottom: 20px; }
+    .field-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    
+    /* 2026 Futuristic Cyber Table */
+    table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 15px; background: rgba(10, 14, 30, 0.7); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); }
+    th, td { padding: 12px 14px; text-align: left; font-size: 13px; white-space: nowrap; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    th { background: rgba(255,255,255,0.06); color: #94a3b8; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.6px; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255, 255, 255, 0.04); }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Ambient Glowing Particles -->
+  <canvas id="bgCanvas"></canvas>
+
+  <div class="container" id="mainBox">
+
+    <!-- टैब्स -->
+    <div class="tabs" id="tabBar">
+      <button class="tab-btn active" id="uTab" onclick="showTab('user')">👤 User Portal</button>
+      <button class="tab-btn" id="aTab" onclick="showTab('admin')">🔐 Admin Control Hub</button>
+    </div>
+
+    <!-- 1. यूजर लॉगिन/रजिस्टर -->
+    <div id="userAuth" class="card">
+      <h2 style="text-align:center; margin-top:0; color:#818cf8; font-size:22px;">User Access & Registration</h2>
+      <p style="text-align:center; color:#94a3b8; font-size:13px; margin-top:-6px; margin-bottom:18px;">Apne verified credentials se login karein ya naya account banayein</p>
+      
+      <input type="text" id="uName" placeholder="Username (e.g. deepak)">
+      <input type="password" id="uPass" placeholder="Password">
+      <button class="btn-main btn-blue" onclick="userLogin()">🚀 Secure Login</button>
+      <button class="btn-main btn-green" onclick="userRegister()">✨ Create New Account</button>
+      <div id="statusMsg" class="status-box hidden"></div>
+    </div>
+
+    <!-- 2. एडमिन लॉगिन -->
+    <div id="adminAuth" class="card hidden">
+      <h2 style="text-align:center; margin-top:0; color:#f472b6; font-size:22px;">Admin Command Console</h2>
+      <p style="text-align:center; color:#94a3b8; font-size:13px; margin-top:-6px; margin-bottom:18px;">Restricted administrative portal access only</p>
+      
+      <input type="text" id="admName" placeholder="Admin ID (admin)">
+      <input type="password" id="admPass" placeholder="Admin Password (Radhe@79875)">
+      <button class="btn-main btn-pink" onclick="adminLogin()">⚡ Authorize Admin Access</button>
+    </div>
+
+    <!-- 3. यूजर डैशबोर्ड -->
+    <div id="userDash" class="card hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0; font-size:18px;">Portal Node: <span id="userNameShow" style="color:#06b6d4; font-weight:800;"></span></h3>
+        <button class="btn-main btn-red" onclick="location.reload()">Logout</button>
+      </div>
+      <hr style="border:0; border-top:1px solid rgba(255,255,255,0.15); margin:18px 0;">
+      
+      <!-- Active Form -->
+      <div id="userFormArea">
+        <h4 id="formTitleShow" style="text-align:center; margin-top:0; color:#f8fafc; font-size:17px;"></h4>
+        <div id="dynamicInputs" class="grid"></div>
+        <button class="btn-main btn-blue" id="subBtn" onclick="submitData()">💾 Lock & Submit Information</button>
+      </div>
+
+      <!-- Locked View -->
+      <div id="lockedArea" class="hidden">
+        <div style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); padding:14px; border-radius:14px; margin-bottom:15px;">
+          <p style="color:#6ee7b7; font-weight:700; margin:0; font-size:14px;">✓ Aapka record successfully submit aur lock ho chuka hai.</p>
+          <small style="color:#cbd5e1;">Agar data galat submit ho gaya hai, toh please Admin se unlock karwane ke liye contact karein.</small>
+        </div>
+        <div id="lockedData" class="grid"></div>
+      </div>
+    </div>
+
+    <!-- 4. एडमिन डैशबोर्ड -->
+    <div id="adminDash" class="card hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h2 style="margin:0; color:#f472b6; font-size:20px;">Master Admin Dashboard</h2>
+          <small style="color:#10b981; font-weight:bold;">● Live Supabase Cloud Sync 2026</small>
+        </div>
+        <button class="btn-main btn-red" onclick="location.reload()">Logout</button>
+      </div>
+      <hr style="border:0; border-top:1px solid rgba(255,255,255,0.15); margin:18px 0;">
+
+      <!-- TOOL A: RESET USER PASSWORD -->
+      <div class="form-box" style="border-color: rgba(245, 158, 11, 0.35);">
+        <h4 style="margin-top:0; color:#fbbf24; font-size:16px;">🔑 Reset User Password</h4>
+        <div class="grid">
+          <input type="text" id="rstTargetUser" placeholder="Target Username (e.g. deepak)" style="margin:0;">
+          <input type="password" id="rstNewPass" placeholder="Enter New Password" style="margin:0;">
+        </div>
+        <button class="btn-main btn-amber" onclick="adminResetPassword()">Update User Password</button>
+      </div>
+
+      <!-- TOOL B: DYNAMIC FORM CREATOR -->
+      <div class="form-box">
+        <h4 style="margin-top:0; color:#60a5fa; font-size:16px;">📝 Dynamic Form Publisher (Multi-Column Schema)</h4>
+        <label style="font-size:12px; color:#cbd5e1;"><b>Form Title:</b></label>
+        <input type="text" id="newFormTitle" placeholder="e.g. Financial KYC Verification 2026">
+        
+        <label style="font-size:12px; color:#cbd5e1; margin-top:10px; display:block;"><b>Form Fields (Har field ka sheet mein alag column banega):</b></label>
+        <div id="adminFieldsBox" class="grid" style="margin-top:6px;"></div>
+        
+        <div style="margin-top:10px;">
+          <button type="button" class="btn-small" style="background:#3b82f6; color:#fff;" onclick="addAdminFieldInput()">+ Add Field</button>
+        </div>
+        <button class="btn-main btn-green" onclick="adminSaveNewForm()">🚀 Publish Form For All Users</button>
+      </div>
+
+      <!-- TOOL C: MULTI-COLUMN DATA TABLE WITH UNLOCK & DELETE -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:25px; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h3 style="margin:0; font-size:17px;">📊 Real-time User Submissions</h3>
+          <small style="color:#94a3b8;">Data ko unlock ya delete karne ke liye direct action buttons use karein</small>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn-small" style="background:linear-gradient(135deg, #059669, #10b981); color:#fff;" onclick="exportToExcel()">📥 Export to Excel</button>
+          <button class="btn-small" style="background:linear-gradient(135deg, #6366f1, #06b6d4); color:#fff;" onclick="loadAdminRecords()">⚡ Quick Refresh</button>
+        </div>
+      </div>
+      
+      <div id="recordsTable" style="overflow-x:auto;">Loading real-time records...</div>
+    </div>
+
+  </div>
+
+  <script>
+    // ========================================================
+    // --- 1. 2026 AMBIENT PARTICLES (BOTTOM TO TOP) ENGINE ---
+    // ========================================================
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const neonPalettes = [
+      'rgba(99, 102, 241, 0.45)',
+      'rgba(6, 182, 212, 0.45)',
+      'rgba(236, 72, 153, 0.4)',
+      'rgba(16, 185, 129, 0.4)',
+      'rgba(245, 158, 11, 0.35)'
+    ];
+
+    class CyberOrb {
+      constructor() { this.init(true); }
+      init(randomY = false) {
+        this.x = Math.random() * canvas.width;
+        this.y = randomY ? Math.random() * canvas.height : canvas.height + Math.random() * 60;
+        this.radius = Math.random() * 6 + 2;
+        this.speedY = Math.random() * 1.4 + 0.5; // Niche se upar
+        this.color = neonPalettes[Math.floor(Math.random() * neonPalettes.length)];
+        this.wobble = Math.random() * 2;
+        this.wobbleSpeed = Math.random() * 0.02 + 0.01;
+      }
+      update() {
+        this.y -= this.speedY;
+        this.x += Math.sin(this.y * this.wobbleSpeed) * 0.6;
+        if (this.y < -20) { this.init(); }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = this.color;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    for (let i = 0; i < 55; i++) { particles.push(new CyberOrb()); }
+
+    function renderAnimation() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(renderAnimation);
+    }
+    renderAnimation();
+
+    // ========================================================
+    // --- 2. SUPABASE DIRECT REST API CONFIGURATION ---
+    // ========================================================
+    const API_URL = "https://tudgmsdicyxshybbdgos.supabase.co/rest/v1";
+    const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1ZGdtc2RpY3l4c2h5YmJkZ29zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5MjA3MDYsImV4cCI6MjEwMzQ5NjcwNn0.x2D-lLA7DLZ8a2CWGgGoIBzvHjOXxChQurchw-8e2k4";
+
+    let currentUser = null;
+    let cachedSubmissions = [];
+    let currentActiveForm = {
+      id: 'default_form',
+      title: 'Financial Details Form',
+      fields: ['Deposit', 'Advance', 'GNPA', 'NNPA', 'Profit', 'CRAR', 'BDDR', 'Net worth']
+    };
+
+    function showTab(type) {
+      document.getElementById('uTab').className = 'tab-btn' + (type === 'user' ? ' active' : '');
+      document.getElementById('aTab').className = 'tab-btn' + (type === 'admin' ? ' active' : '');
+      document.getElementById('userAuth').classList.toggle('hidden', type !== 'user');
+      document.getElementById('adminAuth').classList.toggle('hidden', type !== 'admin');
+    }
+
+    function showMsg(txt, isErr) {
+      const box = document.getElementById('statusMsg');
+      box.innerText = txt;
+      box.className = 'status-box';
+      box.style.background = isErr ? 'rgba(239, 68, 68, 0.25)' : 'rgba(16, 185, 129, 0.25)';
+      box.style.border = isErr ? '1px solid #ef4444' : '1px solid #10b981';
+      box.style.color = isErr ? '#fca5a5' : '#6ee7b7';
+      box.classList.remove('hidden');
+    }
+
+    // User Register
+    async function userRegister() {
+      const u = document.getElementById('uName').value.trim();
+      const p = document.getElementById('uPass').value.trim();
+      if (!u || !p) return showMsg("Username aur Password dono bharna zaroori hai.", true);
+
+      showMsg("Connecting to Supabase Cloud...", false);
+      try {
+        const res = await fetch(`${API_URL}/portal_users`, {
+          method: 'POST',
+          headers: {
+            'apikey': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify({ username: u, password: p })
+        });
+
+        if (res.ok) {
+          showMsg("✓ Account create ho gaya! Ab Login button dabayein.", false);
+        } else {
+          showMsg("Error: User pehle se registered hai!", true);
+        }
+      } catch (err) {
+        showMsg("Network Error: " + err.message, true);
+      }
+    }
+
+    // User Login
+    async function userLogin() {
+      const u = document.getElementById('uName').value.trim();
+      const p = document.getElementById('uPass').value.trim();
+      if (!u || !p) return showMsg("Username aur Password dono bharna zaroori hai.", true);
+
+      showMsg("Verifying credentials...", false);
+      try {
+        const res = await fetch(`${API_URL}/portal_users?username=eq.${encodeURIComponent(u)}`, {
+          headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
+        });
+        const users = await res.json();
+
+        if (users.length === 0) return showMsg("Account nahi mila! Pehle Create Account karein.", true);
+        if (users[0].password !== p) return showMsg("Galat Password दर्ज किया गया है!", true);
+
+        currentUser = u;
+        await openUserDashboard();
+      } catch (err) {
+        showMsg("Login Error: " + err.message, true);
+      }
+    }
+
+    // Admin Login
+    async function adminLogin() {
+      const u = document.getElementById('admName').value.trim();
+      const p = document.getElementById('admPass').value.trim();
+      if (u === 'admin' && p === 'Radhe@79875') {
+        document.getElementById('tabBar').classList.add('hidden');
+        document.getElementById('adminAuth').classList.add('hidden');
+        document.getElementById('adminDash').classList.remove('hidden');
+        document.getElementById('mainBox').className = 'container admin-wide';
+        
+        await fetchLatestForm();
+        renderAdminFormBuilder();
+        loadAdminRecords();
+      } else {
+        alert("Galat Admin ID ya Password!");
+      }
+    }
+
+    async function fetchLatestForm() {
+      try {
+        const res = await fetch(`${API_URL}/portal_forms?order=created_at.desc&limit=1`, {
+          headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
+        });
+        const forms = await res.json();
+        if (forms && forms.length > 0) {
+          currentActiveForm = forms[0];
+        }
+      } catch (e) {
+        console.warn("Using fallback form schema");
+      }
+    }
+
+    // User Dashboard
+    async function openUserDashboard() {
+      document.getElementById('tabBar').classList.add('hidden');
+      document.getElementById('userAuth').classList.add('hidden');
+      document.getElementById('userDash').classList.remove('hidden');
+      document.getElementById('userNameShow').innerText = currentUser;
+
+      await fetchLatestForm();
+      document.getElementById('formTitleShow').innerText = currentActiveForm.title;
+
+      let html = "";
+      currentActiveForm.fields.forEach((f, idx) => {
+        html += `<div><label style="font-size:12px; font-weight:700; color:#cbd5e1;">${f}:</label><input type="text" id="in_${idx}" placeholder="Enter ${f}"></div>`;
+      });
+      document.getElementById('dynamicInputs').innerHTML = html;
+
+      // Check if user already submitted and is locked
+      try {
+        const checkRes = await fetch(`${API_URL}/portal_submissions?username=eq.${encodeURIComponent(currentUser)}&form_id=eq.${encodeURIComponent(currentActiveForm.id)}&order=created_at.desc&limit=1`, {
+          headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
+        });
+        const subData = await checkRes.json();
+        if (subData && subData.length > 0) {
+          showLocked(currentActiveForm.fields, subData[0].values);
+        } else {
+          document.getElementById('userLockedArea').classList.add('hidden');
+          document.getElementById('userFormArea').classList.remove('hidden');
+        }
+      } catch (e) {}
+    }
+
+    function showLocked(fList, vals) {
+      document.getElementById('userFormArea').classList.add('hidden');
+      document.getElementById('lockedArea').classList.remove('hidden');
+      let lockedHtml = "";
+      fList.forEach((f, i) => {
+        lockedHtml += `<div style="background:rgba(255,255,255,0.06); padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.1);"><span style="font-size:11px; color:#94a3b8; font-weight:bold; display:block;">${f}</span><span style="font-size:14px; font-weight:600; color:#f8fafc;">${vals[i] || '-'}</span></div>`;
+      });
+      document.getElementById('lockedData').innerHTML = lockedHtml;
+    }
+
+    // Submit User Form
+    async function submitData() {
+      const vals = [];
+      for (let i = 0; i < currentActiveForm.fields.length; i++) {
+        const val = document.getElementById(`in_${i}`).value.trim();
+        if (!val) return alert("Kripya sabhi box bharein.");
+        vals.push(val);
+      }
+
+      const btn = document.getElementById('subBtn');
+      btn.innerText = "Encrypting & Saving to Supabase...";
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`${API_URL}/portal_submissions`, {
+          method: 'POST',
+          headers: {
+            'apikey': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({
+            username: currentUser,
+            form_id: currentActiveForm.id,
+            form_title: currentActiveForm.title,
+            field_names: currentActiveForm.fields,
+            values: vals
+          })
+        });
+
+        if (res.ok) {
+          alert("✓ Data safaltapoorvak lock ho gaya!");
+          showLocked(currentActiveForm.fields, vals);
+        } else {
+          alert("Data save nahi ho paya.");
+          btn.innerText = "💾 Lock & Submit Information";
+          btn.disabled = false;
+        }
+      } catch (e) {
+        alert("Error: " + e.message);
+        btn.innerText = "💾 Lock & Submit Information";
+        btn.disabled = false;
+      }
+    }
+
+    // Admin Password Reset
+    async function adminResetPassword() {
+      const targetUser = document.getElementById('rstTargetUser').value.trim();
+      const newPass = document.getElementById('rstNewPass').value.trim();
+
+      if (!targetUser || !newPass) return alert("Target Username aur New Password dono bharein.");
+
+      try {
+        const res = await fetch(`${API_URL}/portal_users?username=eq.${encodeURIComponent(targetUser)}`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify({ password: newPass })
+        });
+
+        const data = await res.json();
+        if (data && data.length > 0) {
+          alert(`Safalta: User '${targetUser}' ka password turant update ho gaya!`);
+          document.getElementById('rstTargetUser').value = '';
+          document.getElementById('rstNewPass').value = '';
+        } else {
+          alert(`User '${targetUser}' database mein nahi mila.`);
+        }
+      } catch (e) {
+        alert("Password Reset Error: " + e.message);
+      }
+    }
+
+    // Admin Form Builder
+    function renderAdminFormBuilder() {
+      document.getElementById('newFormTitle').value = currentActiveForm.title;
+      const box = document.getElementById('adminFieldsBox');
+      box.innerHTML = "";
+      currentActiveForm.fields.forEach(f => addAdminFieldInput(f));
+    }
+
+    function addAdminFieldInput(defaultVal = "") {
+      const box = document.getElementById('adminFieldsBox');
+      const div = document.createElement('div');
+      div.className = 'field-row';
+      div.innerHTML = `
+        <input type="text" class="adm-f-val" value="${defaultVal}" placeholder="Field Name" style="margin:0;">
+        <button type="button" class="btn-small" style="background:#ef4444; color:#fff;" onclick="this.parentElement.remove()">✕</button>
+      `;
+      box.appendChild(div);
+    }
+
+    async function adminSaveNewForm() {
+      const title = document.getElementById('newFormTitle').value.trim();
+      const inputs = document.querySelectorAll('.adm-f-val');
+      const fList = [];
+      inputs.forEach(inp => {
+        const val = inp.value.trim();
+        if (val) fList.push(val);
+      });
+
+      if (!title || fList.length === 0) return alert("Form Title aur kam se kam ek field ka naam zaroori hai.");
+
+      const newId = 'form_' + Date.now();
+      try {
+        const res = await fetch(`${API_URL}/portal_forms`, {
+          method: 'POST',
+          headers: {
+            'apikey': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({
+            id: newId,
+            title: title,
+            fields: fList
+          })
+        });
+
+        if (res.ok) {
+          alert("✓ Naya Dynamic Form publish ho gaya!");
+          location.reload();
+        } else {
+          alert("Form publish nahi ho saka.");
+        }
+      } catch (e) {
+        alert("Error: " + e.message);
+      }
+    }
+
+    // ========================================================
+    // --- 3. MULTI-COLUMN TABLE + UNLOCK & DELETE LOGIC ---
+    // ========================================================
+    async function loadAdminRecords() {
+      const area = document.getElementById('recordsTable');
+      area.innerHTML = "<p style='color:#818cf8; text-align:center; padding:15px;'>Syncing real-time records...</p>";
+      
+      try {
+        const res = await fetch(`${API_URL}/portal_submissions?order=created_at.desc`, {
+          headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
+        });
+        cachedSubmissions = await res.json();
+
+        if (!cachedSubmissions || cachedSubmissions.length === 0) {
+          area.innerHTML = "<p style='text-align:center; padding:20px; color:#94a3b8;'>Koi record available nahi hai.</p>";
+          return;
+        }
+
+        let tableHtml = "<table><thead><tr>";
+        tableHtml += "<th>Actions</th><th>User Name</th><th>Form Title</th><th>Submission Time</th>";
+        
+        currentActiveForm.fields.forEach(f => {
+          tableHtml += `<th>${f}</th>`;
+        });
+        tableHtml += "</tr></thead><tbody>";
+
+        cachedSubmissions.forEach(row => {
+          const formattedTime = new Date(row.created_at).toLocaleString('en-IN');
+          tableHtml += `<tr>
+            <td style="white-space:nowrap;">
+              <button class="btn-action-unlock" onclick="unlockUserSubmission('${row.id}', '${row.username}')" title="User ko re-edit karne allow karein">🔓 Unlock</button>
+              <button class="btn-action-del" onclick="deleteUserSubmission('${row.id}', '${row.username}')" title="Record delete karein">🗑️ Delete</button>
+            </td>
+            <td><b style="color:#06b6d4;">${row.username}</b></td>
+            <td>${row.form_title}</td>
+            <td style="color:#cbd5e1;">${formattedTime}</td>`;
+          
+          currentActiveForm.fields.forEach((_, idx) => {
+            const cellValue = (row.values && row.values[idx] !== undefined) ? row.values[idx] : '-';
+            tableHtml += `<td>${cellValue}</td>`;
+          });
+
+          tableHtml += `</tr>`;
+        });
+
+        tableHtml += "</tbody></table>";
+        area.innerHTML = tableHtml;
+      } catch (err) {
+        area.innerHTML = "<p style='color:#ef4444;'>Error loading table: " + err.message + "</p>";
+      }
+    }
+
+    // --- UNLOCK RECORD FUNCTION ---
+    async function unlockUserSubmission(recordId, username) {
+      if (!confirm(`Kya aap User '${username}' ka data unlock karna chahte hain? \n\nUnlock hone ke baad user dobara login karke naya data bhar sakega.`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/portal_submissions?id=eq.${recordId}`, {
+          method: 'DELETE',
+          headers: {
+            'apikey': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`
+          }
+        });
+
+        if (res.ok) {
+          alert(`✓ Safalta: User '${username}' ka form unlock ho gaya hai! User ab naya form bhar sakta hai.`);
+          loadAdminRecords();
+        } else {
+          alert("Unlock nahi ho paya.");
+        }
+      } catch (e) {
+        alert("Error: " + e.message);
+      }
+    }
+
+    // --- DELETE RECORD FUNCTION ---
+    async function deleteUserSubmission(recordId, username) {
+      if (!confirm(`Warning: Kya aap sach me User '${username}' ke is record ko permanently DELETE karna chahte hain?`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/portal_submissions?id=eq.${recordId}`, {
+          method: 'DELETE',
+          headers: {
+            'apikey': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`
+          }
+        });
+
+        if (res.ok) {
+          alert(`✓ Record permanently delete kar diya gaya.`);
+          loadAdminRecords();
+        } else {
+          alert("Delete fail ho gaya.");
+        }
+      } catch (e) {
+        alert("Error: " + e.message);
+      }
+    }
+
+    // ========================================================
+    // --- 4. EXCEL / CSV INSTANT EXPORT ---
+    // ========================================================
+    function exportToExcel() {
+      if (!cachedSubmissions || cachedSubmissions.length === 0) {
+        return alert("Download ke liye koi data nahi hai.");
+      }
+
+      let csv = [];
+      let headers = ['User Name', 'Form Title', 'Submission Date & Time'].concat(currentActiveForm.fields);
+      csv.push(headers.map(h => `"${h.replace(/"/g, '""')}"`).join(','));
+
+      cachedSubmissions.forEach(row => {
+        const formattedTime = new Date(row.created_at).toLocaleString('en-IN');
+        let rowData = [
+          row.username,
+          row.form_title,
+          formattedTime
+        ];
+
+        currentActiveForm.fields.forEach((_, idx) => {
+          let cellVal = (row.values && row.values[idx] !== undefined) ? row.values[idx] : '';
+          rowData.push(cellVal);
+        });
+
+        csv.push(rowData.map(c => `"${String(c).replace(/"/g, '""')}"`).join(','));
+      });
+
+      const csvString = "\uFEFF" + csv.join("\r\n");
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Portal_Submissions_Export_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
