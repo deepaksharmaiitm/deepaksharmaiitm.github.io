@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Control Console 2026 - Master Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #ec4899;
+      --primary-glow: rgba(236, 72, 153, 0.45);
+      --accent: #8b5cf6;
+      --card-bg: rgba(18, 22, 45, 0.75);
+      --card-border: rgba(255, 255, 255, 0.14);
+    }
+
+    * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    
+    body {
+      background: radial-gradient(circle at 20% 20%, #2e1065 0%, #0c0f24 50%, #05060f 100%);
+      min-height: 100vh;
+      margin: 0;
+      padding: 25px 15px;
+      color: #f8fafc;
+      overflow-x: hidden;
+    }
+
+    .container { max-width: 600px; margin: 0 auto; }
+    .admin-wide { max-width: 1280px; }
+    
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      padding: 28px;
+      border-radius: 24px;
+      margin-top: 15px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      position: relative;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -50%; width: 200%; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--primary), var(--accent), transparent);
+    }
+
+    input {
+      width: 100%; padding: 13px 16px; margin: 6px 0; border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.18); background: rgba(0, 0, 0, 0.35); color: #fff;
+      font-size: 14px; outline: none; transition: 0.3s;
+    }
+    input:focus {
+      border-color: #f472b6;
+      box-shadow: 0 0 18px var(--primary-glow);
+    }
+
+    button.btn-main {
+      width: 100%; padding: 14px; margin-top: 12px; border: none;
+      border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; color: #fff;
+      transition: all 0.25s ease;
+    }
+    button.btn-main:hover { filter: brightness(1.2); transform: translateY(-2px); }
+
+    .btn-pink { background: linear-gradient(135deg, #ec4899, #8b5cf6); box-shadow: 0 4px 15px var(--primary-glow); }
+    .btn-green { background: linear-gradient(135deg, #059669, #10b981); }
+    .btn-amber { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .btn-red { background: #ef4444; width: auto; padding: 7px 16px; border-radius: 10px; }
+    
+    .btn-action-unlock {
+      background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px; margin-right: 5px;
+    }
+    .btn-action-unlock:hover { background: #f59e0b; color: #000; }
+
+    .btn-action-del {
+      background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px;
+    }
+    .btn-action-del:hover { background: #ef4444; color: #fff; }
+
+    .btn-small { width: auto; padding: 9px 16px; margin: 0; border-radius: 10px; cursor: pointer; font-weight: 700; border: none; }
+    
+    .hidden { display: none !important; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 650px) { .grid { grid-template-columns: 1fr; } }
+    
+    .form-box { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.12); margin-bottom: 20px; }
+    .field-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    
+    table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 15px; background: rgba(10, 14, 30, 0.7); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); }
+    th, td { padding: 12px 14px; text-align: left; font-size: 13px; white-space: nowrap; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    th { background: rgba(255,255,255,0.06); color: #94a3b8; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.6px; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255, 255, 255, 0.04); }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="mainBox">
+
+    <!-- ADMIN AUTH CARD -->
+    <div id="adminAuth" class="card">
+      <h2 style="text-align:center; margin-top:0; color:#f472b6; font-size:24px;">🔐 Admin Command Console</h2>
+      <p style="text-align:center; color:#94a3b8; font-size:13px; margin-top:-6px; margin-bottom:18px;">Enter administrator master credentials</p>
+      
+      <input type="text" id="admName" placeholder="Admin ID">
+      <input type="password" id="admPass" placeholder="Admin Password">
+      <button class="btn-main btn-pink" onclick="adminLogin()">⚡ Authorize Admin Access</button>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="adminDash" class="card hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h2 style="margin:0; color:#f472b6; font-size:20px;">Master Admin Dashboard</h2>
+          <small style="color:#10b981; font-weight:bold;">● Live Supabase Cloud Sync 2026</small>
+        </div>
+        <button class="btn-main btn-red" onclick="location.reload()">Logout</button>
+      </div>
+      <hr style="border:0; border-top:1px solid rgba(255,255,255,0.15); margin:18px 0;">
+
+      <!-- TOOL A: RESET USER PASSWORD -->
+      <div class="form-box" style="border-color: rgba(245, 158, 11, 0.35);">
+        <h4 style="margin-top:0; color:#fbbf24; font-size:16px;">🔑 Reset User Password (Temporary/Override)</h4>
+        <div class="grid">
+          <input type="text" id="rstTargetUser" placeholder="Target Username (e.g. deepak)" style="margin:0;">
+          <input type="password" id="rstNewPass" placeholder="Enter Temp/New Password" style="margin:0;">
+        </div>
+        <button class="btn-main btn-amber" onclick="adminResetPassword()">Update User Password</button>
+      </div>
+
+      <!-- TOOL B: DYNAMIC FORM CREATOR -->
+      <div class="form-box">
+        <h4 style="margin-top:0; color:#60a5fa; font-size:16px;">📝 Dynamic Form Publisher (Multi-Column Schema)</h4>
+        <label style="font-size:12px; color:#cbd5e1;"><b>Form Title:</b></label>
+        <input type="text" id="newFormTitle" placeholder="e.g. Financial KYC Verification 2026">
+        
+        <label style="font-size:12px; color:#cbd5e1; margin-top:10px; display:block;"><b>Form Fields (Har field ka sheet mein alag column banega):</b></label>
+        <div id="adminFieldsBox" class="grid" style="margin-top:6px;"></div>
+        
+        <div style="margin-top:10px;">
+          <button type="button" class="btn-small" style="background:#3b82f6; color:#fff;" onclick="addAdminFieldInput()">+ Add Field</button>
+        </div>
+        <button class="btn-main btn-green" onclick="adminSaveNewForm()">🚀 Publish Form For All Users</button>
+      </div>
+
+      <!-- TOOL C: MULTI-COLUMN DATA TABLE WITH PASSWORD, UNLOCK & DELETE -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:25px; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h3 style="margin:0; font-size:17px;">📊 Real-time Submissions & User Credentials</h3>
+          <small style="color:#94a3b8;">User Passwords are clearly visible in the dedicated table column.</small>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn-small" style="background:linear-gradient(135deg, #059669, #10b981); color:#fff;" onclick="exportToExcel()">📥 Export to Excel</button>
+          <button class="btn-small" style="background:linear-gradient(135deg, #6366f1, #06b6d4); color:#fff;" onclick="loadAdminRecords()">⚡ Quick Refresh</button>
+        </div>
+      </div>
+      
+      <div id="recordsTable" style="overflow-x:auto;">Loading real-time records...</div>
+    </div>
+
+  </div>
+
+  <script>
+    const API_URL = "https://tudgmsdicyxshybbdgos.supabase.co/rest/v1";
+    const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1ZGdtc2RpY3l4c2h5YmJkZ29zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5MjA3MDYsImV4cCI6MjEwMzQ5NjcwNn0.x2D-lLA7DLZ8a2CWGgGoIBzvHjOXxChQurchw-8e2k4";
+
+    let cachedSubmissions = [];
+    let currentActiveForm = {
+      id: 'default_form',
+      title: 'Financial Details Form',
+      fields: ['Deposit', 'Advance', 'GNPA', 'NNPA', 'Profit', 'CRAR', 'BDDR', 'Net worth']
+    };
+
+    function adminLogin() {
+      const u = document.getElementById('admName').value.trim();
+      const p = document.getElementById('admPass').value.trim();
+      if (u === 'admin' && p === 'Radhe@79875') {
+        document.getElementById('adminAuth').classList.add('hidden');
+        document.getElementById('adminDash').classList.remove('hidden');
+        document.getElementById('mainBox').className = 'container admin-wide';
+        
+        fetchLatestForm();
+        renderAdminFormBuilder();
+        loadAdminRecords();
+      } else {
+        alert("Galat Admin ID ya Password!");
+      }
+    }
+
+    async function fetchLatestForm() {
+      try {
+        const res = await fetch(`${API_URL}/portal_forms?order=created_at.desc&limit=1`, {
+          headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
+        });
+        const forms = await res.json();
+        if (forms && forms.length > 0) currentActiveForm = forms[0];
+      } catch (e) {}
+    }
+
+    async function adminResetPassword() {
+      const targetUser = document.getElementById('rstTargetUser').value.trim();
+      const newPass = document.getElementById('rstNewPass').value.trim();
+
+      if (!targetUser || !newPass) return alert("Target Username aur New Password dono bharein.");
+
+      try {
+        const res = await fetch(`${API_URL}/portal_users?username=eq.${encodeURIComponent(targetUser)}`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify({ password: newPass })
+        });
+
+        await fetch(`${API_URL}/portal_submissions?username=eq.${encodeURIComponent(targetUser)}`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_password: newPass })
+        });
+
+        const data = await res.json();
+        if (data && data.length > 0) {
+          alert(`Safalta: User '${targetUser}' ka password turant update ho gaya! Ab user is password ko dal kar apna naya password reset kar sakta hai.`);
+          document.getElementById('rstTargetUser').value = '';
+          document.getElementById('rstNewPass').value = '';
+          loadAdminRecords();
+        } else {
+          alert(`User '${targetUser}' database mein nahi mila.`);
+        }
+      } catch (e) {
+        alert("Password Reset Error: " + e.message);
+      }
+    }
+
+    function renderAdminFormBuilder() {
+      document.getElementById('newFormTitle').value = currentActiveForm.title;
+      const box = document.getElementById('adminFieldsBox');
+      box.innerHTML = "";
+      currentActiveForm.fields.forEach(f => addAdminFieldInput(f));
+    }
+
+    function addAdminFieldInput(defaultVal = "") {
+      const box = document.getElementById('adminFieldsBox');
+      const div = document.createElement('div');
+      div.className = 'field-row';
+      div.innerHTML = `
+        <input type="text" class="adm-f-val" value="${defaultVal}" placeholder="Field Name" style="margin:0;">
+        <button type="button" class="btn-small" style="background:#ef4444; color:#fff;" onclick="this.parentElement.remove()">✕</button>
+      `;
+      box.appendChild(div);
+    }
+
+    async function adminSaveNewForm() {
+      const title = document.getElementById('newFormTitle').value.trim();
+      const inputs = document.querySelectorAll('.adm-f-val');
+      const fList = [];
+      inputs.forEach(inp => {
+        const val = inp.value.trim();
+        if (val) fList.push(val);
+      });
+
+      if (!title || fList.length === 0) return alert("Form Title aur kam se kam ek field ka naam zaroori hai.");
+
+      const newId = 'form_' + Date.now();
+      try {
+        const res = await fetch(`${API_URL}/portal_forms`, {
+          method: 'POST',
+          headers: {
+            'apikey': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({
+            id: newId,
+            title: title,
+            fields: fList
+          })
+        });
+
+        if (res.ok) {
+          alert("✓ Naya Dynamic Form publish ho gaya!");
+          location.reload();
+        } else {
+          alert("Form publish nahi ho saka.");
+        }
+      } catch (e) {
+        alert("Error: " + e.message);
+      }
+    }
+
+    async function loadAdminRecords() {
+      const area = document.getElementById('recordsTable');
+      area.innerHTML = "<p style='color:#818cf8; text-align:center; padding:15px;'>Syncing real-time records & user passwords...</p>";
+      
+      try {
+        const res = await fetch(`${API_URL}/portal_submissions?order=created_at.desc`, {
+          headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
+        });
+        cachedSubmissions = await res.json();
+
+        const uRes = await fetch(`${API_URL}/portal_users`, {
+          headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
+        });
+        const usersList = await uRes.json();
+        const userPassMap = {};
+        if (Array.isArray(usersList)) {
+          usersList.forEach(u => { userPassMap[u.username] = u.password; });
+        }
+
+        if (!cachedSubmissions || cachedSubmissions.length === 0) {
+          area.innerHTML = "<p style='text-align:center; padding:20px; color:#94a3b8;'>Koi record available nahi hai.</p>";
+          return;
+        }
+
+        let tableHtml = "<table><thead><tr>";
+        tableHtml += "<th>Actions</th><th>User Name</th><th style='color:#fbbf24;'>🔑 User Password</th><th>Status</th><th>Form Title</th><th>Submission Time</th>";
+        
+        currentActiveForm.fields.forEach(f => {
+          tableHtml += `<th>${f}</th>`;
+        });
+        tableHtml += "</tr></thead><tbody>";
+
+        cachedSubmissions.forEach(row => {
+          const formattedTime = new Date(row.created_at).toLocaleString('en-IN');
+          const isLocked = row.is_locked !== false;
+          const statusBadge = isLocked 
+            ? `<span style="background:rgba(16,185,129,0.2); color:#6ee7b7; border:1px solid #10b981; padding:3px 8px; border-radius:12px; font-size:11px; font-weight:700;">Locked</span>`
+            : `<span style="background:rgba(245,158,11,0.2); color:#fbbf24; border:1px solid #f59e0b; padding:3px 8px; border-radius:12px; font-size:11px; font-weight:700;">Unlocked</span>`;
+          
+          const displayPassword = row.user_password || userPassMap[row.username] || '—';
+
+          tableHtml += `<tr>
+            <td style="white-space:nowrap;">
+              <button class="btn-action-unlock" onclick="unlockUserSubmission('${row.id}', '${row.username}')" title="User ko bhara hua form re-edit karne allow karein">🔓 Unlock</button>
+              <button class="btn-action-del" onclick="deleteUserSubmission('${row.id}', '${row.username}')" title="Record delete karein">🗑️ Delete</button>
+            </td>
+            <td><b style="color:#06b6d4;">${row.username}</b></td>
+            <td><code style="background:rgba(245,158,11,0.15); color:#fbbf24; padding:4px 8px; border-radius:6px; font-weight:700; border:1px solid rgba(245,158,11,0.3);">${displayPassword}</code></td>
+            <td>${statusBadge}</td>
+            <td>${row.form_title}</td>
+            <td style="color:#cbd5e1;">${formattedTime}</td>`;
+          
+          currentActiveForm.fields.forEach((_, idx) => {
+            const cellValue = (row.values && row.values[idx] !== undefined) ? row.values[idx] : '-';
+            tableHtml += `<td>${cellValue}</td>`;
+          });
+
+          tableHtml += `</tr>`;
+        });
+
+        tableHtml += "</tbody></table>";
+        area.innerHTML = tableHtml;
+      } catch (err) {
+        area.innerHTML = "<p style='color:#ef4444;'>Error loading table: " + err.message + "</p>";
+      }
+    }
+
+    async function unlockUserSubmission(recordId, username) {
+      if (!confirm(`User '${username}' ka data unlock karein? \n\n✓ Note: Record delete nahi hoga. User ko apna pehle se bhara hua data milega jise woh edit karke dubara submit kar sakega.`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/portal_submissions?id=eq.${recordId}`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify({ is_locked: false })
+        });
+
+        if (res.ok) {
+          alert(`✓ Safalta: User '${username}' ka form unlock ho gaya hai! User ko bhara hua data milega aur woh edit kar sakega.`);
+          loadAdminRecords();
+        } else {
+          alert("Unlock nahi ho paya.");
+        }
+      } catch (e) {
+        alert("Error: " + e.message);
+      }
+    }
+
+    async function deleteUserSubmission(recordId, username) {
+      if (!confirm(`Warning: Kya aap sach me User '${username}' ke is record ko permanently DELETE karna chahte hain?`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/portal_submissions?id=eq.${recordId}`, {
+          method: 'DELETE',
+          headers: {
+            'apikey': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`
+          }
+        });
+
+        if (res.ok) {
+          alert(`✓ Record permanently delete kar diya gaya.`);
+          loadAdminRecords();
+        } else {
+          alert("Delete fail ho gaya.");
+        }
+      } catch (e) {
+        alert("Error: " + e.message);
+      }
+    }
+
+    function exportToExcel() {
+      if (!cachedSubmissions || cachedSubmissions.length === 0) {
+        return alert("Download ke liye koi data nahi hai.");
+      }
+
+      let csv = [];
+      let headers = ['User Name', 'User Password', 'Status', 'Form Title', 'Submission Date & Time'].concat(currentActiveForm.fields);
+      csv.push(headers.map(h => `"${h.replace(/"/g, '""')}"`).join(','));
+
+      cachedSubmissions.forEach(row => {
+        const formattedTime = new Date(row.created_at).toLocaleString('en-IN');
+        let rowData = [
+          row.username,
+          row.user_password || '',
+          (row.is_locked !== false ? 'Locked' : 'Unlocked'),
+          row.form_title,
+          formattedTime
+        ];
+
+        currentActiveForm.fields.forEach((_, idx) => {
+          let cellVal = (row.values && row.values[idx] !== undefined) ? row.values[idx] : '';
+          rowData.push(cellVal);
+        });
+
+        csv.push(rowData.map(c => `"${String(c).replace(/"/g, '""')}"`).join(','));
+      });
+
+      const csvString = "\uFEFF" + csv.join("\r\n");
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Portal_Submissions_Export_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
