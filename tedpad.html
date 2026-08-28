@@ -1,679 +1,884 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="hi" data-theme="sunset">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Planted Aquarium Tablet - Cloud Synced Notebook</title>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Kalam:wght@400;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
-
+  <title>Smart Global Note Board</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --tablet-body: #ffffff;
-      --paper-bg: #ffffff;
-      --line-color: #cbd5e1;
-      --margin-line: #f87171;
-      --text-color: #1e293b;
+    /* ========== THEME PALETTES ========== */
+    :root[data-theme="sunset"] {
+      --bg-gradient: radial-gradient(circle at top center, #9a3412 0%, #431407 60%, #1c1917 100%);
+      --card-bg: rgba(41, 37, 36, 0.85);
+      --card-border: rgba(249, 115, 22, 0.4);
+      --primary: #f97316;
+      --primary-hover: #ea580c;
+      --accent: #fbbf24;
+      --text-main: #fff7ed;
+      --text-muted: #fdba74;
+      --item-bg: rgba(28, 25, 23, 0.95);
+      --date-badge: rgba(249, 115, 22, 0.25);
+      --date-text: #fed7aa;
+      --clock-outer-glow: rgba(249, 115, 22, 0.35);
+      --clock-gold-rim: linear-gradient(135deg, #fef08a, #d97706, #78350f, #fbbf24);
+      --clock-num-color: #fef08a;
+    }
+
+    :root[data-theme="midnight"] {
+      --bg-gradient: radial-gradient(circle at 10% 20%, #1e1b4b 0%, #0f172a 90%);
+      --card-bg: rgba(30, 41, 59, 0.75);
+      --card-border: rgba(99, 102, 241, 0.25);
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent: #a855f7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --item-bg: rgba(15, 23, 42, 0.85);
+      --date-badge: rgba(99, 102, 241, 0.15);
+      --date-text: #a5b4fc;
+      --clock-outer-glow: rgba(99, 102, 241, 0.35);
+      --clock-gold-rim: linear-gradient(135deg, #e0e7ff, #6366f1, #312e81, #a5b4fc);
+      --clock-num-color: #e0e7ff;
+    }
+
+    :root[data-theme="cyberpunk"] {
+      --bg-gradient: radial-gradient(circle at top right, #1a0b2e, #090014);
+      --card-bg: rgba(28, 12, 49, 0.8);
+      --card-border: rgba(236, 72, 153, 0.35);
+      --primary: #ec4899;
+      --primary-hover: #db2777;
+      --accent: #06b6d4;
+      --text-main: #fdf2f8;
+      --text-muted: #d8b4fe;
+      --item-bg: rgba(15, 5, 29, 0.9);
+      --date-badge: rgba(236, 72, 153, 0.2);
+      --date-text: #f472b6;
+      --clock-outer-glow: rgba(236, 72, 153, 0.4);
+      --clock-gold-rim: linear-gradient(135deg, #fbcfe8, #ec4899, #831843, #06b6d4);
+      --clock-num-color: #fbcfe8;
+    }
+
+    :root[data-theme="emerald"] {
+      --bg-gradient: radial-gradient(circle at bottom left, #064e3b, #022c22);
+      --card-bg: rgba(6, 78, 59, 0.5);
+      --card-border: rgba(16, 185, 129, 0.3);
+      --primary: #10b981;
+      --primary-hover: #059669;
+      --accent: #34d399;
+      --text-main: #ecfdf5;
+      --text-muted: #a7f3d0;
+      --item-bg: rgba(2, 44, 34, 0.85);
+      --date-badge: rgba(16, 185, 129, 0.15);
+      --date-text: #6ee7b7;
+      --clock-outer-glow: rgba(16, 185, 129, 0.35);
+      --clock-gold-rim: linear-gradient(135deg, #a7f3d0, #10b981, #064e3b, #34d399);
+      --clock-num-color: #a7f3d0;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: background 0.3s ease, border-color 0.3s ease;
     }
 
     body {
-      background: radial-gradient(circle at 50% 15%, #0e3d2f 0%, #061f18 45%, #020a08 100%);
-      color: #fff;
-      font-family: 'Outfit', sans-serif;
+      background: var(--bg-gradient);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      padding: 24px 16px;
+      color: var(--text-main);
       overflow-x: hidden;
       position: relative;
     }
 
-    .aquarium-light {
+    /* Falling Confetti Canvas */
+    #confettiCanvas {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: radial-gradient(ellipse at 50% -10%, rgba(74, 222, 128, 0.2) 0%, rgba(14, 116, 144, 0.1) 50%, transparent 85%);
       pointer-events: none;
       z-index: 1;
     }
 
-    #aquariumCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .tablet-device {
+    .container {
       width: 100%;
-      max-width: 860px;
-      height: 740px;
-      background: #ffffff;
-      border-radius: 36px;
-      padding: 14px;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 0 8px #e2e8f0, 0 0 0 12px #94a3b8;
-      display: flex;
-      flex-direction: column;
+      max-width: 780px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
       position: relative;
       z-index: 2;
     }
 
-    .tablet-header-bar {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding-bottom: 8px;
-      gap: 10px;
-    }
-
-    .camera-dot {
-      width: 8px;
-      height: 8px;
-      background: #334155;
-      border-radius: 50%;
-    }
-
-    .speaker-slot {
-      width: 40px;
-      height: 4px;
-      background: #cbd5e1;
-      border-radius: 4px;
-    }
-
-    .tablet-screen {
-      flex: 1;
-      background: var(--paper-bg);
-      border-radius: 20px;
-      border: 1.5px solid #e2e8f0;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      transition: background 0.3s ease;
-    }
-
-    .notepad-toolbar {
+    /* Top Header */
+    .top-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 18px;
-      background: rgba(248, 250, 252, 0.95);
-      border-bottom: 1.5px solid #e2e8f0;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .tablet-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #1e293b;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .action-btn-group {
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      margin-bottom: 24px;
+      gap: 20px;
       flex-wrap: wrap;
     }
 
-    .color-picker-wrapper {
-      display: flex;
-      align-items: center;
+    .header-left {
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .header-title h2 {
+      font-size: 26px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .header-title p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      margin-bottom: 12px;
+    }
+
+    /* Theme Switcher */
+    .theme-selector {
+      display: inline-flex;
       gap: 6px;
-      background: #e2e8f0;
-      padding: 4px 8px;
-      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
     }
 
-    .color-picker-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: #334155;
-    }
-
-    .color-swatch {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      border: 1.5px solid rgba(0,0,0,0.2);
-      cursor: pointer;
-      transition: transform 0.15s;
-    }
-
-    .color-swatch:hover { transform: scale(1.2); }
-
-    .color-custom-input {
+    .theme-dot {
       width: 22px;
       height: 22px;
-      border: none;
       border-radius: 50%;
       cursor: pointer;
-      background: transparent;
-      padding: 0;
+      border: 2px solid transparent;
+      transition: transform 0.2s, border-color 0.2s;
     }
 
-    .action-btn {
-      padding: 6px 12px;
-      font-size: 12px;
+    .theme-dot:hover { transform: scale(1.15); }
+    .theme-dot.active { border-color: #ffffff; transform: scale(1.1); }
+    .dot-sunset { background: #f97316; }
+    .dot-midnight { background: #6366f1; }
+    .dot-cyberpunk { background: #ec4899; }
+    .dot-emerald { background: #10b981; }
+
+    /* ========== PREMIUM CLASSIC LUXURY CLOCK WITH SMOOTH SWEEP ========== */
+    .clock-widget {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid var(--card-border);
+      padding: 12px 16px;
+      border-radius: 22px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      flex-shrink: 0;
+    }
+
+    .clock-outer-rim {
+      width: 146px;
+      height: 146px;
+      border-radius: 50%;
+      padding: 4px;
+      background: var(--clock-gold-rim);
+      box-shadow: 0 0 20px var(--clock-outer-glow), inset 0 0 10px rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .classic-clock {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0.6) 100%);
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      position: relative;
+      box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.9);
+    }
+
+    /* Inner Golden Minute Track Ring */
+    .inner-track-ring {
+      position: absolute;
+      width: 116px;
+      height: 116px;
+      top: 50%;
+      left: 50%;
+      margin: -58px 0 0 -58px;
+      border-radius: 50%;
+      border: 1px dashed rgba(254, 240, 138, 0.25);
+      pointer-events: none;
+    }
+
+    /* Classic Serif Numbers (1 to 12) */
+    .clock-num {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      text-align: center;
+      line-height: 22px;
+      font-family: 'Cinzel', serif;
+      font-size: 11.5px;
       font-weight: 700;
-      border-radius: 8px;
+      color: var(--clock-num-color);
+      top: 50%;
+      left: 50%;
+      margin: -11px 0 0 -11px;
+      user-select: none;
+      text-shadow: 0 0 8px rgba(0,0,0,0.8);
+    }
+
+    /* Precision Positions */
+    .num-12 { transform: rotate(0deg) translate(0, -52px) rotate(0deg); }
+    .num-1  { transform: rotate(30deg) translate(0, -52px) rotate(-30deg); }
+    .num-2  { transform: rotate(60deg) translate(0, -52px) rotate(-60deg); }
+    .num-3  { transform: rotate(90deg) translate(0, -52px) rotate(-90deg); }
+    .num-4  { transform: rotate(120deg) translate(0, -52px) rotate(-120deg); }
+    .num-5  { transform: rotate(150deg) translate(0, -52px) rotate(-150deg); }
+    .num-6  { transform: rotate(180deg) translate(0, -52px) rotate(-180deg); }
+    .num-7  { transform: rotate(210deg) translate(0, -52px) rotate(-210deg); }
+    .num-8  { transform: rotate(240deg) translate(0, -52px) rotate(-240deg); }
+    .num-9  { transform: rotate(270deg) translate(0, -52px) rotate(-270deg); }
+    .num-10 { transform: rotate(300deg) translate(0, -52px) rotate(-300deg); }
+    .num-11 { transform: rotate(330deg) translate(0, -52px) rotate(-330deg); }
+
+    /* Classic Clock Hands */
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      border-radius: 5px;
+      will-change: transform;
+    }
+
+    /* Elegant Hour Hand */
+    .hour-hand {
+      width: 4px;
+      height: 36px;
+      background: linear-gradient(to top, #d97706, #fef08a);
+      margin-left: -2px;
+      z-index: 5;
+      box-shadow: 0 0 5px rgba(0,0,0,0.7);
+    }
+
+    /* Elegant Minute Hand */
+    .min-hand {
+      width: 2.8px;
+      height: 50px;
+      background: linear-gradient(to top, #ea580c, #fed7aa);
+      margin-left: -1.4px;
+      z-index: 6;
+      box-shadow: 0 0 5px rgba(0,0,0,0.7);
+    }
+
+    /* Continuous Running Second Hand with Counterweight */
+    .sec-hand-wrap {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      z-index: 8;
+      will-change: transform;
+    }
+
+    .sec-hand {
+      position: absolute;
+      bottom: 0;
+      left: -1px;
+      width: 2px;
+      height: 58px;
+      background: #ef4444;
+      border-radius: 2px;
+      box-shadow: 0 0 6px rgba(239, 68, 68, 0.8);
+    }
+
+    .sec-tail {
+      position: absolute;
+      top: 0;
+      left: -1.5px;
+      width: 3px;
+      height: 14px;
+      background: #dc2626;
+      border-radius: 2px;
+    }
+
+    /* Luxury Golden Center Cap */
+    .clock-center-dot {
+      width: 10px;
+      height: 10px;
+      background: radial-gradient(circle, #fef08a 0%, #b45309 100%);
+      border: 1.5px solid #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      box-shadow: 0 0 6px rgba(0,0,0,0.8);
+    }
+
+    /* Date display under clock */
+    .clock-date-text {
+      margin-top: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-main);
+      background: var(--date-badge);
+      border: 1px solid var(--card-border);
+      padding: 4px 12px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    /* Input Controls */
+    .input-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+      background: rgba(0,0,0,0.18);
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--card-border);
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .custom-input {
+      background: var(--item-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 14px;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .custom-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.25);
+    }
+
+    .note-text-input { flex: 1; min-width: 220px; }
+    
+    .date-input {
+      width: 170px;
+      cursor: pointer;
+      color-scheme: dark;
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: #fff;
       border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-weight: 700;
+      font-size: 14px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      transition: transform 0.1s, opacity 0.2s;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
     }
 
-    .action-btn:active { transform: scale(0.96); }
-    .btn-add { background: #0284c7; color: #fff; }
-    .btn-save-cloud { background: #16a34a; color: #fff; }
-    .btn-export { background: #475569; color: #fff; }
+    .btn-submit:hover { opacity: 0.95; transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .notepad-container {
-      flex: 1;
-      position: relative;
-      background: var(--paper-bg);
+    /* Note List */
+    .list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 400px;
       overflow-y: auto;
-      padding: 15px 15px 15px 45px;
-      background-image: linear-gradient(90deg, transparent 38px, var(--margin-line) 39px, var(--margin-line) 40px, transparent 41px);
-      background-size: 100% 100%;
-      background-attachment: local;
-      transition: background 0.3s ease;
+      padding-right: 4px;
     }
 
-    .note-line {
+    .list-container::-webkit-scrollbar { width: 6px; }
+    .list-container::-webkit-scrollbar-thumb {
+      background: var(--card-border);
+      border-radius: 10px;
+    }
+
+    .note-card {
       display: flex;
       align-items: center;
-      min-height: 38px;
-      border-bottom: 1px solid var(--line-color);
-      position: relative;
-      transition: background 0.15s ease;
+      justify-content: space-between;
+      background: var(--item-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      gap: 14px;
+      animation: fadeIn 0.25s ease-out;
     }
 
-    .note-line:hover { background: rgba(0, 0, 0, 0.03); }
-
-    .line-number {
-      position: absolute;
-      left: -32px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #94a3b8;
-      width: 22px;
-      text-align: right;
-      user-select: none;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .line-input {
+    .note-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       flex: 1;
-      border: none;
-      outline: none;
-      background: transparent;
-      font-family: 'Kalam', 'Caveat', cursive, sans-serif;
-      font-size: 19px;
-      color: var(--text-color);
-      padding: 4px 8px 4px 10px;
-      line-height: 28px;
+      min-width: 0;
     }
 
-    .btn-line-delete {
-      background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
-      border: 1px solid rgba(239, 68, 68, 0.2);
+    .note-num {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary);
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 4px 8px;
+      flex-shrink: 0;
+    }
+
+    .note-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .note-text {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-main);
+      word-break: break-word;
+    }
+
+    .note-date-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--date-badge);
+      color: var(--date-text);
+      padding: 2px 8px;
       border-radius: 6px;
-      width: 26px;
-      height: 26px;
+      width: fit-content;
+    }
+
+    .btn-delete {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      padding: 8px 12px;
+      border-radius: 10px;
       font-size: 13px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       cursor: pointer;
-      margin-right: 6px;
-      opacity: 0.35;
-      transition: all 0.2s;
-    }
-
-    .note-line:hover .btn-line-delete { opacity: 1; }
-    .btn-line-delete:hover { background: #ef4444; color: #ffffff; transform: scale(1.1); }
-
-    .tablet-footer-bar {
       display: flex;
-      justify-content: center;
       align-items: center;
-      padding-top: 8px;
+      gap: 4px;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
     }
 
-    .home-bar {
-      width: 120px;
-      height: 4px;
-      background: #cbd5e1;
-      border-radius: 4px;
+    .btn-delete:hover {
+      background: #ef4444;
+      color: #ffffff;
+      border-color: #ef4444;
     }
 
-    #toast {
-      position: fixed;
-      bottom: 25px;
-      background: rgba(6, 31, 24, 0.95);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(74, 222, 128, 0.5);
-      color: #dcfce7;
-      padding: 10px 22px;
-      border-radius: 30px;
+    .status-msg {
+      text-align: center;
+      font-size: 12px;
+      padding: 8px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      display: none;
+    }
+    .status-err { background: rgba(239, 68, 68, 0.2); color: #fca5a5; display: block; }
+    .status-ok { background: rgba(34, 197, 94, 0.2); color: #86efac; display: block; }
+
+    .empty-state {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 30px 10px;
+      font-size: 14px;
+    }
+
+    /* Developer Footer */
+    .dev-footer {
+      margin-top: 24px;
+      text-align: center;
       font-size: 13px;
       font-weight: 600;
-      display: none;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
-      z-index: 99;
+      color: var(--text-muted);
+      z-index: 2;
+    }
+
+    .dev-footer span {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
     }
   </style>
 </head>
 <body>
 
-  <div class="aquarium-light"></div>
-  <canvas id="aquariumCanvas"></canvas>
+  <!-- Falling Confetti Canvas -->
+  <canvas id="confettiCanvas"></canvas>
 
-  <div class="tablet-device">
-    <div class="tablet-header-bar">
-      <div class="camera-dot"></div>
-      <div class="speaker-slot"></div>
-    </div>
-
-    <div class="tablet-screen">
-      <div class="notepad-toolbar">
-        <span class="tablet-title">🌿 Cloud Aquarium Tablet</span>
-        <div class="action-btn-group">
-          
-          <div class="color-picker-wrapper">
-            <span class="color-picker-label">🎨 Page:</span>
-            <div class="color-swatch" style="background:#ffffff;" title="White" onclick="setPageColor('#ffffff', '#1e293b', '#cbd5e1')"></div>
-            <div class="color-swatch" style="background:#fef9c3;" title="Yellow" onclick="setPageColor('#fef9c3', '#713f12', '#fde047')"></div>
-            <div class="color-swatch" style="background:#dcfce7;" title="Green" onclick="setPageColor('#dcfce7', '#14532d', '#86efac')"></div>
-            <div class="color-swatch" style="background:#e0f2fe;" title="Blue" onclick="setPageColor('#e0f2fe', '#0c4a6e', '#7dd3fc')"></div>
-            <div class="color-swatch" style="background:#fce7f3;" title="Pink" onclick="setPageColor('#fce7f3', '#831843', '#f472b6')"></div>
-            <input type="color" class="color-custom-input" title="Custom Color" onchange="setCustomPageColor(this.value)">
-          </div>
-
-          <button class="action-btn btn-add" onclick="addNewLine('', true)">➕ Line</button>
-          <button class="action-btn btn-save-cloud" id="saveCloudBtn" onclick="saveLinesOnline()">☁️ Save Online</button>
-          <button class="action-btn btn-export" onclick="exportLines()">⬇️ Export</button>
+  <div class="container">
+    <!-- Top Header with Classic Sweeping Analog Clock on Right -->
+    <div class="top-header">
+      <div class="header-left">
+        <div class="header-title">
+          <h2>Live Note Space</h2>
+          <p>क्लाउड डेटाबेस से कनेक्टेड स्मार्ट बोर्ड</p>
+        </div>
+        
+        <!-- Theme Switcher -->
+        <div class="theme-selector">
+          <div class="theme-dot dot-sunset active" title="Sunset Orange" onclick="setTheme('sunset')"></div>
+          <div class="theme-dot dot-midnight" title="Midnight Blue" onclick="setTheme('midnight')"></div>
+          <div class="theme-dot dot-cyberpunk" title="Cyberpunk Pink" onclick="setTheme('cyberpunk')"></div>
+          <div class="theme-dot dot-emerald" title="Emerald Green" onclick="setTheme('emerald')"></div>
         </div>
       </div>
 
-      <div class="notepad-container" id="linesContainer"></div>
+      <!-- Classic Luxury Analog Clock with Smooth Sweeping Second Hand -->
+      <div class="clock-widget">
+        <div class="clock-outer-rim">
+          <div class="classic-clock">
+            <div class="inner-track-ring"></div>
+
+            <!-- Serif Roman-styled Classic Numbers -->
+            <div class="clock-num num-12">12</div>
+            <div class="clock-num num-1">1</div>
+            <div class="clock-num num-2">2</div>
+            <div class="clock-num num-3">3</div>
+            <div class="clock-num num-4">4</div>
+            <div class="clock-num num-5">5</div>
+            <div class="clock-num num-6">6</div>
+            <div class="clock-num num-7">7</div>
+            <div class="clock-num num-8">8</div>
+            <div class="clock-num num-9">9</div>
+            <div class="clock-num num-10">10</div>
+            <div class="clock-num num-11">11</div>
+
+            <!-- Hands -->
+            <div class="hand hour-hand" id="hourHand"></div>
+            <div class="hand min-hand" id="minHand"></div>
+
+            <!-- Continuous Smooth Second Hand Wrap -->
+            <div class="sec-hand-wrap" id="secWrap">
+              <div class="sec-hand"></div>
+              <div class="sec-tail"></div>
+            </div>
+
+            <div class="clock-center-dot"></div>
+          </div>
+        </div>
+        <div class="clock-date-text" id="clockCurrentDate">--/--/----</div>
+      </div>
     </div>
 
-    <div class="tablet-footer-bar">
-      <div class="home-bar"></div>
+    <div id="statusBox" class="status-msg"></div>
+
+    <!-- Input Section -->
+    <div class="input-form">
+      <div class="input-row">
+        <input type="text" id="noteInput" class="custom-input note-text-input" placeholder="नया नोट या टास्क लिखें..." onkeypress="if(event.key === 'Enter') addNote()">
+        <input type="date" id="dateInput" class="custom-input date-input" title="अंतिम तिथि (Last Date)">
+      </div>
+      <button id="submitBtn" class="btn-submit" onclick="addNote()">
+        <span>+ Add Note</span>
+      </button>
+    </div>
+
+    <!-- Notes List -->
+    <div class="list-container" id="notesList">
+      <div class="empty-state">डेटा लोड हो रहा है...</div>
     </div>
   </div>
 
-  <div id="toast"></div>
+  <!-- Developer Footer -->
+  <div class="dev-footer">
+    ⚡ Developed with ❤️ by <span>Deepak Sharma</span>
+  </div>
 
   <script>
-    // Updated Live Apps Script Endpoint
-    const CLOUD_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhrWQHT6QgIGR7HwfM7Y6B9nxlTPC30Or_VZhKUg73CoIeFMihsePKiMHg_Lc2d1lijg/exec";
+    const PROJECT_URL = "https://tudgmsdicyxshybbdgos.supabase.co";
+    const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1ZGdtc2RpY3l4c2h5YmJkZ29zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5MjA3MDYsImV4cCI6MjEwMzQ5NjcwNn0.x2D-lLA7DLZ8a2CWGgGoIBzvHjOXxChQurchw-8e2k4";
 
-    /* --- Aquarium Engine --- */
-    const canvas = document.getElementById('aquariumCanvas');
-    const ctx = canvas.getContext('2d');
+    const API_URL = `${PROJECT_URL}/rest/v1/notes`;
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    const TROPICAL_SPECIES = [
-      { name: 'Discus', primary: '#f97316', secondary: '#38bdf8', accent: '#0f172a', stripes: true, tailLength: 1.1, bodyRatio: 0.75 },
-      { name: 'Electric Blue', primary: '#0284c7', secondary: '#38bdf8', accent: '#facc15', stripes: false, tailLength: 1.25, bodyRatio: 0.55 },
-      { name: 'Tiger Barb', primary: '#fbbf24', secondary: '#ea580c', accent: '#1e293b', stripes: true, tailLength: 1.2, bodyRatio: 0.6 },
-      { name: 'Fire Cichlid', primary: '#dc2626', secondary: '#f97316', accent: '#7f1d1d', stripes: false, tailLength: 1.3, bodyRatio: 0.5 },
-      { name: 'Angelfish', primary: '#e2e8f0', secondary: '#facc15', accent: '#334155', stripes: true, tailLength: 1.4, bodyRatio: 0.8 }
-    ];
-
-    class RealFish {
-      constructor(sizeCategory = null) {
-        this.sizeCategory = sizeCategory;
-        this.reset();
-      }
-
-      reset() {
-        this.species = TROPICAL_SPECIES[Math.floor(Math.random() * TROPICAL_SPECIES.length)];
-        const category = this.sizeCategory || (Math.random() < 0.25 ? 'big' : Math.random() < 0.65 ? 'medium' : 'small');
-        
-        if (category === 'big') {
-          this.length = Math.random() * 12 + 42;
-          this.baseSpeed = Math.random() * 0.35 + 0.35;
-        } else if (category === 'medium') {
-          this.length = Math.random() * 10 + 26;
-          this.baseSpeed = Math.random() * 0.45 + 0.45;
-        } else {
-          this.length = Math.random() * 6 + 14;
-          this.baseSpeed = Math.random() * 0.6 + 0.6;
-        }
-
-        this.height = this.length * this.species.bodyRatio;
-        this.direction = Math.random() > 0.5 ? 1 : -1;
-        this.x = this.direction === 1 ? -90 : canvas.width + 90;
-        this.y = Math.random() * (canvas.height - 140) + 60;
-        this.speedX = this.baseSpeed * this.direction;
-        this.speedY = Math.random() * 0.2 - 0.1;
-        this.wiggle = Math.random() * Math.PI * 2;
-        this.wiggleSpeed = (category === 'small' ? 0.12 : category === 'big' ? 0.05 : 0.08);
-      }
-
-      update() {
-        this.x += this.speedX;
-        this.y += Math.sin(this.wiggle * 0.5) * 0.25 + this.speedY;
-        this.wiggle += this.wiggleSpeed;
-        if (this.direction === 1 && this.x > canvas.width + 100) this.reset();
-        if (this.direction === -1 && this.x < -100) this.reset();
-      }
-
-      draw() {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        if (this.direction === -1) ctx.scale(-1, 1);
-
-        const L = this.length;
-        const H = this.height;
-        const sway = Math.sin(this.wiggle) * (L * 0.2);
-
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
-        ctx.beginPath();
-        ctx.moveTo(-L * 0.1, -H * 0.45);
-        ctx.quadraticCurveTo(-L * 0.3, -H * 1.0, -L * 0.6, -H * 0.2);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.moveTo(-L * 0.2, H * 0.4);
-        ctx.quadraticCurveTo(-L * 0.4, H * 0.85, -L * 0.55, H * 0.2);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.moveTo(-L * 0.7, 0);
-        ctx.quadraticCurveTo(-L * (this.species.tailLength + 0.1), -H * 0.8 + sway, -L * this.species.tailLength, sway);
-        ctx.quadraticCurveTo(-L * (this.species.tailLength + 0.1), H * 0.8 + sway, -L * 0.7, 0);
-        ctx.fillStyle = this.species.secondary;
-        ctx.fill();
-
-        const grad = ctx.createRadialGradient(L * 0.15, -H * 0.1, H * 0.1, 0, 0, L);
-        grad.addColorStop(0, '#ffffff');
-        grad.addColorStop(0.3, this.species.primary);
-        grad.addColorStop(1, this.species.accent);
-
-        ctx.beginPath();
-        ctx.moveTo(L * 0.85, 0);
-        ctx.bezierCurveTo(L * 0.6, -H * 0.7, -L * 0.4, -H * 0.65, -L * 0.75, 0);
-        ctx.bezierCurveTo(-L * 0.4, H * 0.65, L * 0.6, H * 0.7, L * 0.85, 0);
-        ctx.closePath();
-        ctx.fillStyle = grad;
-        ctx.fill();
-
-        if (this.species.stripes) {
-          ctx.strokeStyle = 'rgba(15, 23, 42, 0.75)';
-          ctx.lineWidth = L * 0.09;
-          ctx.lineCap = 'round';
-          ctx.beginPath();
-          ctx.moveTo(L * 0.15, -H * 0.45);
-          ctx.lineTo(L * 0.1, H * 0.45);
-          ctx.stroke();
-        }
-
-        ctx.beginPath();
-        ctx.arc(L * 0.55, -H * 0.1, H * 0.2, 0, Math.PI * 2);
-        ctx.fillStyle = '#ffffff';
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(L * 0.55, -H * 0.1, H * 0.1, 0, Math.PI * 2);
-        ctx.fillStyle = '#0f172a';
-        ctx.fill();
-
-        ctx.restore();
-      }
+    // 1. Theme Logic
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('user_theme', theme);
+      document.querySelectorAll('.theme-dot').forEach(dot => {
+        dot.classList.toggle('active', dot.classList.contains(`dot-${theme}`));
+      });
     }
 
-    class Bubble {
-      constructor() { this.reset(true); }
-      reset(initial = false) {
-        this.r = Math.random() * 4 + 2.5;
-        this.x = Math.random() * canvas.width;
-        this.y = initial ? Math.random() * canvas.height : canvas.height + 15;
-        this.speedY = Math.random() * 1.3 + 0.7;
-        this.sway = Math.random() * 1.0 + 0.3;
-        this.angle = Math.random() * Math.PI * 2;
-        this.opacity = Math.random() * 0.4 + 0.3;
+    // 2. Smooth Continuous Running Clock Logic (60 FPS Animation Frame)
+    let lastDateStr = '';
+    function runSmoothClock() {
+      const now = new Date();
+      const ms = now.getMilliseconds();
+      const sec = now.getSeconds() + ms / 1000;
+      const min = now.getMinutes() + sec / 60;
+      const hr = (now.getHours() % 12) + min / 60;
+
+      const secDeg = sec * 6; // 360 / 60
+      const minDeg = min * 6; // 360 / 60
+      const hrDeg = hr * 30;  // 360 / 12
+
+      const secWrap = document.getElementById('secWrap');
+      const minHand = document.getElementById('minHand');
+      const hourHand = document.getElementById('hourHand');
+
+      if (secWrap) secWrap.style.transform = `rotate(${secDeg}deg)`;
+      if (minHand) minHand.style.transform = `rotate(${minDeg}deg)`;
+      if (hourHand) hourHand.style.transform = `rotate(${hrDeg}deg)`;
+
+      // Date update
+      const options = { day: '2-digit', month: 'short', year: 'numeric' };
+      const dateFormatted = now.toLocaleDateString('en-GB', options);
+      if (dateFormatted !== lastDateStr) {
+        lastDateStr = dateFormatted;
+        const dateEl = document.getElementById('clockCurrentDate');
+        if (dateEl) dateEl.textContent = dateFormatted;
       }
-      update() {
-        this.y -= this.speedY;
-        this.angle += 0.03;
-        this.x += Math.sin(this.angle) * (this.sway * 0.35);
-        if (this.y < -15) this.reset(false);
-      }
-      draw() {
-        ctx.save();
-        ctx.globalAlpha = this.opacity;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        ctx.fillStyle = 'rgba(74, 222, 128, 0.15)';
-        ctx.fill();
-        ctx.restore();
-      }
+
+      requestAnimationFrame(runSmoothClock);
     }
 
-    const fishList = [];
-    const bubbleList = [];
-    for (let i = 0; i < 3; i++) fishList.push(new RealFish('big'));
-    for (let i = 0; i < 5; i++) fishList.push(new RealFish('medium'));
-    for (let i = 0; i < 6; i++) fishList.push(new RealFish('small'));
-    for (let i = 0; i < 22; i++) bubbleList.push(new Bubble());
+    // Init App
+    window.onload = function() {
+      const savedTheme = localStorage.getItem('user_theme') || 'sunset';
+      setTheme(savedTheme);
 
-    function animateAquarium() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      bubbleList.forEach(b => { b.update(); b.draw(); });
-      fishList.forEach(f => { f.update(); f.draw(); });
-      requestAnimationFrame(animateAquarium);
-    }
-    animateAquarium();
+      fetchNotes();
+      setInterval(fetchNotes, 3500);
 
-    /* --- Tablet & Notebook Core Logic --- */
-    const linesContainer = document.getElementById('linesContainer');
-    const toast = document.getElementById('toast');
+      initConfetti();
 
-    function setPageColor(bgColor, textColor, lineColor) {
-      document.documentElement.style.setProperty('--paper-bg', bgColor);
-      document.documentElement.style.setProperty('--text-color', textColor);
-      document.documentElement.style.setProperty('--line-color', lineColor);
-      localStorage.setItem('aquarium_page_bg', bgColor);
-      localStorage.setItem('aquarium_page_text', textColor);
-      localStorage.setItem('aquarium_page_line', lineColor);
-      showToast('🎨 रंग बदल दिया गया!');
+      // Start continuous running clock
+      requestAnimationFrame(runSmoothClock);
+    };
+
+    function showStatus(msg, isError = false) {
+      const box = document.getElementById("statusBox");
+      box.textContent = msg;
+      box.className = "status-msg " + (isError ? "status-err" : "status-ok");
+      setTimeout(() => { box.className = "status-msg"; }, 3500);
     }
 
-    function setCustomPageColor(colorHex) {
-      setPageColor(colorHex, '#1e293b', '#cbd5e1');
-    }
-
-    function addNewLine(text = '', autoFocus = false) {
-      const lineDiv = document.createElement('div');
-      lineDiv.className = 'note-line';
-
-      lineDiv.innerHTML = `
-        <span class="line-number"></span>
-        <input type="text" class="line-input" value="${text.replace(/"/g, '&quot;')}" placeholder="">
-        <button class="btn-line-delete" title="यह लाइन हटाएं" onclick="deleteSingleLine(this)">🗑️</button>
-      `;
-
-      const input = lineDiv.querySelector('.line-input');
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          const nextLine = addNewLine('', true);
-          lineDiv.after(nextLine);
-          reindexLines();
-        } else if (e.key === 'Backspace' && input.value === '' && linesContainer.children.length > 1) {
-          e.preventDefault();
-          const prev = lineDiv.previousElementSibling;
-          lineDiv.remove();
-          reindexLines();
-          if (prev) {
-            const prevInput = prev.querySelector('.line-input');
-            prevInput.focus();
-            prevInput.selectionStart = prevInput.selectionEnd = prevInput.value.length;
+    // 3. Fetch Notes
+    async function fetchNotes() {
+      try {
+        const res = await fetch(`${API_URL}?select=*&order=id.asc`, {
+          headers: {
+            "apikey": ANON_KEY,
+            "Authorization": `Bearer ${ANON_KEY}`
           }
-        }
-      });
+        });
 
-      input.addEventListener('input', autoSaveLinesLocal);
-      linesContainer.appendChild(lineDiv);
-      reindexLines();
-
-      if (autoFocus) input.focus();
-      return lineDiv;
-    }
-
-    function deleteSingleLine(btn) {
-      const line = btn.closest('.note-line');
-      line.remove();
-
-      if (linesContainer.children.length === 0) {
-        addNewLine('', true);
+        if (!res.ok) throw new Error("डेटा लोड नहीं हो सका");
+        const data = await res.json();
+        render(data);
+      } catch (err) {
+        console.error(err);
       }
-      reindexLines();
-      autoSaveLinesLocal();
-      showToast('🗑️ लाइन हटा दी गई!');
     }
 
-    function reindexLines() {
-      const lines = linesContainer.querySelectorAll('.note-line');
-      lines.forEach((line, index) => {
-        line.querySelector('.line-number').innerText = index + 1;
-      });
-    }
+    // 4. Add Note
+    async function addNote() {
+      const textInput = document.getElementById("noteInput");
+      const dateInput = document.getElementById("dateInput");
+      const btn = document.getElementById("submitBtn");
 
-    function getLinesArray() {
-      const texts = [];
-      linesContainer.querySelectorAll('.line-input').forEach(inp => {
-        texts.push(inp.value);
-      });
-      return texts;
-    }
+      const text = textInput.value.trim();
+      const dueDate = dateInput.value;
 
-    function autoSaveLinesLocal() {
-      localStorage.setItem('aquarium_notebook_lines', JSON.stringify(getLinesArray()));
-    }
+      if (!text) return;
 
-    function saveLinesOnline() {
-      const texts = getLinesArray();
-      const saveBtn = document.getElementById('saveCloudBtn');
-      saveBtn.innerText = "⏳ Saving...";
-      saveBtn.disabled = true;
+      btn.disabled = true;
+      btn.innerHTML = "<span>Saving...</span>";
 
-      autoSaveLinesLocal();
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": ANON_KEY,
+            "Authorization": `Bearer ${ANON_KEY}`,
+            "Prefer": "return=representation"
+          },
+          body: JSON.stringify({ 
+            text: text,
+            due_date: dueDate || null
+          })
+        });
 
-      fetch(CLOUD_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(texts)
-      })
-      .then(() => {
-        showToast('☁️ डेटा ऑनलाइन Cloud पर सुरक्षित (Saved) हो गया!');
-      })
-      .catch(err => {
-        showToast('✅ स्थानीय और Cloud पर डेटा सुरक्षित हो गया!');
-      })
-      .finally(() => {
-        saveBtn.innerText = "☁️ Save Online";
-        saveBtn.disabled = false;
-      });
-    }
-
-    function exportLines() {
-      const lines = [];
-      linesContainer.querySelectorAll('.line-input').forEach((inp, idx) => {
-        if (inp.value.trim() !== '') {
-          lines.push(`${idx + 1}. ${inp.value}`);
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.message || "सेव नहीं हो सका");
         }
-      });
 
-      if (lines.length === 0) {
-        showToast('⚠️ पहले कुछ लिखें!');
+        textInput.value = "";
+        dateInput.value = "";
+        showStatus("सफलतापूर्वक जोड़ा गया!");
+        fetchNotes();
+      } catch (err) {
+        showStatus(err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = "<span>+ Add Note</span>";
+      }
+    }
+
+    // 5. Delete Note
+    async function deleteNote(id) {
+      if (!confirm("क्या आप इस नोट को हटाना चाहते हैं?")) return;
+
+      try {
+        const res = await fetch(`${API_URL}?id=eq.${id}`, {
+          method: "DELETE",
+          headers: {
+            "apikey": ANON_KEY,
+            "Authorization": `Bearer ${ANON_KEY}`
+          }
+        });
+
+        if (!res.ok) throw new Error("डिलीट नहीं हो पाया");
+        showStatus("नोट हटा दिया गया");
+        fetchNotes();
+      } catch (err) {
+        showStatus(err.message, true);
+      }
+    }
+
+    // 6. Render Notes
+    function render(notes) {
+      const container = document.getElementById("notesList");
+      container.innerHTML = "";
+
+      if (!notes || notes.length === 0) {
+        container.innerHTML = `<div class="empty-state">अभी कोई नोट सेव नहीं है। ऊपर से नया नोट जोड़ें!</div>`;
         return;
       }
 
-      const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'Aquarium_Notes.txt';
-      link.click();
-      showToast('📥 फाइल डाउनलोड हो गई!');
+      notes.forEach((item, idx) => {
+        const card = document.createElement("div");
+        card.className = "note-card";
+        
+        let dateBadgeHtml = "";
+        if (item.due_date) {
+          dateBadgeHtml = `<span class="note-date-badge">📅 Last Date: ${item.due_date}</span>`;
+        }
+
+        card.innerHTML = `
+          <div class="note-left">
+            <span class="note-num">#${idx + 1}</span>
+            <div class="note-content">
+              <span class="note-text">${escapeHtml(item.text || "")}</span>
+              ${dateBadgeHtml}
+            </div>
+          </div>
+          <button class="btn-delete" title="हटाएँ" onclick="deleteNote(${item.id})">
+            🗑️ Delete
+          </button>
+        `;
+        container.appendChild(card);
+      });
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedBg = localStorage.getItem('aquarium_page_bg');
-      const savedText = localStorage.getItem('aquarium_page_text');
-      const savedLine = localStorage.getItem('aquarium_page_line');
-      if (savedBg && savedText && savedLine) {
-        setPageColor(savedBg, savedText, savedLine);
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // 7. Paper Confetti Animation
+    function initConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = window.innerHeight;
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      const colors = ['#f97316', '#fbbf24', '#ec4899', '#6366f1', '#10b981', '#38bdf8', '#f43f5e'];
+      const pieces = [];
+      const count = 45;
+
+      for (let i = 0; i < count; i++) {
+        pieces.push({
+          x: Math.random() * width,
+          y: Math.random() * height - height,
+          w: Math.random() * 8 + 6,
+          h: Math.random() * 14 + 8,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          speedY: Math.random() * 1.8 + 1,
+          speedX: Math.random() * 1.5 - 0.75,
+          angle: Math.random() * 360,
+          rotationSpeed: Math.random() * 3 - 1.5
+        });
       }
 
-      const localData = localStorage.getItem('aquarium_notebook_lines');
-      let loaded = false;
-      if (localData) {
-        try {
-          const arr = JSON.parse(localData);
-          if (Array.isArray(arr) && arr.length > 0) {
-            linesContainer.innerHTML = '';
-            arr.forEach(txt => addNewLine(txt, false));
-            loaded = true;
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+
+        pieces.forEach(p => {
+          p.y += p.speedY;
+          p.x += Math.sin(p.y * 0.01) + p.speedX;
+          p.angle += p.rotationSpeed;
+
+          if (p.y > height) {
+            p.y = -20;
+            p.x = Math.random() * width;
           }
-        } catch (e) {}
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.angle * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        });
+
+        requestAnimationFrame(animate);
       }
 
-      if (!loaded) {
-        for (let i = 0; i < 8; i++) addNewLine('', false);
-      }
-
-      // Fetch Online Backup
-      fetch(CLOUD_SCRIPT_URL)
-        .then(res => res.json())
-        .then(resData => {
-          if (resData.status === "success" && Array.isArray(resData.data) && resData.data.length > 0) {
-            linesContainer.innerHTML = '';
-            resData.data.forEach(txt => addNewLine(txt, false));
-            autoSaveLinesLocal();
-          }
-        })
-        .catch(e => console.log("Offline mode active"));
-    });
-
-    function showToast(msg) {
-      toast.innerText = msg;
-      toast.style.display = 'block';
-      setTimeout(() => { toast.style.display = 'none'; }, 2200);
+      animate();
     }
   </script>
 </body>
