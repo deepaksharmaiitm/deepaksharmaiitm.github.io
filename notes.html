@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Live Note Board</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+    body {
+      background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: var(--text-main);
+    }
+    .container {
+      width: 100%;
+      max-width: 650px;
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+    .header { text-align: center; margin-bottom: 25px; }
+    .header h2 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .status-msg {
+      text-align: center;
+      font-size: 12px;
+      margin-bottom: 12px;
+      padding: 6px;
+      border-radius: 6px;
+      display: none;
+    }
+    .status-error {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid #ef4444;
+      display: block;
+    }
+    .status-success {
+      background: rgba(34, 197, 94, 0.2);
+      color: #86efac;
+      border: 1px solid #22c55e;
+      display: block;
+    }
+    .input-wrapper { display: flex; gap: 10px; margin-bottom: 25px; }
+    .line-input {
+      flex: 1;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 15px;
+      color: var(--text-main);
+      outline: none;
+    }
+    .line-input:focus { border-color: var(--primary); }
+    .btn-add {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      border: none;
+      border-radius: 12px;
+      padding: 12px 20px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-add:disabled { opacity: 0.6; cursor: not-allowed; }
+    .list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+    .line-item {
+      display: flex;
+      align-items: center;
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      gap: 12px;
+    }
+    .line-number {
+      font-size: 12px;
+      font-weight: 700;
+      color: #818cf8;
+      background: rgba(99, 102, 241, 0.1);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .line-text { font-size: 14px; color: #e2e8f0; word-break: break-word; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h2>Public Live Board</h2>
+      <p style="color: var(--text-muted); font-size: 13px;">यहाँ जो भी लिखेंगे, वह दुनिया में किसी को भी लाइव दिखेगा</p>
+    </div>
+
+    <div id="statusBox" class="status-msg"></div>
+
+    <div class="input-wrapper">
+      <input type="text" id="lineInput" class="line-input" placeholder="नया मैसेज/लाइन लिखें..." onkeypress="handleKey(event)">
+      <button id="addBtn" class="btn-add" onclick="addNewLine()">+ Publish</button>
+    </div>
+
+    <div class="list-container" id="linesList">
+      <div style="text-align:center; color:#94a3b8; padding:20px;">डेटा लोड हो रहा है...</div>
+    </div>
+  </div>
+
+  <script>
+    const PROJECT_URL = "https://tudgmsdicyxshybbdgos.supabase.co";
+    const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1ZGdtc2RpY3l4c2h5YmJkZ29zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5MjA3MDYsImV4cCI6MjEwMzQ5NjcwNn0.x2D-lLA7DLZ8a2CWGgGoIBzvHjOXxChQurchw-8e2k4";
+
+    const API_ENDPOINT = `${PROJECT_URL}/rest/v1/notes?select=*&order=id.asc`;
+
+    window.onload = function() {
+      fetchLines();
+      // हर 3 सेकंड में ऑटो-रिफ्रेश (ताकि दूसरे का मैसेज तुरंत दिख जाए)
+      setInterval(fetchLines, 3000);
+    };
+
+    function showStatus(msg, isError = false) {
+      const box = document.getElementById("statusBox");
+      box.textContent = msg;
+      box.className = "status-msg " + (isError ? "status-error" : "status-success");
+      setTimeout(() => { box.className = "status-msg"; }, 4000);
+    }
+
+    function handleKey(e) {
+      if (e.key === 'Enter') addNewLine();
+    }
+
+    // 1. डेटा फेच करना
+    async function fetchLines() {
+      try {
+        const res = await fetch(API_ENDPOINT, {
+          headers: {
+            "apikey": ANON_KEY,
+            "Authorization": `Bearer ${ANON_KEY}`
+          }
+        });
+
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.message || "डेटा लोड नहीं हो पाया");
+        }
+
+        const data = await res.json();
+        render(data);
+      } catch (err) {
+        console.error(err);
+        document.getElementById("linesList").innerHTML = `<div style="text-align:center; color:#ef4444; padding:20px;">Error: ${err.message}<br><small>कृपया SQL Editor में जाकर RLS disable करें।</small></div>`;
+      }
+    }
+
+    // 2. नया डेटा जोड़ना
+    async function addNewLine() {
+      const input = document.getElementById("lineInput");
+      const btn = document.getElementById("addBtn");
+      const val = input.value.trim();
+      if (!val) return;
+
+      btn.disabled = true;
+      btn.textContent = "Saving...";
+
+      try {
+        const res = await fetch(`${PROJECT_URL}/rest/v1/notes`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": ANON_KEY,
+            "Authorization": `Bearer ${ANON_KEY}`,
+            "Prefer": "return=representation"
+          },
+          body: JSON.stringify({ text: val })
+        });
+
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.message || "सेव नहीं हो सका");
+        }
+
+        input.value = "";
+        showStatus("सफलतापूर्वक पब्लिश हुआ!", false);
+        fetchLines();
+      } catch (err) {
+        showStatus(err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "+ Publish";
+      }
+    }
+
+    // 3. रेंडर करना
+    function render(lines) {
+      const container = document.getElementById("linesList");
+      container.innerHTML = "";
+
+      if (!lines || lines.length === 0) {
+        container.innerHTML = `<div style="text-align:center; color:#94a3b8; padding:20px;">अभी कोई मैसेज नहीं है। ऊपर बॉक्स में लिखकर Publish करें।</div>`;
+        return;
+      }
+
+      lines.forEach((item, idx) => {
+        const div = document.createElement("div");
+        div.className = "line-item";
+        div.innerHTML = `
+          <span class="line-number">#${idx + 1}</span>
+          <span class="line-text">${escapeHtml(item.text || "")}</span>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+  </script>
+</body>
+</html>
