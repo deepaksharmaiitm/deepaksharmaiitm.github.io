@@ -1,194 +1,739 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="hi" data-theme="sunset">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Global Live Note Board</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Smart Global Note Board</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --primary: #4f46e5;
-      --bg: #0f172a;
-      --card: #1e293b;
-      --card-border: #334155;
+    /* ========== THEME PALETTES ========== */
+    :root[data-theme="sunset"] {
+      --bg-gradient: radial-gradient(circle at top center, #9a3412 0%, #431407 60%, #1c1917 100%);
+      --card-bg: rgba(41, 37, 36, 0.85);
+      --card-border: rgba(249, 115, 22, 0.4);
+      --primary: #f97316;
+      --primary-hover: #ea580c;
+      --accent: #fbbf24;
+      --text-main: #fff7ed;
+      --text-muted: #fdba74;
+      --item-bg: rgba(28, 25, 23, 0.95);
+      --date-badge: rgba(249, 115, 22, 0.25);
+      --date-text: #fed7aa;
+      --clock-outer-glow: rgba(249, 115, 22, 0.35);
+      --clock-gold-rim: linear-gradient(135deg, #fef08a, #d97706, #78350f, #fbbf24);
+      --clock-num-color: #fef08a;
+    }
+
+    :root[data-theme="midnight"] {
+      --bg-gradient: radial-gradient(circle at 10% 20%, #1e1b4b 0%, #0f172a 90%);
+      --card-bg: rgba(30, 41, 59, 0.75);
+      --card-border: rgba(99, 102, 241, 0.25);
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent: #a855f7;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
+      --item-bg: rgba(15, 23, 42, 0.85);
+      --date-badge: rgba(99, 102, 241, 0.15);
+      --date-text: #a5b4fc;
+      --clock-outer-glow: rgba(99, 102, 241, 0.35);
+      --clock-gold-rim: linear-gradient(135deg, #e0e7ff, #6366f1, #312e81, #a5b4fc);
+      --clock-num-color: #e0e7ff;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+    :root[data-theme="cyberpunk"] {
+      --bg-gradient: radial-gradient(circle at top right, #1a0b2e, #090014);
+      --card-bg: rgba(28, 12, 49, 0.8);
+      --card-border: rgba(236, 72, 153, 0.35);
+      --primary: #ec4899;
+      --primary-hover: #db2777;
+      --accent: #06b6d4;
+      --text-main: #fdf2f8;
+      --text-muted: #d8b4fe;
+      --item-bg: rgba(15, 5, 29, 0.9);
+      --date-badge: rgba(236, 72, 153, 0.2);
+      --date-text: #f472b6;
+      --clock-outer-glow: rgba(236, 72, 153, 0.4);
+      --clock-gold-rim: linear-gradient(135deg, #fbcfe8, #ec4899, #831843, #06b6d4);
+      --clock-num-color: #fbcfe8;
+    }
+
+    :root[data-theme="emerald"] {
+      --bg-gradient: radial-gradient(circle at bottom left, #064e3b, #022c22);
+      --card-bg: rgba(6, 78, 59, 0.5);
+      --card-border: rgba(16, 185, 129, 0.3);
+      --primary: #10b981;
+      --primary-hover: #059669;
+      --accent: #34d399;
+      --text-main: #ecfdf5;
+      --text-muted: #a7f3d0;
+      --item-bg: rgba(2, 44, 34, 0.85);
+      --date-badge: rgba(16, 185, 129, 0.15);
+      --date-text: #6ee7b7;
+      --clock-outer-glow: rgba(16, 185, 129, 0.35);
+      --clock-gold-rim: linear-gradient(135deg, #a7f3d0, #10b981, #064e3b, #34d399);
+      --clock-num-color: #a7f3d0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
     body {
-      background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+      background: var(--bg-gradient);
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px 16px;
+      color: var(--text-main);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Falling Confetti Canvas */
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 780px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Top Header */
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .header-left {
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .header-title h2 {
+      font-size: 26px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .header-title p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      margin-bottom: 12px;
+    }
+
+    /* Theme Switcher */
+    .theme-selector {
+      display: inline-flex;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    .theme-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .theme-dot:hover { transform: scale(1.15); }
+    .theme-dot.active { border-color: #ffffff; transform: scale(1.1); }
+    .dot-sunset { background: #f97316; }
+    .dot-midnight { background: #6366f1; }
+    .dot-cyberpunk { background: #ec4899; }
+    .dot-emerald { background: #10b981; }
+
+    /* ========== PREMIUM CLASSIC LUXURY CLOCK WITH SMOOTH SWEEP ========== */
+    .clock-widget {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid var(--card-border);
+      padding: 12px 16px;
+      border-radius: 22px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      flex-shrink: 0;
+    }
+
+    .clock-outer-rim {
+      width: 146px;
+      height: 146px;
+      border-radius: 50%;
+      padding: 4px;
+      background: var(--clock-gold-rim);
+      box-shadow: 0 0 20px var(--clock-outer-glow), inset 0 0 10px rgba(0,0,0,0.8);
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
-      color: var(--text-main);
     }
-    .container {
+
+    .classic-clock {
       width: 100%;
-      max-width: 650px;
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0.6) 100%);
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      position: relative;
+      box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.9);
     }
-    .header { text-align: center; margin-bottom: 25px; }
-    .header h2 {
-      font-size: 24px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #818cf8, #c084fc);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+
+    /* Inner Golden Minute Track Ring */
+    .inner-track-ring {
+      position: absolute;
+      width: 116px;
+      height: 116px;
+      top: 50%;
+      left: 50%;
+      margin: -58px 0 0 -58px;
+      border-radius: 50%;
+      border: 1px dashed rgba(254, 240, 138, 0.25);
+      pointer-events: none;
     }
-    .status-msg {
+
+    /* Classic Serif Numbers (1 to 12) */
+    .clock-num {
+      position: absolute;
+      width: 22px;
+      height: 22px;
       text-align: center;
-      font-size: 12px;
-      margin-bottom: 12px;
-      padding: 6px;
-      border-radius: 6px;
-      display: none;
+      line-height: 22px;
+      font-family: 'Cinzel', serif;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--clock-num-color);
+      top: 50%;
+      left: 50%;
+      margin: -11px 0 0 -11px;
+      user-select: none;
+      text-shadow: 0 0 8px rgba(0,0,0,0.8);
     }
-    .status-error {
-      background: rgba(239, 68, 68, 0.2);
-      color: #fca5a5;
-      border: 1px solid #ef4444;
-      display: block;
+
+    /* Precision Positions */
+    .num-12 { transform: rotate(0deg) translate(0, -52px) rotate(0deg); }
+    .num-1  { transform: rotate(30deg) translate(0, -52px) rotate(-30deg); }
+    .num-2  { transform: rotate(60deg) translate(0, -52px) rotate(-60deg); }
+    .num-3  { transform: rotate(90deg) translate(0, -52px) rotate(-90deg); }
+    .num-4  { transform: rotate(120deg) translate(0, -52px) rotate(-120deg); }
+    .num-5  { transform: rotate(150deg) translate(0, -52px) rotate(-150deg); }
+    .num-6  { transform: rotate(180deg) translate(0, -52px) rotate(-180deg); }
+    .num-7  { transform: rotate(210deg) translate(0, -52px) rotate(-210deg); }
+    .num-8  { transform: rotate(240deg) translate(0, -52px) rotate(-240deg); }
+    .num-9  { transform: rotate(270deg) translate(0, -52px) rotate(-270deg); }
+    .num-10 { transform: rotate(300deg) translate(0, -52px) rotate(-300deg); }
+    .num-11 { transform: rotate(330deg) translate(0, -52px) rotate(-330deg); }
+
+    /* Classic Clock Hands */
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      border-radius: 5px;
+      will-change: transform;
     }
-    .status-success {
-      background: rgba(34, 197, 94, 0.2);
-      color: #86efac;
-      border: 1px solid #22c55e;
-      display: block;
+
+    /* Elegant Hour Hand */
+    .hour-hand {
+      width: 4px;
+      height: 36px;
+      background: linear-gradient(to top, #d97706, #fef08a);
+      margin-left: -2px;
+      z-index: 5;
+      box-shadow: 0 0 5px rgba(0,0,0,0.7);
     }
-    .input-wrapper { display: flex; gap: 10px; margin-bottom: 25px; }
-    .line-input {
-      flex: 1;
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 12px 18px;
-      font-size: 15px;
+
+    /* Elegant Minute Hand */
+    .min-hand {
+      width: 2.8px;
+      height: 50px;
+      background: linear-gradient(to top, #ea580c, #fed7aa);
+      margin-left: -1.4px;
+      z-index: 6;
+      box-shadow: 0 0 5px rgba(0,0,0,0.7);
+    }
+
+    /* Continuous Running Second Hand with Counterweight */
+    .sec-hand-wrap {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      z-index: 8;
+      will-change: transform;
+    }
+
+    .sec-hand {
+      position: absolute;
+      bottom: 0;
+      left: -1px;
+      width: 2px;
+      height: 58px;
+      background: #ef4444;
+      border-radius: 2px;
+      box-shadow: 0 0 6px rgba(239, 68, 68, 0.8);
+    }
+
+    .sec-tail {
+      position: absolute;
+      top: 0;
+      left: -1.5px;
+      width: 3px;
+      height: 14px;
+      background: #dc2626;
+      border-radius: 2px;
+    }
+
+    /* Luxury Golden Center Cap */
+    .clock-center-dot {
+      width: 10px;
+      height: 10px;
+      background: radial-gradient(circle, #fef08a 0%, #b45309 100%);
+      border: 1.5px solid #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      box-shadow: 0 0 6px rgba(0,0,0,0.8);
+    }
+
+    /* Date display under clock */
+    .clock-date-text {
+      margin-top: 10px;
+      font-size: 11px;
+      font-weight: 700;
       color: var(--text-main);
-      outline: none;
+      background: var(--date-badge);
+      border: 1px solid var(--card-border);
+      padding: 4px 12px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
     }
-    .line-input:focus { border-color: var(--primary); }
-    .btn-add {
-      background: linear-gradient(135deg, #6366f1, #4f46e5);
-      border: none;
-      border-radius: 12px;
-      padding: 12px 20px;
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .btn-add:disabled { opacity: 0.6; cursor: not-allowed; }
-    .list-container {
+
+    /* Input Controls */
+    .input-form {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      max-height: 380px;
-      overflow-y: auto;
+      gap: 12px;
+      margin-bottom: 24px;
+      background: rgba(0,0,0,0.18);
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--card-border);
     }
-    .line-item {
+
+    .input-row {
       display: flex;
-      align-items: center;
-      background: #0f172a;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .custom-input {
+      background: var(--item-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 12px 16px;
-      gap: 12px;
+      font-size: 14px;
+      color: var(--text-main);
+      outline: none;
     }
-    .line-number {
-      font-size: 12px;
+
+    .custom-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.25);
+    }
+
+    .note-text-input { flex: 1; min-width: 220px; }
+    
+    .date-input {
+      width: 170px;
+      cursor: pointer;
+      color-scheme: dark;
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
       font-weight: 700;
-      color: #818cf8;
-      background: rgba(99, 102, 241, 0.1);
-      padding: 4px 8px;
-      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
     }
-    .line-text { font-size: 14px; color: #e2e8f0; word-break: break-word; }
+
+    .btn-submit:hover { opacity: 0.95; transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Note List */
+    .list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .list-container::-webkit-scrollbar { width: 6px; }
+    .list-container::-webkit-scrollbar-thumb {
+      background: var(--card-border);
+      border-radius: 10px;
+    }
+
+    .note-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--item-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      gap: 14px;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .note-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .note-num {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary);
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 4px 8px;
+      flex-shrink: 0;
+    }
+
+    .note-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .note-text {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-main);
+      word-break: break-word;
+    }
+
+    .note-date-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--date-badge);
+      color: var(--date-text);
+      padding: 2px 8px;
+      border-radius: 6px;
+      width: fit-content;
+    }
+
+    .btn-delete {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .btn-delete:hover {
+      background: #ef4444;
+      color: #ffffff;
+      border-color: #ef4444;
+    }
+
+    .status-msg {
+      text-align: center;
+      font-size: 12px;
+      padding: 8px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      display: none;
+    }
+    .status-err { background: rgba(239, 68, 68, 0.2); color: #fca5a5; display: block; }
+    .status-ok { background: rgba(34, 197, 94, 0.2); color: #86efac; display: block; }
+
+    .empty-state {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 30px 10px;
+      font-size: 14px;
+    }
+
+    /* Developer Footer */
+    .dev-footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      z-index: 2;
+    }
+
+    .dev-footer span {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
 
+  <!-- Falling Confetti Canvas -->
+  <canvas id="confettiCanvas"></canvas>
+
   <div class="container">
-    <div class="header">
-      <h2>Public Live Board</h2>
-      <p style="color: var(--text-muted); font-size: 13px;">यहाँ जो भी लिखेंगे, वह दुनिया में किसी को भी लाइव दिखेगा</p>
+    <!-- Top Header with Classic Sweeping Analog Clock on Right -->
+    <div class="top-header">
+      <div class="header-left">
+        <div class="header-title">
+          <h2>Live Note Space</h2>
+          <p>क्लाउड डेटाबेस से कनेक्टेड स्मार्ट बोर्ड</p>
+        </div>
+        
+        <!-- Theme Switcher -->
+        <div class="theme-selector">
+          <div class="theme-dot dot-sunset active" title="Sunset Orange" onclick="setTheme('sunset')"></div>
+          <div class="theme-dot dot-midnight" title="Midnight Blue" onclick="setTheme('midnight')"></div>
+          <div class="theme-dot dot-cyberpunk" title="Cyberpunk Pink" onclick="setTheme('cyberpunk')"></div>
+          <div class="theme-dot dot-emerald" title="Emerald Green" onclick="setTheme('emerald')"></div>
+        </div>
+      </div>
+
+      <!-- Classic Luxury Analog Clock with Smooth Sweeping Second Hand -->
+      <div class="clock-widget">
+        <div class="clock-outer-rim">
+          <div class="classic-clock">
+            <div class="inner-track-ring"></div>
+
+            <!-- Serif Roman-styled Classic Numbers -->
+            <div class="clock-num num-12">12</div>
+            <div class="clock-num num-1">1</div>
+            <div class="clock-num num-2">2</div>
+            <div class="clock-num num-3">3</div>
+            <div class="clock-num num-4">4</div>
+            <div class="clock-num num-5">5</div>
+            <div class="clock-num num-6">6</div>
+            <div class="clock-num num-7">7</div>
+            <div class="clock-num num-8">8</div>
+            <div class="clock-num num-9">9</div>
+            <div class="clock-num num-10">10</div>
+            <div class="clock-num num-11">11</div>
+
+            <!-- Hands -->
+            <div class="hand hour-hand" id="hourHand"></div>
+            <div class="hand min-hand" id="minHand"></div>
+
+            <!-- Continuous Smooth Second Hand Wrap -->
+            <div class="sec-hand-wrap" id="secWrap">
+              <div class="sec-hand"></div>
+              <div class="sec-tail"></div>
+            </div>
+
+            <div class="clock-center-dot"></div>
+          </div>
+        </div>
+        <div class="clock-date-text" id="clockCurrentDate">--/--/----</div>
+      </div>
     </div>
 
     <div id="statusBox" class="status-msg"></div>
 
-    <div class="input-wrapper">
-      <input type="text" id="lineInput" class="line-input" placeholder="नया मैसेज/लाइन लिखें..." onkeypress="handleKey(event)">
-      <button id="addBtn" class="btn-add" onclick="addNewLine()">+ Publish</button>
+    <!-- Input Section -->
+    <div class="input-form">
+      <div class="input-row">
+        <input type="text" id="noteInput" class="custom-input note-text-input" placeholder="नया नोट या टास्क लिखें..." onkeypress="if(event.key === 'Enter') addNote()">
+        <input type="date" id="dateInput" class="custom-input date-input" title="अंतिम तिथि (Last Date)">
+      </div>
+      <button id="submitBtn" class="btn-submit" onclick="addNote()">
+        <span>+ Add Note</span>
+      </button>
     </div>
 
-    <div class="list-container" id="linesList">
-      <div style="text-align:center; color:#94a3b8; padding:20px;">डेटा लोड हो रहा है...</div>
+    <!-- Notes List -->
+    <div class="list-container" id="notesList">
+      <div class="empty-state">डेटा लोड हो रहा है...</div>
     </div>
+  </div>
+
+  <!-- Developer Footer -->
+  <div class="dev-footer">
+    ⚡ Developed with ❤️ by <span>Deepak Sharma</span>
   </div>
 
   <script>
     const PROJECT_URL = "https://tudgmsdicyxshybbdgos.supabase.co";
     const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1ZGdtc2RpY3l4c2h5YmJkZ29zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5MjA3MDYsImV4cCI6MjEwMzQ5NjcwNn0.x2D-lLA7DLZ8a2CWGgGoIBzvHjOXxChQurchw-8e2k4";
 
-    const API_ENDPOINT = `${PROJECT_URL}/rest/v1/notes?select=*&order=id.asc`;
+    const API_URL = `${PROJECT_URL}/rest/v1/notes`;
 
+    // 1. Theme Logic
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('user_theme', theme);
+      document.querySelectorAll('.theme-dot').forEach(dot => {
+        dot.classList.toggle('active', dot.classList.contains(`dot-${theme}`));
+      });
+    }
+
+    // 2. Smooth Continuous Running Clock Logic (60 FPS Animation Frame)
+    let lastDateStr = '';
+    function runSmoothClock() {
+      const now = new Date();
+      const ms = now.getMilliseconds();
+      const sec = now.getSeconds() + ms / 1000;
+      const min = now.getMinutes() + sec / 60;
+      const hr = (now.getHours() % 12) + min / 60;
+
+      const secDeg = sec * 6; // 360 / 60
+      const minDeg = min * 6; // 360 / 60
+      const hrDeg = hr * 30;  // 360 / 12
+
+      const secWrap = document.getElementById('secWrap');
+      const minHand = document.getElementById('minHand');
+      const hourHand = document.getElementById('hourHand');
+
+      if (secWrap) secWrap.style.transform = `rotate(${secDeg}deg)`;
+      if (minHand) minHand.style.transform = `rotate(${minDeg}deg)`;
+      if (hourHand) hourHand.style.transform = `rotate(${hrDeg}deg)`;
+
+      // Date update
+      const options = { day: '2-digit', month: 'short', year: 'numeric' };
+      const dateFormatted = now.toLocaleDateString('en-GB', options);
+      if (dateFormatted !== lastDateStr) {
+        lastDateStr = dateFormatted;
+        const dateEl = document.getElementById('clockCurrentDate');
+        if (dateEl) dateEl.textContent = dateFormatted;
+      }
+
+      requestAnimationFrame(runSmoothClock);
+    }
+
+    // Init App
     window.onload = function() {
-      fetchLines();
-      // हर 3 सेकंड में ऑटो-रिफ्रेश (ताकि दूसरे का मैसेज तुरंत दिख जाए)
-      setInterval(fetchLines, 3000);
+      const savedTheme = localStorage.getItem('user_theme') || 'sunset';
+      setTheme(savedTheme);
+
+      fetchNotes();
+      setInterval(fetchNotes, 3500);
+
+      initConfetti();
+
+      // Start continuous running clock
+      requestAnimationFrame(runSmoothClock);
     };
 
     function showStatus(msg, isError = false) {
       const box = document.getElementById("statusBox");
       box.textContent = msg;
-      box.className = "status-msg " + (isError ? "status-error" : "status-success");
-      setTimeout(() => { box.className = "status-msg"; }, 4000);
+      box.className = "status-msg " + (isError ? "status-err" : "status-ok");
+      setTimeout(() => { box.className = "status-msg"; }, 3500);
     }
 
-    function handleKey(e) {
-      if (e.key === 'Enter') addNewLine();
-    }
-
-    // 1. डेटा फेच करना
-    async function fetchLines() {
+    // 3. Fetch Notes
+    async function fetchNotes() {
       try {
-        const res = await fetch(API_ENDPOINT, {
+        const res = await fetch(`${API_URL}?select=*&order=id.asc`, {
           headers: {
             "apikey": ANON_KEY,
             "Authorization": `Bearer ${ANON_KEY}`
           }
         });
 
-        if (!res.ok) {
-          const errData = await res.json();
-          throw new Error(errData.message || "डेटा लोड नहीं हो पाया");
-        }
-
+        if (!res.ok) throw new Error("डेटा लोड नहीं हो सका");
         const data = await res.json();
         render(data);
       } catch (err) {
         console.error(err);
-        document.getElementById("linesList").innerHTML = `<div style="text-align:center; color:#ef4444; padding:20px;">Error: ${err.message}<br><small>कृपया SQL Editor में जाकर RLS disable करें।</small></div>`;
       }
     }
 
-    // 2. नया डेटा जोड़ना
-    async function addNewLine() {
-      const input = document.getElementById("lineInput");
-      const btn = document.getElementById("addBtn");
-      const val = input.value.trim();
-      if (!val) return;
+    // 4. Add Note
+    async function addNote() {
+      const textInput = document.getElementById("noteInput");
+      const dateInput = document.getElementById("dateInput");
+      const btn = document.getElementById("submitBtn");
+
+      const text = textInput.value.trim();
+      const dueDate = dateInput.value;
+
+      if (!text) return;
 
       btn.disabled = true;
-      btn.textContent = "Saving...";
+      btn.innerHTML = "<span>Saving...</span>";
 
       try {
-        const res = await fetch(`${PROJECT_URL}/rest/v1/notes`, {
+        const res = await fetch(API_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -196,7 +741,10 @@
             "Authorization": `Bearer ${ANON_KEY}`,
             "Prefer": "return=representation"
           },
-          body: JSON.stringify({ text: val })
+          body: JSON.stringify({ 
+            text: text,
+            due_date: dueDate || null
+          })
         });
 
         if (!res.ok) {
@@ -204,40 +752,133 @@
           throw new Error(errData.message || "सेव नहीं हो सका");
         }
 
-        input.value = "";
-        showStatus("सफलतापूर्वक पब्लिश हुआ!", false);
-        fetchLines();
+        textInput.value = "";
+        dateInput.value = "";
+        showStatus("सफलतापूर्वक जोड़ा गया!");
+        fetchNotes();
       } catch (err) {
         showStatus(err.message, true);
       } finally {
         btn.disabled = false;
-        btn.textContent = "+ Publish";
+        btn.innerHTML = "<span>+ Add Note</span>";
       }
     }
 
-    // 3. रेंडर करना
-    function render(lines) {
-      const container = document.getElementById("linesList");
+    // 5. Delete Note
+    async function deleteNote(id) {
+      if (!confirm("क्या आप इस नोट को हटाना चाहते हैं?")) return;
+
+      try {
+        const res = await fetch(`${API_URL}?id=eq.${id}`, {
+          method: "DELETE",
+          headers: {
+            "apikey": ANON_KEY,
+            "Authorization": `Bearer ${ANON_KEY}`
+          }
+        });
+
+        if (!res.ok) throw new Error("डिलीट नहीं हो पाया");
+        showStatus("नोट हटा दिया गया");
+        fetchNotes();
+      } catch (err) {
+        showStatus(err.message, true);
+      }
+    }
+
+    // 6. Render Notes
+    function render(notes) {
+      const container = document.getElementById("notesList");
       container.innerHTML = "";
 
-      if (!lines || lines.length === 0) {
-        container.innerHTML = `<div style="text-align:center; color:#94a3b8; padding:20px;">अभी कोई मैसेज नहीं है। ऊपर बॉक्स में लिखकर Publish करें।</div>`;
+      if (!notes || notes.length === 0) {
+        container.innerHTML = `<div class="empty-state">अभी कोई नोट सेव नहीं है। ऊपर से नया नोट जोड़ें!</div>`;
         return;
       }
 
-      lines.forEach((item, idx) => {
-        const div = document.createElement("div");
-        div.className = "line-item";
-        div.innerHTML = `
-          <span class="line-number">#${idx + 1}</span>
-          <span class="line-text">${escapeHtml(item.text || "")}</span>
+      notes.forEach((item, idx) => {
+        const card = document.createElement("div");
+        card.className = "note-card";
+        
+        let dateBadgeHtml = "";
+        if (item.due_date) {
+          dateBadgeHtml = `<span class="note-date-badge">📅 Last Date: ${item.due_date}</span>`;
+        }
+
+        card.innerHTML = `
+          <div class="note-left">
+            <span class="note-num">#${idx + 1}</span>
+            <div class="note-content">
+              <span class="note-text">${escapeHtml(item.text || "")}</span>
+              ${dateBadgeHtml}
+            </div>
+          </div>
+          <button class="btn-delete" title="हटाएँ" onclick="deleteNote(${item.id})">
+            🗑️ Delete
+          </button>
         `;
-        container.appendChild(div);
+        container.appendChild(card);
       });
     }
 
     function escapeHtml(str) {
       return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // 7. Paper Confetti Animation
+    function initConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = window.innerHeight;
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      const colors = ['#f97316', '#fbbf24', '#ec4899', '#6366f1', '#10b981', '#38bdf8', '#f43f5e'];
+      const pieces = [];
+      const count = 45;
+
+      for (let i = 0; i < count; i++) {
+        pieces.push({
+          x: Math.random() * width,
+          y: Math.random() * height - height,
+          w: Math.random() * 8 + 6,
+          h: Math.random() * 14 + 8,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          speedY: Math.random() * 1.8 + 1,
+          speedX: Math.random() * 1.5 - 0.75,
+          angle: Math.random() * 360,
+          rotationSpeed: Math.random() * 3 - 1.5
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+
+        pieces.forEach(p => {
+          p.y += p.speedY;
+          p.x += Math.sin(p.y * 0.01) + p.speedX;
+          p.angle += p.rotationSpeed;
+
+          if (p.y > height) {
+            p.y = -20;
+            p.x = Math.random() * width;
+          }
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.angle * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        });
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
     }
   </script>
 </body>
