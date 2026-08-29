@@ -1,25 +1,24 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="teal">
+<html lang="en" data-theme="solar-gold">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Password Generator</title>
+    <title>Easy & Strong Password Generator</title>
     <meta name="description" content="Easy and strong password generator" />
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke='%2354d6c0' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='13' cy='13' r='7.5'/%3E%3Cpath d='M18.5 18.5 L27 27'/%3E%3C/g%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke='%23ffc312' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='13' cy='13' r='7.5'/%3E%3Cpath d='M18.5 18.5 L27 27'/%3E%3C/g%3E%3C/svg%3E"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@500;800&family=Noto+Sans+Devanagari:wght@500;700&display=swap"
       rel="stylesheet"
     />
     <style>
       :root {
         --text-xs: 0.8rem;
-        --text-sm: 0.9rem;
+        --text-sm: 0.92rem;
         --text-base: 1rem;
-        --text-lg: 1.35rem;
-        --text-2xl: clamp(1.7rem, 1.1rem + 2vw, 2.6rem);
+        --text-lg: 1.45rem;
         --s1: 0.25rem;
         --s2: 0.5rem;
         --s3: 0.75rem;
@@ -28,130 +27,28 @@
         --s6: 1.5rem;
         --s8: 2rem;
         --s10: 2.5rem;
-        --radius: 16px;
-        --radius-sm: 11px;
-        --sans: "Noto Sans Devanagari", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-        --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+        --radius: 24px;
+        --radius-sm: 14px;
+        --sans: "Space Grotesk", "Noto Sans Devanagari", sans-serif;
+        --mono: "JetBrains Mono", monospace;
+
+        /* 🌟 SOLAR GOLD FIXED THEME 🌟 */
+        --bg-overlay: rgba(10, 7, 1, 0.88);
+        --panel: rgba(38, 26, 6, 0.78);
+        --field: rgba(20, 14, 2, 0.9);
+        --border: rgba(255, 195, 18, 0.35);
+        --ink: #fffdf5;
+        --muted: #d6be8c;
+        --accent: #ffc312;
+        --accent-glow: rgba(255, 195, 18, 0.5);
+        --on-accent: #170f01;
+        --hologram-grad: linear-gradient(135deg, #f79f1f 0%, #ffc312 50%, #ea2027 100%);
       }
 
-      /* ---------- 10 simple dark themes ---------- */
-      [data-theme="midnight"] {
-        --bg: #10141f;
-        --bg2: #171d2c;
-        --panel: #1a2132;
-        --field: #212a3e;
-        --border: #2c364d;
-        --ink: #eaf0fb;
-        --muted: #97a3bd;
-        --accent: #4f8cff;
-        --on-accent: #06122b;
-      }
-      [data-theme="forest"] {
-        --bg: #0d1713;
-        --bg2: #12211b;
-        --panel: #152420;
-        --field: #1c2f28;
-        --border: #26413a;
-        --ink: #e8f5ee;
-        --muted: #93b3a5;
-        --accent: #4fd18b;
-        --on-accent: #062015;
-      }
-      [data-theme="violet"] {
-        --bg: #14101f;
-        --bg2: #1b1530;
-        --panel: #1f1834;
-        --field: #291f45;
-        --border: #382a5c;
-        --ink: #f0eaff;
-        --muted: #a99bc9;
-        --accent: #a97bff;
-        --on-accent: #150826;
-      }
-      [data-theme="ember"] {
-        --bg: #17100d;
-        --bg2: #211510;
-        --panel: #251813;
-        --field: #33201a;
-        --border: #472c23;
-        --ink: #fdeee7;
-        --muted: #c4a094;
-        --accent: #ff7a45;
-        --on-accent: #210c03;
-      }
-      [data-theme="ocean"] {
-        --bg: #08161d;
-        --bg2: #0d2029;
-        --panel: #0f2530;
-        --field: #163140;
-        --border: #1f4557;
-        --ink: #e5f4fa;
-        --muted: #8fb2c0;
-        --accent: #35c6e8;
-        --on-accent: #03181f;
-      }
-      [data-theme="rose"] {
-        --bg: #1a0f14;
-        --bg2: #24141b;
-        --panel: #29161f;
-        --field: #371d29;
-        --border: #4b2938;
-        --ink: #ffeaf1;
-        --muted: #c79aab;
-        --accent: #ff5f95;
-        --on-accent: #240711;
-      }
-      [data-theme="amber"] {
-        --bg: #16130a;
-        --bg2: #1f1b0e;
-        --panel: #231e11;
-        --field: #302818;
-        --border: #443922;
-        --ink: #fdf4e0;
-        --muted: #bfae8b;
-        --accent: #f5c144;
-        --on-accent: #1e1503;
-      }
-      [data-theme="teal"] {
-        --bg: #0a1817;
-        --bg2: #0f2221;
-        --panel: #112726;
-        --field: #17332f;
-        --border: #204841;
-        --ink: #e4f7f3;
-        --muted: #8fb8b0;
-        --accent: #2fd6bc;
-        --on-accent: #04201b;
-      }
-      [data-theme="slate"] {
-        --bg: #14171a;
-        --bg2: #1b1f23;
-        --panel: #1e2327;
-        --field: #272d33;
-        --border: #363e46;
-        --ink: #edf1f4;
-        --muted: #9aa5b0;
-        --accent: #9fb4c7;
-        --on-accent: #10161c;
-      }
-      [data-theme="grape"] {
-        --bg: #17101c;
-        --bg2: #201528;
-        --panel: #24182d;
-        --field: #30203b;
-        --border: #442c52;
-        --ink: #f7eaff;
-        --muted: #b79ac4;
-        --accent: #d267e8;
-        --on-accent: #200527;
-      }
-
-      /* ---------- base ---------- */
       * {
         box-sizing: border-box;
       }
-      html,
-      body {
+      html, body {
         margin: 0;
         min-height: 100%;
       }
@@ -160,139 +57,138 @@
         font-size: var(--text-base);
         line-height: 1.6;
         color: var(--ink);
-        background: linear-gradient(170deg, var(--bg2), var(--bg));
+        background-color: #030008;
+        background-image: 
+          radial-gradient(circle at center, transparent 0%, var(--bg-overlay) 90%),
+          linear-gradient(to bottom, var(--bg-overlay), var(--bg-overlay)),
+          url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=2070&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
         display: flex;
         flex-direction: column;
         min-height: 100vh;
+        overflow-x: hidden;
       }
-      button {
-        font: inherit;
-        cursor: pointer;
-        color: inherit;
-      }
-      :focus-visible {
-        outline: 2px solid var(--accent);
-        outline-offset: 3px;
-        border-radius: 8px;
-      }
+
       #confetti {
         position: fixed;
         inset: 0;
         z-index: 0;
         pointer-events: none;
       }
-      .topbar,
-      .wrap,
-      .foot {
+      .topbar, .wrap {
         position: relative;
         z-index: 1;
       }
 
-      /* ---------- header ---------- */
+      /* Header */
       .topbar {
         display: flex;
-        flex-wrap: wrap;
-        gap: var(--s4);
-        align-items: center;
-        justify-content: space-between;
+        flex-direction: column;
+        gap: var(--s2);
+        align-items: flex-start;
         padding: var(--s5) clamp(var(--s4), 4vw, var(--s10));
       }
       .brand {
         display: inline-flex;
         align-items: center;
-        gap: var(--s2);
-        font-weight: 700;
+        gap: var(--s3);
+        font-weight: 800;
+        font-size: 1.15rem;
+        letter-spacing: 0.5px;
       }
       .brand .sai {
-        width: 38px;
-        height: 38px;
+        width: 44px;
+        height: 44px;
         border-radius: 50%;
         object-fit: cover;
         border: 2px solid var(--accent);
-      }
-      .theme-box {
-        position: relative;
-      }
-      .theme-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--s2);
-        padding: var(--s2) var(--s4);
-        font-size: var(--text-sm);
-        font-weight: 500;
-        border-radius: 999px;
-        border: 0;
-        background: var(--accent);
-        color: var(--on-accent);
-      }
-      .theme-btn .caret {
-        transition: transform 0.2s ease;
-      }
-      .theme-btn[aria-expanded="true"] .caret {
-        transform: rotate(180deg);
-      }
-      .themes {
-        position: absolute;
-        right: 0;
-        top: calc(100% + var(--s3));
-        z-index: 5;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--s2);
-        padding: var(--s3);
-        width: max-content;
-        border-radius: var(--radius-sm);
-        border: 1px solid var(--border);
-        background: var(--panel);
-      }
-      .themes[hidden] {
-        display: none;
-      }
-      .chip {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--s2);
-        padding: var(--s2) var(--s3);
-        font-size: var(--text-xs);
-        border-radius: 999px;
-        border: 1px solid var(--border);
-        background: var(--field);
-        color: var(--muted);
-      }
-      .chip:hover {
-        color: var(--ink);
-        border-color: var(--accent);
-      }
-      .chip .dot {
-        width: 11px;
-        height: 11px;
-        border-radius: 50%;
-        flex: 0 0 auto;
-      }
-      .chip.is-active {
-        color: var(--on-accent);
-        background: var(--accent);
-        border-color: transparent;
-        font-weight: 500;
-      }
-      .shuffle {
-        grid-column: 1 / -1;
-        justify-content: center;
-        border-style: dashed;
+        box-shadow: 0 0 15px var(--accent-glow);
       }
 
-      /* ---------- main ---------- */
+      /* Top Inline Home Button */
+      .header-home-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        color: var(--ink);
+        padding: 6px 14px;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: var(--text-xs);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        transition: all 0.2s ease;
+      }
+      .header-home-btn:hover {
+        background: var(--hologram-grad);
+        color: var(--on-accent);
+        border-color: transparent;
+        transform: translateY(-2px);
+        box-shadow: 0 0 15px var(--accent-glow);
+      }
+
+      /* Single-line Slow Blinking Main Title */
+      .blinking-title {
+        font-size: clamp(1.1rem, 0.9rem + 1.2vw, 1.85rem);
+        font-weight: 800;
+        line-height: 1.2;
+        margin: 0 0 var(--s2);
+        white-space: nowrap;
+        background: var(--hologram-grad);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: slowBlink 3s ease-in-out infinite;
+      }
+
+      @keyframes slowBlink {
+        0%, 100% {
+          opacity: 1;
+          filter: drop-shadow(0 0 16px var(--accent-glow));
+        }
+        50% {
+          opacity: 0.35;
+          filter: drop-shadow(0 0 2px transparent);
+        }
+      }
+
+      /* Fixed Bottom-Right Developer Badge */
+      .fixed-dev-badge {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        color: var(--muted);
+        padding: 8px 18px;
+        border-radius: 999px;
+        font-size: var(--text-xs);
+        font-weight: 600;
+        z-index: 99999;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+        pointer-events: auto;
+      }
+      .fixed-dev-badge strong {
+        color: var(--accent);
+        font-weight: 800;
+        text-shadow: 0 0 8px var(--accent-glow);
+      }
+
+      /* Main Content */
       .wrap {
         flex: 1;
         width: 100%;
-        max-width: 640px;
+        max-width: 660px;
         margin: 0 auto;
-        padding: clamp(var(--s6), 4vw, var(--s10)) clamp(var(--s4), 4vw, var(--s6)) var(--s10);
-      }
-      h1 {
-        font-size: var(--text-2xl);
-        line-height: 1.2;
-        margin: 0 0 var(--s2);
+        padding: clamp(var(--s4), 3vw, var(--s6)) clamp(var(--s4), 4vw, var(--s6)) 90px;
       }
       .sub {
         margin: 0 0 var(--s8);
@@ -301,9 +197,12 @@
       }
       .card {
         background: var(--panel);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
         border: 1px solid var(--border);
         border-radius: var(--radius);
-        padding: clamp(var(--s5), 3.5vw, var(--s8));
+        padding: clamp(var(--s6), 4vw, var(--s8));
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(255, 255, 255, 0.02);
       }
       .out {
         display: flex;
@@ -312,31 +211,38 @@
         background: var(--field);
         border: 1px solid var(--border);
         border-radius: var(--radius-sm);
-        padding: var(--s4);
-        min-height: 68px;
+        padding: var(--s4) var(--s5);
+        min-height: 74px;
+        box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
       }
       #pw {
         flex: 1;
         min-width: 0;
         font-family: var(--mono);
-        font-weight: 700;
+        font-weight: 800;
         font-size: var(--text-lg);
+        color: var(--accent);
+        text-shadow: 0 0 12px var(--accent-glow);
         word-break: break-all;
       }
       .icon-btn {
         display: grid;
         place-items: center;
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
         flex: 0 0 auto;
-        border-radius: 11px;
+        border-radius: 12px;
         border: 1px solid var(--border);
-        background: transparent;
+        background: var(--panel);
         color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
       }
       .icon-btn:hover {
         color: var(--accent);
         border-color: var(--accent);
+        box-shadow: 0 0 15px var(--accent-glow);
+        transform: scale(1.05);
       }
       .parts {
         display: flex;
@@ -348,8 +254,9 @@
       }
       .parts span {
         padding: var(--s1) var(--s3);
-        border-radius: 999px;
+        border-radius: 8px;
         background: var(--field);
+        border: 1px solid var(--border);
         font-family: var(--mono);
       }
       fieldset {
@@ -359,9 +266,11 @@
       }
       legend {
         font-size: var(--text-xs);
-        letter-spacing: 0.06em;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
         color: var(--muted);
         padding: 0 0 var(--s3);
+        font-weight: 700;
       }
       .cats {
         display: flex;
@@ -369,12 +278,15 @@
         gap: var(--s2);
       }
       .cat {
-        padding: var(--s2) var(--s4);
+        padding: 10px 18px;
         font-size: var(--text-sm);
+        font-weight: 600;
         border-radius: var(--radius-sm);
         border: 1px solid var(--border);
         background: var(--field);
         color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s;
       }
       .cat:hover {
         border-color: var(--accent);
@@ -384,37 +296,45 @@
         color: var(--on-accent);
         background: var(--accent);
         border-color: transparent;
-        font-weight: 500;
+        font-weight: 700;
+        box-shadow: 0 0 15px var(--accent-glow);
       }
       .cta {
         width: 100%;
         margin-top: var(--s6);
-        padding: var(--s4);
+        padding: 16px;
         border: 0;
         border-radius: var(--radius-sm);
-        background: var(--accent);
+        background: var(--hologram-grad);
         color: var(--on-accent);
-        font-weight: 700;
-        font-size: var(--text-sm);
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        box-shadow: 0 10px 30px var(--accent-glow);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       }
       .cta:hover {
-        filter: brightness(1.08);
+        transform: translateY(-2px);
+        box-shadow: 0 15px 40px var(--accent-glow);
+        filter: brightness(1.1);
       }
       .hint {
         min-height: 1.3em;
         margin: var(--s3) 0 0;
         text-align: center;
         font-size: var(--text-xs);
-        color: var(--muted);
+        color: var(--accent);
+        font-weight: 700;
       }
       .recent {
         margin-top: var(--s8);
       }
       .recent h2 {
         font-size: var(--text-xs);
-        letter-spacing: 0.08em;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
         color: var(--muted);
-        font-weight: 500;
+        font-weight: 700;
         margin: 0 0 var(--s3);
       }
       ul {
@@ -447,64 +367,42 @@
       li button {
         border: 0;
         background: transparent;
-        color: var(--muted);
+        color: var(--accent);
         font-family: var(--sans);
+        font-weight: 700;
         font-size: var(--text-xs);
         flex: 0 0 auto;
+        cursor: pointer;
       }
       li button:hover {
-        color: var(--accent);
-      }
-      .foot {
-        padding: var(--s5) clamp(var(--s4), 4vw, var(--s10));
-        border-top: 1px solid var(--border);
-        text-align: right;
-        color: var(--muted);
-        font-size: var(--text-xs);
-      }
-      .foot strong {
-        color: var(--ink);
-      }
-      @media (max-width: 560px) {
-        .topbar {
-          flex-direction: column;
-          align-items: flex-start;
-        }
-        .themes {
-          right: auto;
-          left: 0;
-        }
+        text-shadow: 0 0 8px var(--accent-glow);
       }
     </style>
   </head>
   <body>
+
     <header class="topbar">
       <span class="brand">
-        <img class="sai" src="sai.png" width="38" height="38" alt="Sai Baba" />
+        <img class="sai" src="sai.png" width="44" height="44" alt="Sai Baba" />
         Om Sai Ram
       </span>
-      <div class="theme-box">
-        <button class="theme-btn" id="themeBtn" aria-expanded="false" aria-controls="themes">
-          <span id="themeName">Theme: Teal</span>
-          <svg class="caret" width="20" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M6 9.5 12 15.5 18 9.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-        <nav class="themes" id="themes" aria-label="Choose theme" hidden></nav>
-      </div>
+      
+      <!-- Home Button directly below Om Sai Ram -->
+      <a href="index.html" class="header-home-btn">🏠 Home</a>
     </header>
 
     <main class="wrap">
-      <h1>Easy and Strong Password Generator</h1>
-      <p class="sub">Please select your category</p>
+      <!-- Single-line Slowly Blinking Title -->
+      <h1 class="blinking-title">Easy &amp; Strong Password Generator</h1>
+      <p class="sub">Next-generation cyber secure keys</p>
 
       <section class="card">
         <div class="out">
           <output id="pw" aria-live="polite">—</output>
           <button class="icon-btn" id="copy" title="Copy" aria-label="Copy">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <rect x="9" y="9" width="11" height="11" rx="2.5" stroke="currentColor" stroke-width="1.8" />
-              <path d="M15 5.5H6.5A2.5 2.5 0 0 0 4 8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="11" height="11" rx="2.5" />
+              <path d="M15 5.5H6.5A2.5 2.5 0 0 0 4 8v8" />
             </svg>
           </button>
         </div>
@@ -512,41 +410,31 @@
         <div class="parts" id="parts" aria-live="polite"></div>
 
         <fieldset>
-          <legend>06 digit name + 01 special character + 06 digit numbers pattern</legend>
+          <legend>06 Digit Name + 01 Special Character + 06 Digit Numbers</legend>
           <div class="cats" id="cats"></div>
         </fieldset>
 
-        <button class="cta" id="gen">Generate Password</button>
+        <button class="cta" id="gen">⚡ Generate Password</button>
         <p class="hint" id="hint"></p>
       </section>
 
       <section class="recent">
-        <h2>Recent passwords</h2>
+        <h2>Recent Passwords</h2>
         <ul id="list">
           <li class="empty">Your last 5 passwords will appear here.</li>
         </ul>
       </section>
     </main>
 
+    <!-- Floating Name Badge at Bottom-Right -->
+    <div class="fixed-dev-badge">
+      Developed by <strong>Deepak Sharma</strong>
+    </div>
+
     <canvas id="confetti" aria-hidden="true"></canvas>
-    <footer class="foot">Developed by <strong>Deepak Sharma</strong></footer>
 
     <script>
       const $ = (s) => document.querySelector(s);
-
-      const THEMES = [
-        ["midnight", "Midnight", "#4f8cff"],
-        ["forest", "Forest", "#4fd18b"],
-        ["violet", "Violet", "#a97bff"],
-        ["ember", "Ember", "#ff7a45"],
-        ["ocean", "Ocean", "#35c6e8"],
-        ["rose", "Rose", "#ff5f95"],
-        ["amber", "Amber", "#f5c144"],
-        ["teal", "Teal", "#2fd6bc"],
-        ["slate", "Slate", "#9fb4c7"],
-        ["grape", "Grape", "#d267e8"],
-      ];
-      const PARTY = ["#ff5f95", "#f5c144", "#4fd18b", "#4f8cff", "#d267e8", "#35c6e8", "#ff7a45"];
 
       const WORDS = {
         animal: ["Monkey", "Rabbit", "Parrot", "Falcon", "Jaguar", "Turtle", "Donkey", "Iguana", "Impala", "Bobcat", "Walrus", "Ferret", "Kitten", "Beagle"],
@@ -572,7 +460,6 @@
       };
       const pick = (arr) => arr[rnd(arr.length)];
 
-      /* ---------- password ---------- */
       function make() {
         const pool = cat === "all" ? Object.values(WORDS).flat() : WORDS[cat];
         const word = pick(pool);
@@ -601,56 +488,9 @@
           document.execCommand("copy");
           t.remove();
         }
-        $("#hint").textContent = "Copied.";
+        $("#hint").textContent = "✓ Copied to clipboard!";
       }
 
-      /* ---------- theme button ---------- */
-      let theme = "teal";
-      $("#themes").innerHTML =
-        THEMES.map(
-          ([id, label, dot], i) =>
-            `<button class="chip${i === 0 ? " is-active" : ""}" data-theme-id="${id}" aria-pressed="${i === 0}">` +
-            `<span class="dot" style="background:${dot}"></span>${label}</button>`
-        ).join("") + `<button class="chip shuffle" id="shuffle">Random theme</button>`;
-
-      function setTheme(id) {
-        const row = THEMES.find((t) => t[0] === id) || THEMES[0];
-        theme = row[0];
-        document.documentElement.dataset.theme = theme;
-        $("#themeName").textContent = "Theme: " + row[1];
-        $("#themes")
-          .querySelectorAll("[data-theme-id]")
-          .forEach((c) => {
-            const on = c.dataset.themeId === theme;
-            c.classList.toggle("is-active", on);
-            c.setAttribute("aria-pressed", String(on));
-          });
-      }
-      function toggleMenu(open) {
-        const menu = $("#themes");
-        const show = open === undefined ? menu.hidden : open;
-        menu.hidden = !show;
-        $("#themeBtn").setAttribute("aria-expanded", String(show));
-      }
-      $("#themeBtn").addEventListener("click", (e) => {
-        e.stopPropagation();
-        toggleMenu();
-      });
-      document.addEventListener("click", (e) => {
-        if (!e.target.closest(".theme-box")) toggleMenu(false);
-      });
-      document.addEventListener("keydown", (e) => e.key === "Escape" && toggleMenu(false));
-      $("#themes").addEventListener("click", (e) => {
-        const b = e.target.closest("[data-theme-id]");
-        if (b) {
-          setTheme(b.dataset.themeId);
-          toggleMenu(false);
-          return;
-        }
-        if (e.target.closest("#shuffle")) setTheme(pick(THEMES.filter((t) => t[0] !== theme))[0]);
-      });
-
-      /* ---------- categories ---------- */
       $("#cats").innerHTML = Object.keys(CAT_LABELS)
         .map(
           (k, i) =>
@@ -671,8 +511,6 @@
         make();
       });
 
-      setTheme(theme);
-
       $("#gen").addEventListener("click", make);
       $("#copy").addEventListener("click", () => copy($("#pw").textContent));
       $("#list").addEventListener("click", (e) => {
@@ -681,446 +519,68 @@
       });
       make();
 
-      /* ---------- light confetti rain (30fps, few pieces) ---------- */
+      /* 🌟 CYBER CODE OBJECTS RAIN ANIMATION 🌟 */
       const cv = $("#confetti");
       const cx = cv.getContext("2d");
-      const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-      let bits = [];
-      const R = (a, b) => a + Math.random() * (b - a);
+      let glyphs = [];
+
+      const GLYPH_CHARS = [
+        "0", "1", "{", "}", "</>", "λ", "⚡", "⌘", "π", "∑", "0x1", "::", "&&", "/*", "*/", "≠", "⌥", "$", "=>"
+      ];
 
       function sizeCanvas() {
         cv.width = innerWidth;
         cv.height = innerHeight;
       }
-      const SHAPES = ["rect", "circle", "triangle", "diamond", "ring", "streamer", "star"];
-      function newBit(spread) {
+
+      function newGlyph(isInitial = false) {
         return {
-          shape: SHAPES[(Math.random() * SHAPES.length) | 0],
-          x: R(0, cv.width),
-          y: spread ? R(0, cv.height) : R(-90, -10),
-          w: R(6, 11),
-          h: R(8, 15),
-          vy: R(0.5, 1.5),
-          drift: R(-0.3, 0.3),
-          rot: R(0, 6.28),
-          vr: R(-0.04, 0.04),
-          color: PARTY[(Math.random() * PARTY.length) | 0],
+          char: GLYPH_CHARS[Math.floor(Math.random() * GLYPH_CHARS.length)],
+          x: Math.random() * cv.width,
+          y: isInitial ? Math.random() * cv.height : -30,
+          size: Math.floor(Math.random() * 8 + 12),
+          vy: Math.random() * 1.5 + 0.8,
+          alpha: Math.random() * 0.7 + 0.2,
+          rotation: (Math.random() - 0.5) * 0.3,
         };
       }
+
       function seed() {
-        const n = Math.min(60, Math.round((innerWidth * innerHeight) / 20000));
-        bits = Array.from({ length: n }, () => newBit(true));
+        glyphs = Array.from({ length: 35 }, () => newGlyph(true));
       }
 
-      function drawBit(b) {
-        cx.save();
-        cx.translate(b.x, b.y);
-        cx.rotate(b.rot);
-        cx.fillStyle = b.color;
-        cx.strokeStyle = b.color;
-        const w = b.w,
-          h = b.h,
-          r = w / 2;
-        if (b.shape === "rect") {
-          cx.fillRect(-w / 2, -h / 2, w, h);
-        } else if (b.shape === "streamer") {
-          cx.fillRect(-1.5, -h, 3, h * 2);
-        } else if (b.shape === "circle") {
-          cx.beginPath();
-          cx.arc(0, 0, r, 0, 6.2832);
-          cx.fill();
-        } else if (b.shape === "ring") {
-          cx.lineWidth = 2;
-          cx.beginPath();
-          cx.arc(0, 0, r, 0, 6.2832);
-          cx.stroke();
-        } else if (b.shape === "triangle") {
-          cx.beginPath();
-          cx.moveTo(0, -h / 2);
-          cx.lineTo(w / 2, h / 2);
-          cx.lineTo(-w / 2, h / 2);
-          cx.closePath();
-          cx.fill();
-        } else if (b.shape === "diamond") {
-          cx.beginPath();
-          cx.moveTo(0, -h / 2);
-          cx.lineTo(w / 2, 0);
-          cx.lineTo(0, h / 2);
-          cx.lineTo(-w / 2, 0);
-          cx.closePath();
-          cx.fill();
-        } else {
-          cx.lineWidth = 2;
-          cx.beginPath();
-          cx.moveTo(-r, 0);
-          cx.lineTo(r, 0);
-          cx.moveTo(0, -r);
-          cx.lineTo(0, r);
-          cx.stroke();
+      function frame() {
+        cx.clearRect(0, 0, cv.width, cv.height);
+        const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+
+        for (const g of glyphs) {
+          g.y += g.vy;
+          if (g.y > cv.height + 30) {
+            Object.assign(g, newGlyph(false));
+          }
+
+          cx.save();
+          cx.translate(g.x, g.y);
+          cx.rotate(g.rotation);
+          cx.globalAlpha = g.alpha;
+          cx.font = `800 ${g.size}px "JetBrains Mono", monospace`;
+          cx.fillStyle = accentColor;
+          cx.shadowColor = accentColor;
+          cx.shadowBlur = 10;
+          cx.fillText(g.char, 0, 0);
+          cx.restore();
         }
-        cx.restore();
-      }
-
-      let last = 0;
-      function frame(now) {
         requestAnimationFrame(frame);
-        if (now - last < 33) return; // ~30fps cap, CPU friendly
-        last = now;
-        cx.clearRect(0, 0, cv.width, cv.height);
-        cx.globalAlpha = 0.75;
-        for (const b of bits) {
-          b.y += b.vy;
-          b.x += b.drift;
-          b.rot += b.vr;
-          if (b.y > cv.height + 24) Object.assign(b, newBit(false));
-          drawBit(b);
-        }
       }
-      function drawStill() {
-        cx.clearRect(0, 0, cv.width, cv.height);
-        cx.globalAlpha = 0.7;
-        for (const b of bits) drawBit(b);
-      }
-      let rt;
+
       addEventListener("resize", () => {
-        clearTimeout(rt);
-        rt = setTimeout(() => {
-          sizeCanvas();
-          seed();
-          if (still) drawStill();
-        }, 250);
+        sizeCanvas();
+        seed();
       });
+
       sizeCanvas();
       seed();
-      still ? drawStill() : requestAnimationFrame(frame);
+      requestAnimationFrame(frame);
     </script>
-  <script data-pplx-inline-edit>
-(function () {
-  if (window === window.top) return;
-
-  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
-  const MAX_FONT_BYTES = 500 * 1024;
-  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
-  let scrollForwarding = false;
-  let scrollRaf = 0;
-  let trustedTopOrigin = null;
-
-  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
-  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
-  // across multiple labels.
-  function matchesAllowedOrigin(origin) {
-    if (!origin) return false;
-    for (const entry of allowedParentOrigins) {
-      if (!entry.includes("*")) {
-        if (entry === origin) return true;
-        continue;
-      }
-      const pattern = new RegExp(
-        "^" +
-          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
-          "$",
-      );
-      if (pattern.test(origin)) return true;
-    }
-    return false;
-  }
-
-  // Trust decision: when the sender is same-origin-visible (event.origin is a
-  // real origin like https://www.perplexity.ai) we trust event.origin directly.
-  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
-  // broker's stamped `parentOrigin` to identify the top window. The fallback
-  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
-  // on the response path (see postToTrustedTop) to ensure replies can't be
-  // delivered to anyone but the actual top window of that claimed origin.
-  function getTrustedParentOrigin(event) {
-    const forwardedParentOrigin =
-      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
-    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
-    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
-  }
-
-  // All responses go to window.top with targetOrigin = the allowlisted origin.
-  // An attacker that iframes us inside their own null-origin broker can claim
-  // any parentOrigin they like, but the browser will drop the reply whenever
-  // the real top's origin doesn't match — so the screenshot never leaves.
-  function postToTrustedTop(message) {
-    if (!trustedTopOrigin) return;
-    try {
-      window.top.postMessage(message, trustedTopOrigin);
-    } catch (_error) {}
-  }
-
-  function inlineAll(original, clone) {
-    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
-
-    try {
-      const computedStyle = getComputedStyle(original);
-      // cssText on a computed style is the serialized declaration in modern
-      // Chromium/Safari — a single read beats enumerating ~400 longhand
-      // properties. Firefox returns "" here, so we fall back on empty.
-      const serialized = computedStyle.cssText;
-      if (serialized) {
-        clone.style.cssText = serialized;
-      } else {
-        const parts = new Array(computedStyle.length);
-        for (let index = 0; index < computedStyle.length; index += 1) {
-          const property = computedStyle[index];
-          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
-        }
-        clone.style.cssText = parts.join("");
-      }
-    } catch (_error) {}
-
-    const originalChildren = original.children;
-    const clonedChildren = clone.children;
-    for (
-      let index = 0;
-      index < originalChildren.length && index < clonedChildren.length;
-      index += 1
-    ) {
-      inlineAll(originalChildren[index], clonedChildren[index]);
-    }
-  }
-
-  function extractFontUrl(srcValue) {
-    const matches = [
-      ...srcValue.matchAll(
-        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
-      ),
-    ];
-    if (matches.length === 0) return null;
-    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
-    if (woff2) return woff2[1];
-    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
-    if (woff) return woff[1];
-    return matches[0][1];
-  }
-
-  // Cache resolved font URL -> data URI across captures. Fonts on a page
-  // essentially never change, and a batch run emits multiple captures back to
-  // back — without this we'd refetch + re-base64 every time.
-  const fontDataUriCache = new Map();
-  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
-
-  async function fetchAsDataUri(url) {
-    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
-    let dataUri = null;
-    try {
-      const response = await fetch(url, { mode: "cors", credentials: "omit" });
-      if (response.ok) {
-        const blob = await response.blob();
-        if (blob.size <= MAX_FONT_BYTES) {
-          dataUri = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () =>
-              resolve(typeof reader.result === "string" ? reader.result : null);
-            reader.onerror = () => resolve(null);
-            reader.readAsDataURL(blob);
-          });
-        }
-      }
-    } catch (_error) {
-      dataUri = null;
-    }
-    fontDataUriCache.set(url, dataUri);
-    return dataUri;
-  }
-
-  function collectFontFaceRuleTexts() {
-    const rules = [];
-    for (const sheet of document.styleSheets) {
-      let cssRules;
-      try {
-        cssRules = sheet.cssRules;
-      } catch (_error) {
-        continue;
-      }
-      if (!cssRules) continue;
-      for (const rule of cssRules) {
-        const cssText = rule.cssText || "";
-        if (cssText.startsWith("@font-face")) rules.push(cssText);
-      }
-    }
-    return rules;
-  }
-
-  async function buildInlinedFontCss() {
-    const ruleTexts = collectFontFaceRuleTexts();
-    if (ruleTexts.length === 0) return null;
-
-    const resolved = ruleTexts.map((cssText) => {
-      if (!SRC_DECLARATION_RE.test(cssText)) return null;
-      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
-      if (!srcMatch) return null;
-      const url = extractFontUrl(srcMatch[1]);
-      if (!url) return null;
-      try {
-        return { cssText, url: new URL(url, document.baseURI).href };
-      } catch (_error) {
-        return null;
-      }
-    });
-
-    const dataUris = await Promise.all(
-      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
-    );
-
-    const inlined = [];
-    let totalBytes = 0;
-    for (let index = 0; index < resolved.length; index += 1) {
-      const entry = resolved[index];
-      const dataUri = dataUris[index];
-      if (!entry || !dataUri) continue;
-      const approxBytes = dataUri.length * 0.75;
-      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
-      totalBytes += approxBytes;
-      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
-    }
-    return inlined.length > 0 ? inlined.join("\n") : null;
-  }
-
-  function stripExternal(clone) {
-    const images = clone.querySelectorAll("img");
-    for (let index = 0; index < images.length; index += 1) {
-      const src = images[index].getAttribute("src");
-      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
-    }
-
-    const elements = clone.querySelectorAll("*");
-    for (let index = 0; index < elements.length; index += 1) {
-      const style = elements[index].style.cssText;
-      if (style && style.includes("url(")) {
-        elements[index].style.cssText = style.replace(
-          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
-          "none",
-        );
-      }
-    }
-  }
-
-  function emitScroll() {
-    scrollRaf = 0;
-    if (!scrollForwarding) return;
-    postToTrustedTop({
-      type: "INLINE_EDIT_SCROLL",
-      scrollX: window.scrollX,
-      scrollY: window.scrollY,
-    });
-  }
-
-  window.addEventListener(
-    "scroll",
-    function () {
-      if (!scrollForwarding || scrollRaf) return;
-      scrollRaf = requestAnimationFrame(emitScroll);
-    },
-    { passive: true, capture: true },
-  );
-
-  async function handleCaptureRequest(event) {
-    const requestId = event.data.requestId;
-    const scrollX = window.scrollX;
-    const scrollY = window.scrollY;
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
-    function postResult(dataUrl) {
-      postToTrustedTop({
-        type: "INLINE_EDIT_SCREENSHOT_RESULT",
-        requestId,
-        dataUrl,
-        scrollX,
-        scrollY,
-      });
-    }
-
-    try {
-      // Wait for any pending web fonts to resolve so both inline metrics and
-      // the @font-face inlining below see the same loaded faces.
-      if (document.fonts && document.fonts.ready) {
-        try {
-          await document.fonts.ready;
-        } catch (_error) {}
-      }
-
-      const clone = document.documentElement.cloneNode(true);
-      inlineAll(document.documentElement, clone);
-
-      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
-      for (let index = 0; index < removedNodes.length; index += 1) {
-        removedNodes[index].remove();
-      }
-
-      stripExternal(clone);
-
-      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
-      // can resolve them — external font URLs aren't fetched during
-      // foreignObject rendering, which would otherwise force a fallback face
-      // and change text metrics.
-      const inlinedFontCss = await buildInlinedFontCss();
-      if (inlinedFontCss) {
-        const styleEl = document.createElement("style");
-        styleEl.textContent = inlinedFontCss;
-        const head = clone.querySelector("head");
-        if (head) head.appendChild(styleEl);
-        else clone.insertBefore(styleEl, clone.firstChild);
-      }
-
-      const html = new XMLSerializer().serializeToString(clone);
-      const svg =
-        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
-        '<foreignObject width="100%" height="100%">' +
-        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
-        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
-        html +
-        "</div></div></foreignObject></svg>";
-      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-      const image = new Image();
-      image.onload = function () {
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        canvas.getContext("2d").drawImage(image, 0, 0);
-        postResult(canvas.toDataURL("image/png"));
-      };
-      image.onerror = function () {
-        postResult(null);
-      };
-      image.src = svgUrl;
-    } catch (_error) {
-      postResult(null);
-    }
-  }
-
-  window.addEventListener("message", function (event) {
-    if (!event.data) return;
-    // Only accept messages from the direct parent frame. Blocks sibling /
-    // unrelated-window postMessage senders that could otherwise reach us.
-    if (event.source !== window.parent) return;
-
-    const trustedParentOrigin = getTrustedParentOrigin(event);
-    if (!trustedParentOrigin) return;
-    trustedTopOrigin = trustedParentOrigin;
-
-    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
-      scrollForwarding = true;
-      emitScroll();
-      return;
-    }
-
-    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
-      scrollForwarding = false;
-      if (scrollRaf) cancelAnimationFrame(scrollRaf);
-      scrollRaf = 0;
-      return;
-    }
-
-    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
-
-    handleCaptureRequest(event);
-  });
-})();
-
-
-</script></body>
+  </body>
 </html>
