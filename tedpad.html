@@ -96,6 +96,35 @@
       position: relative;
     }
 
+    /* Fixed Floating Home Button */
+    .fixed-home-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: var(--card-bg);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 10px 18px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 99999;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+
+    .fixed-home-btn:hover {
+      background: var(--primary);
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+
     /* Falling Confetti Canvas */
     #confettiCanvas {
       position: fixed;
@@ -549,6 +578,9 @@
 </head>
 <body>
 
+  <!-- Floating Home Button -->
+  <a href="index.html" class="fixed-home-btn">🏠 Home</a>
+
   <!-- Falling Confetti Canvas -->
   <canvas id="confettiCanvas"></canvas>
 
@@ -655,9 +687,9 @@
       const min = now.getMinutes() + sec / 60;
       const hr = (now.getHours() % 12) + min / 60;
 
-      const secDeg = sec * 6; // 360 / 60
-      const minDeg = min * 6; // 360 / 60
-      const hrDeg = hr * 30;  // 360 / 12
+      const secDeg = sec * 6;
+      const minDeg = min * 6;
+      const hrDeg = hr * 30;
 
       const secWrap = document.getElementById('secWrap');
       const minHand = document.getElementById('minHand');
@@ -667,7 +699,6 @@
       if (minHand) minHand.style.transform = `rotate(${minDeg}deg)`;
       if (hourHand) hourHand.style.transform = `rotate(${hrDeg}deg)`;
 
-      // Date update
       const options = { day: '2-digit', month: 'short', year: 'numeric' };
       const dateFormatted = now.toLocaleDateString('en-GB', options);
       if (dateFormatted !== lastDateStr) {
@@ -689,7 +720,6 @@
 
       initConfetti();
 
-      // Start continuous running clock
       requestAnimationFrame(runSmoothClock);
     };
 
